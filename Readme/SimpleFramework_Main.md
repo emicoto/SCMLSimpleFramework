@@ -137,9 +137,7 @@ iModExtraStatist
 ```
 
 #### 部分模块代表的位置
-下面这张图展示了最简单的几种模块所代表的位置，更多解说可以[在这里](https://github.com/emicoto/DOLMods/blob/main/Simple%20Frameworks/temp/widget%20copy.twee)查看。
-
-![example](https://i.niupic.com/images/2024/01/13/ffYi.png)
+下面这张图展示了最简单的几种模块所代表的位置，更多解说可以[在这里](https://github.com/emicoto/DOLMods/blob/main/Readme/SFWidgets_readme.twee)查看。
 
 ### 打包 MOD
 现在，你已经在 `内容文件` 写好了内容，也在 `载入文件` 中通过简易框架把内容逐个加入到了游戏中。你需要做的只是把 MOD 打包了。
@@ -192,7 +190,7 @@ iModExtraStatist
 你可以将 `内容文件` 和 `载入文件` 分别拆分成多个 twee 文件和 js 文件，也可以把它们整理在文件夹里，只需在填写 `boot.json` 时把它们都正确写进去即可。
 
 ## 简化内容编写
-除了便于添加内容，简易框架还提供了一些函数，可以简化内容的编写。你可以在 JavaScript 文件中直接使用这些函数，也可以在 twee 文件中以宏的形式使用它们。下面展示了在 twee 文件中使用部分这些函数的例子。完整的函数可以在[此处](https://github.com/emicoto/DOLMods/blob/52695d80a24e009b2882eab147a5fbf17ef19972/Simple%20Frameworks/scripts/simpleMacros.js)查看。
+除了便于添加内容，简易框架还提供了一些函数，可以简化内容的编写。你可以在 JavaScript 文件中直接使用这些函数，也可以在 twee 文件中以宏的形式使用它们。下面展示了在 twee 文件中使用部分这些函数的例子。
 
 ### 多语言支持
 #### 常用文本的多语言
@@ -200,7 +198,7 @@ iModExtraStatist
 <<set _link = getLan('next')>> <!--输出为“Next”或“继续”-->
 <<link _link $passage>><</link>>
 ```
-目前支持的常用文本请参见[此处](https://github.com/emicoto/DOLMods/blob/52695d80a24e009b2882eab147a5fbf17ef19972/Simple%20Frameworks/scripts/simpleMacros.js#L1)的 `setup.lang`。
+目前支持的常用文本请参见[此处](https://github.com/emicoto/SCMLSimpleFramework/blob/Simple%20Frameworks/scripts/simpleMacros.js#L1)的 `setup.lang`。
 
 #### 编写多语言内容
 ```HTML
@@ -267,7 +265,7 @@ datas后的数值可以是：总值相加为100的方式从大到小排。
 ```
 
 ## 添加 NPC 与 特征
-参考[此处](https://github.com/emicoto/DOLMods/blob/52695d80a24e009b2882eab147a5fbf17ef19972/simple%20new%20content/newNPC.js)。
+参考[此处](https://github.com/emicoto/SCMLSimpleFramework/blob/simple%20new%20content/newNPC.js)。
 
 ## 添加纹身
 与原版添加纹身的写法基本一致，但可以省略不需要进行设置的变量。
@@ -308,7 +306,7 @@ setup.modTattoos.push(...myNewTatoos); //表格设置完后，推送到简易框
 ```
 
 ## 添加物品
-参考[此处](https://github.com/emicoto/DOLMods/blob/52695d80a24e009b2882eab147a5fbf17ef19972/simple%20new%20content/newItems.js)。
+参考[此处](https://github.com/emicoto/SCMLSimpleFramework/blob/simple%20new%20content/newItems.js)。
 
 需要注意的是，物品系统还没完全从爱糖机模组独立，所以如果想用到物品相关功能，
 
@@ -320,7 +318,7 @@ setup.modTattoos.push(...myNewTatoos); //表格设置完后，推送到简易框
 参考[此处](https://github.com/emicoto/DOLMods/blob/main/i%20Candy%20and%20Robot/0Scripts/1_database/actions.js)。
 
 ## 添加以 JavaScript 编写的宏
-参考[此处](https://github.com/emicoto/DOLMods/blob/52695d80a24e009b2882eab147a5fbf17ef19972/simple%20new%20content/test.js)。
+参考[此处](https://github.com/emicoto/SCMLSimpleFramework/blob/simple%20new%20content/test.js)。
 
 ## 注册事件
 参考[此处](https://github.com/emicoto/DOLMods/blob/main/i%20Candy%20and%20Robot/gamecode/Scene/SceneRegist.js)。
@@ -335,6 +333,6 @@ setup.modTattoos.push(...myNewTatoos); //表格设置完后，推送到简易框
 简易框架主要是用于添加内容和简化编写的。 
 
 当然，也可以通过新的事件系统来对passage进行打补丁，这样就可以在不对源码进行修改的情况下，
-对passage进行些许修改，添加事件分支，功能等等。
+对passage进行些许修改，添加事件分支，功能，对特定位置的文本或链接进行打补丁。
 
 但以上方式都无法达到你想要的效果，则请请查看 [TweeReplacer](https://github.com/Lyoko-Jeremie/Degrees-of-Lewdity_Mod_TweeReplacer/) 的用法，或查看 ModLoader 自带的 [`getPassageData` 和 `updatePassageData` 方法](https://github.com/Lyoko-Jeremie/sugarcube-2-ModLoader/blob/ff638f59261874737c269880f6ff1a1a6e2db865/src/insertTools/MyMod/MyMod_script_preload_example.js)。
