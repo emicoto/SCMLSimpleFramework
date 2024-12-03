@@ -3,58 +3,6 @@
 
 ---
 
-## [EN]
-
-**SCMLSimpleFramework** is a simple content addition framework designed for Sugarcube2 ModLoader.  
-It facilitates the development of game expansion mods by allowing easy integration of new content such as NPCs, items, sidebar descriptions, menus, buttons, mod setting panels, new map entries, and interaction points.
-
-### Key Features:
-
-- **Simplified Content Addition:**  
-  Wrap your content using `<<widget>>` and add its name to the corresponding module queue to seamlessly integrate various elements into the game.
-  
-- **Modular Support:**  
-  Supports multiple modules; refer to the `.twee` files in the `Readme` folder for details.
-  
-- **Examples Provided:**  
-  Sample files are available in the `simple new content` folder for reference.
-
-### Usage Instructions:
-
-1. **Wrap Content:**  
-   Encapsulate your content using `<<widget>>`.
-   
-2. **Add to Module Queue:**  
-   Include the `widget` name in the appropriate module queue.
-   
-3. **Load Order:**  
-   Ensure this mod is loaded early, but after localization mods to prevent conflicts.
-
-### Note:
-
-- **Download:**  
-  Please download from the [Releases](https://github.com/emicoto/SCMLSimpleFramework/releases) page; avoid downloading directly from the master branch.
-  
-- **Discussion and Feedback:**  
-  For queries or feedback, join the QQ group: 257791727.
-
-### Example Code:
-
-```javascript
-simpleFrameworks.addto('iModHeader', {
-  passage: ['Start', 'Home'],
-  widget: 'aSimpleTest',
-});
-```
-
-### Reference:
-
-- [Simple Frameworks Manual](https://github.com/emicoto/DOLMods/blob/main/Simple%20Frameworks/README.md)
-
-SCMLSimpleFramework enhances the efficiency of game expansion mod development, enriching the game's content and diversity.
-
----
-
 ## [中文]
 
 **SCMLSimpleFramework** 是为 Sugarcube2 ModLoader 设计的简易内容添加框架，旨在简化游戏扩展模组的开发过程。  
@@ -104,3 +52,55 @@ simpleFrameworks.addto('iModHeader', {
 - [简易框架说明书](https://github.com/emicoto/SCMLSimpleFramework/blob/main/Readme/SimpleFramework_Main.md)
 
 SCMLSimpleFramework 提高了游戏扩展模组开发的效率，丰富了游戏的内容和多样性。
+
+---
+
+## [EN]
+
+**SCMLSimpleFramework** is a simple content addition framework designed for Sugarcube2 ModLoader.  
+It facilitates the development of game expansion mods by allowing easy integration of new content such as NPCs, items, sidebar descriptions, menus, buttons, mod setting panels, new map entries, and interaction points.
+
+### Key Features:
+
+- **Simplified Content Addition:**  
+  Wrap your content using `<<widget>>` and add its name to the corresponding module queue to seamlessly integrate various elements into the game.
+  
+- **Modular Support:**  
+  Supports multiple modules; refer to the `.twee` files in the `Readme` folder for details.
+  
+- **Examples Provided:**  
+  Sample files are available in the `simple new content` folder for reference.
+
+### Usage Instructions:
+
+1. **Wrap Content:**  
+   Encapsulate your content using `<<widget>>`.
+   
+2. **Add to Module Queue:**  
+   Include the `widget` name in the appropriate module queue.
+   
+3. **Load Order:**  
+   Ensure this mod is loaded early, but after localization mods to prevent conflicts.
+
+### Note:
+
+- **Download:**  
+  Please download from the [Releases](https://github.com/emicoto/SCMLSimpleFramework/releases) page; avoid downloading directly from the master branch.
+  
+- **Discussion and Feedback:**  
+  For queries or feedback, join the QQ group: 257791727.
+
+### Example Code:
+
+```javascript
+simpleFrameworks.addto('iModHeader', {
+  passage: ['Start', 'Home'],
+  widget: 'aSimpleTest',
+});
+```
+
+### Reference:
+
+- [Simple Frameworks Manual](https://github.com/emicoto/DOLMods/blob/main/Simple%20Frameworks/README.md)
+
+SCMLSimpleFramework enhances the efficiency of game expansion mod development, enriching the game's content and diversity.
