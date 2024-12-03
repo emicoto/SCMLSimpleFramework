@@ -1,0 +1,52 @@
+{
+	"name": "lune-mod",
+	"version": "1.0.0",
+	"description": "一些DOL的ML版MOD",
+	"main": "index.js",
+	"type": "module",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "tsx ./script/cli.ts build",
+		"cli": "tsx ./script/cli.ts",
+		"mod-major": "tsx ./script/cli.ts major",
+		"mod-minor": "tsx ./script/cli.ts minor",
+		"mod-patch": "tsx ./script/cli.ts patch",
+		"mod-update": "tsx ./script/cli.ts update",
+		"lint": "eslint --fix --ext .js ."
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/emicoto/DOLMods.git"
+	},
+	"author": "Lunefox",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/emicoto/DOLMods/issues"
+	},
+	"homepage": "https://github.com/emicoto/DOLMods#readme",
+	"dependencies": {
+		"@types/glob": "^8.1.0",
+		"@types/inquirer": "^9.0.7",
+		"@types/semver": "^7.5.6",
+		"archiver": "^6.0.1",
+		"commander": "^11.1.0",
+		"execa": "^8.0.1",
+		"glob": "^10.3.10",
+		"inquirer": "^9.2.12",
+		"ora": "^8.0.1",
+		"ora-classic": "^5.4.2",
+		"semver": "^7.5.4",
+		"tsx": "^4.7.0",
+		"typescript": "^5.3.3",
+		"yargs": "^17.7.2"
+	},
+	"devDependencies": {
+		"@types/archiver": "^6.0.2",
+		"@types/eslint": "^8",
+		"@types/node": "^20.10.5",
+		"eslint": "^8.56.0",
+		"stylelint": "^16.1.0",
+		"stylelint-config-standard": "^36.0.0"
+	},
+	"packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72"
+}
