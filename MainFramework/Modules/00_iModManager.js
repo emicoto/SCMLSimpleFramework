@@ -154,3 +154,9 @@ const iMod = (() => {
         isSafePeriod : _isSafePerieod
     });
 })();
+
+Object.defineProperties(window, {
+    Story  : { get : () => SugarCube.Story },
+    Macro  : { get : () => SugarCube.Macro },
+    Engine : { get : () => SugarCube.Engine }
+});

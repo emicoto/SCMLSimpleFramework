@@ -1,5 +1,5 @@
 const frameworkversion = '2.0.0'
-const builds = 6;
+const builds = 8;
 const lastUpdate = '2024.12.08';
 
 const simpleFrameworks = {
@@ -70,10 +70,11 @@ const simpleFrameworks = {
     },
 
     default : {
-        iModInit  : () => '<<iModInitFunction>><<run setup.addBodyWriting()>>\n\n',
-        iModReady : () => '\n',
+        iModInit   : '<<iModInitFunction>><<run setup.addBodyWriting()>>\n\n',
+        iModReady  : '\n',
+        iModHeader : '<<iEventHeader>>\n',
         
-        iModOptions : () => `
+        iModOptions : `
 <<setupOptions>>
 <span class="gold"><<lanSwitch "Simple Framework" "简易框架" >></span>
 <br>
@@ -96,7 +97,7 @@ const simpleFrameworks = {
 
 `,
 
-        iModCheats : () => `
+        iModCheats : `
 <span class="gold"><<lanSwitch "Cheats Extends Mods" "作弊扩展">></span>
 <br>
 <<set _link = lanSwitch("Dry yourself", "一键烘干")>>
@@ -106,7 +107,7 @@ const simpleFrameworks = {
 <br><br>
 `,
 
-        iModSettings : () => `
+        iModSettings : `
 <div class="solidBorderContainer settings-container">
 <i><<=lanSwitch(
     'All the settings of <span class="gold">mods</span>.',
@@ -115,11 +116,11 @@ const simpleFrameworks = {
 </div>
 <hr>
 `,
-        CustomImgLayer : () => '\n<<ModLocationIMG>>'
+        CustomImgLayer : '\n<<ModLocationIMG>>'
     },
 
     specialWidget : {
-        iModReplace : () => `
+        iModReplace : `
 <<widget "iModReplace">>
 	<<set _key to _args[0]>>
 	<<if !_key>>
@@ -141,7 +142,7 @@ const simpleFrameworks = {
 	<<print '<<'+_key+'>>'>>
 <</widget>>`,
 
-        iModSettingsButton : () => `
+        iModSettingsButton : `
 <<widget "iModSettingsButton">>
     <div id='modSettingButton' @class="_selectedSettings is 'mods' ? 'gold buttonStartSelected' : 'buttonStart'" >
     <<button "Mod Settings">>
@@ -154,7 +155,7 @@ const simpleFrameworks = {
 <</widget>>
 `,
 
-        ModLocationIMG : () => `
+        ModLocationIMG : `
 <<widget "ModLocationIMG">>
     <<if setup.ModLocationPNG.includes($location)>>
     <img id='location' class='CustomLocation' @src="_imgLoc + _weather_display + '/$location' + _dayState + '.png'">
@@ -163,7 +164,7 @@ const simpleFrameworks = {
     <</if>>
 <</widget>>
 `,
-        ModaddNPCRelationText : () => `
+        ModaddNPCRelationText : `
 <<widget "ModaddNPCRelationText">>
 <<if SugarCube.Macro.has($args[0]+'Opinion')>>
     <<print '<<'+$args[0]+'Opinion>>'>>
@@ -331,7 +332,12 @@ const simpleFrameworks = {
     async createModInitMacro() {
         let html = '\n\n<<widget \'iModInitFunction\'>>\n';
         this.initFunction.forEach(func => {
-            html += `<<run ${func}()>>\n`;
+            if (typeof func === 'function') {
+                html += `<<run ${func.name}()>>\n`;
+            }
+            else if (typeof func === 'string') {
+                html += `<<run ${func}()>>\n`;
+            }
         });
         html += '<</widget>>\n';
 
@@ -344,7 +350,12 @@ const simpleFrameworks = {
     async createSpecialWidgets() {
         let html = '\n\n';
         for (const widget in this.specialWidget) {
-            html += this.specialWidget[widget]();
+            if (typeof this.specialWidget[widget] === 'function') {
+                html += this.specialWidget[widget]();
+            }
+            else if (typeof this.specialWidget[widget] === 'string') {
+                html += this.specialWidget[widget];
+            }
         }
 
         this.widgethtml += html;

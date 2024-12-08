@@ -20,7 +20,7 @@ slog('log', 'simple framework start at util.js')
 ;(function () {
     'use strict';
 
-    // make sure the props is valid variables (not null, undefined, empty array, empty object)
+    // make sure the props is valid variables (not null, undefined, empty array, empty object, NaN)
     function isValid(props) {
         const type = typeof props;
         const isArray = Array.isArray(props);
@@ -33,6 +33,14 @@ slog('log', 'simple framework start at util.js')
 
         if (type == 'object') {
             return JSON.stringify(props) !== '{}';
+        }
+
+        if (type == 'number') {
+            return String(props) !== 'NaN';
+        }
+
+        if (type == 'boolean') {
+            return props;
         }
 
         return true;
@@ -265,6 +273,10 @@ slog('log', 'simple framework start at util.js')
         );
     }
 
+    function isObject(obj) {
+        return typeof obj === 'object' && obj !== null && !Array.isArray(obj);
+    }
+
     Object.defineProperties(window, {
         inrange       : { value : inrange },
         Random        : { value : random },
@@ -280,7 +292,8 @@ slog('log', 'simple framework start at util.js')
         setPath       : { value : setPath },
         getPath       : { value : getPath },
         getKeyByValue : { value : getKeyByValue },
-        isValid       : { value : isValid }
+        isValid       : { value : isValid },
+        isObject      : { value : isObject }
     });
 	
     // fix the number to any decimal places

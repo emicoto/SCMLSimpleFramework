@@ -6,6 +6,30 @@ Save.onSave.add(() => {
 
 });
 
+
+/**
+ * @param {string} stage - the stage name for set
+ */
+function setStage(stage) {
+    V.stage = stage;
+
+    // do nothing if not a string;
+    if (typeof V.prevStage === 'string' && V.prevStage !== stage) {
+        V.prevStage = stage;
+    }
+}
+
+
+function unsetStage() {
+    if (isValid(V.stage)) {
+        V.lastStage = V.stage; // save for backup
+        V.prevStage = null;
+        V.stage = null;
+    }
+}
+window.setStage = setStage;
+window.unsetStage = unsetStage;
+
 // if not a function should get error
 if (typeof Config.navigation.override !== 'function') {
     throw new Error('Config.navigation.override is not a function');
@@ -28,7 +52,14 @@ Config.navigation.override = function (passageTitle) {
     if (iEvent.state.isReady() === false) {
         return result;
     }
-    
+
+    if (result === false) {
+        Tvar.backupPassage = passageTitle;
+    }
+    else {
+        Tvar.backupPassage = result;
+    }
+
     const prevPassage = Story.get(V.passage);
     const _result = iEventHandler.onNavi(passage, prevPassage);
     if (typeof _result === 'string') {
@@ -54,6 +85,17 @@ prehistory.SFE_Prehistory = function () {
     // save the last passage if it's different
     if (V.passage !== passage.title) {
         V.lastPassage = V.passage;
+    }
+
+    // save the stage. stage passage should be Stage <stageName>; no more space should be used
+    // but if it's special stage can set after in the passage
+    if (passage.tags.has('stage')) {
+        const stage = passage.title.split(' ')[1];
+        setStage(stage);
+    }
+    // if not stage, then unset the stage
+    else {
+        unsetStage();
     }
 
     if (iEvent.state.isReady() === false) {
@@ -89,10 +131,15 @@ postrender.SFEInit = function () {
     iEvent.init();
 };
 
-// onHeaxer
+// onHeader
 function SFE_onHeader() {
+    const psg = Story.get(passage());
+    // won't run if not ready
+    if (iEvent.state.isReady() === false) {
+        return;
+    }
     // do header event
-    iEventHandler.onBefore();
+    iEventHandler.onBefore(psg);
 }
 
 postrender.SFE_onPostevent = function () {

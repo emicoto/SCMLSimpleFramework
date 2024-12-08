@@ -10,20 +10,12 @@ var iEvent = (() => {
     const _data = {
         events : {
             onScene     : new SeriesData('scene'),
+            onTime      : new SeriesData('time'),
             onCondition : new SeriesData('condition')
                 .add(
                     new ConditionSeries('common', 'condition')
                         .Cond(() => true)
-                ),
-
-            get(type, id) {
-                const storage = _data.events[type];
-                if (!storage) {
-                    console.error(`Event type ${type} is not defined`);
-                    return;
-                }
-                return id ? storage.get(id) : storage;
-            }
+                )
         },
 
         actions : {
@@ -97,6 +89,15 @@ var iEvent = (() => {
          */
         listen(listenerObj) {
             this.listener.push(listenerObj);
+        },
+
+        get(type, id) {
+            const storage = _data.events[type];
+            if (!storage) {
+                console.error(`Event type ${type} is not defined`);
+                return;
+            }
+            return id ? storage.get(id) : storage;
         }
     };
 
@@ -206,13 +207,24 @@ var iEvent = (() => {
     }
 
     function _sortEvents(data) {
-        if (data instanceof EventSeries) {
+        if (data instanceof EventSeries || data instanceof ConditionSeries) {
             data.sort();
         }
-
-        if (typeof data == 'object' && String(data) == '[object Object]') {
-            for (const key in data) {
-                _sortEvents(data[key]);
+        else if (Array.isArray(data)) {
+            for (const item of data) {
+                if (typeof item.sort === 'function') {
+                    item.sort();
+                }
+            }
+        }
+        else if (data instanceof Map) {
+            for (const item of data.values()) {
+                if (typeof item.sort === 'function') {
+                    item.sort();
+                }
+                else if (typeof item === 'object') {
+                    _sortEvents(item);
+                }
             }
         }
     }
@@ -220,7 +232,13 @@ var iEvent = (() => {
     const _state = {
         running : '',
         init    : false,
+        /**
+         * @type {Scene}
+         */
         event   : null,
+        set(state) {
+            this.running = state;
+        },
         isReady() {
             return this.init;
         },
@@ -246,6 +264,11 @@ var iEvent = (() => {
             }
             return this.running.split(':')[1];
         },
+
+        /**
+         * ensure return a SceneData object
+         * @returns {SceneData}
+         */
         getEvent() {
             if (this.event === null) {
                 console.error('[SF/EventSystem] Event is not set');
@@ -253,7 +276,7 @@ var iEvent = (() => {
             }
 
             const data = this.event;
-            return new SceneData(data.Id, data.type, data.priorty).setData(data);
+            return new SceneData(data.Id, data.type, data.priorty).setData(data.data);
         }
     };
 
@@ -277,7 +300,7 @@ var iEvent = (() => {
         _defineObj();
         console.log('[SF/EventSystem] variable Flags is ready:', Flags);
 
-        _state.running = 'ready';
+        _state.set('ready');
         _state.init = true;
     }
 
@@ -285,10 +308,10 @@ var iEvent = (() => {
         _defineObj();
 
         if (V.eFlags.systemState) {
-            _state.running = V.eFlags.systemState;
+            _state.set(V.eFlags.systemState);
         }
         else {
-            _state.running = 'idle';
+            _state.set('idle');
         }
 
         if (_state.isPlaying()) {
@@ -299,7 +322,8 @@ var iEvent = (() => {
         }
     }
 
-    function _onSave() {
+    function _onSave(arg) {
+        console.log('[SF/EventSystem] Saving event system', arg);
         V.eFlags.systemState = _state.running;
         // save event running data
         Tvar.event = _state.event;
@@ -309,19 +333,21 @@ var iEvent = (() => {
     // only work if V.stage is valid
     function _play(eventId, phase = 0) {
         _state.event = new Scene('scene', eventId);
-        _state.running = `starting:${_state.event.fullTitle}`;
         if (phase > 0) {
             _state.event.maxPhase = phase;
         }
+
+        _state.set(`starting:${_state.event.baseTitle}`);
         return _state.event;
     }
 
     // set event and ready to play a event by given data
     function _setEvent(eventData) {
-        _state.event = new Scene('scene', eventData.Id, eventData).initData();
-        _state.running = `starting:${_state.event.fullTitle}`;
+        _state.event = new Scene('scene', eventData.Id, eventData);
+        _state.event.getFullTitle();
+        _state.set(`starting:${_state.event.baseTitle}`);
 
-        console.log(`[SF/EventSystem] Event ${_state.event.fullTitle} is set to ready`);
+        console.log(`[SF/EventSystem] Event ${_state.event.baseTitle} is set to ready`);
         return _state.event;
     }
 
@@ -342,10 +368,10 @@ var iEvent = (() => {
 
     function _unsetEvent() {
         _state.event = null;
-        _state.running = 'idle';
+        _state.set('idle');
 
         V.phase = 0;
-        V.eFlags.systemState = 'idle';
+        V.eFlags.systemState = _state.running;
         Tvar.event = null;
 
         wikifier('endevent');

@@ -116,7 +116,7 @@ const Lang = (() => {
     function _languageSwitch(...lanObj) {
         let lan;
 
-        if (String[lanObj[0]] == '[object Object]') {
+        if (isObject(lanObj[0])) {
             lan = _findAvailableLanguage(lanObj[0]);
             return lanObj[0][lan];
         }
@@ -125,6 +125,7 @@ const Lang = (() => {
             EN : lanObj[0],
             CN : lanObj[1]
         };
+
         if (Array.isArray(lanObj[0])) {
             obj.EN = lanObj[0][0];
             obj.CN = lanObj[0][1];

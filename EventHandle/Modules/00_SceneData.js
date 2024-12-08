@@ -190,13 +190,11 @@ class SceneData {
     /**
      * set actions when the event is running
      * @param {actionType} action
-     * actiontype: nextButton/leave/onPhase/before/after/branch_X/phase_X, X is the number or id of the branch or phase
+     * actiontype: init/end/next/phase_x/branch_X; X is the number or id of the branch or phase
      * the action will be triggered when the condition is met
-     * nextButton: trigger when the next button is clicked
-     * leave: trigger when the event is leaving
-     * onPhase: trigger when the phase is changing
-     * before: trigger before the event starts
-     * after: trigger after the event ends
+     * next: trigger when the next button is clicked
+     * init: trigger before the event starts
+     * end: trigger after the event ends
      * branch_X: trigger when the branch X starts
      * phase_X: trigger when the phase X starts
      * @param {function | string} arg the string should be twee code

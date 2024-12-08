@@ -15,6 +15,7 @@ class Scene {
         if (this.data === null && V.stage) {
             this.stage = V.stage;
             this.fullTitle = `${_type} ${V.stage} ${this.episode}`;
+            this.baseTitle = this.fullTitle;
         }
 
         this.startTime = V.timeStamp;
@@ -98,6 +99,42 @@ class Scene {
         }
 
         return _title;
+    }
+
+    initLanguage() {
+        const fullTitle = this.getFullTitle();
+
+        if (Story.has(`${fullTitle} ${setup.language}`)) {
+            return `${fullTitle} ${setup.language}`;
+        }
+
+        if (Story.has(`${fullTitle} CN`)) {
+            return `${fullTitle} CN`;
+        }
+
+        if (Story.has(`${fullTitle} EN`)) {
+            return `${fullTitle} EN`;
+        }
+
+        if (Story.has(`${fullTitle}`)) {
+            return fullTitle;
+        }
+
+        console.warn(`Scene ${fullTitle} is not found, try to use the base title`);
+
+        if (Story.has(`${this.baseTitle} ${setup.language}`)) {
+            return `${this.baseTitle} ${setup.language}`;
+        }
+
+        if (Story.has(`${this.baseTitle} CN`)) {
+            return `${this.baseTitle} CN`;
+        }
+
+        if (Story.has(`${this.baseTitle} EN`)) {
+            return `${this.baseTitle} EN`;
+        }
+
+        return this.baseTitle;
     }
 
     getLanguage() {
