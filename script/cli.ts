@@ -36,6 +36,7 @@ function buildZip() {
 		if (!stat.isDirectory()) return;
 		const hasBoot = fs.readdirSync(file).includes("boot.json")
 		if (!hasBoot) return;
+		
 		const boot = getBootJson(file);
 		if ("modPacker" in boot) {
 			const modPacker = boot.modPacker;

@@ -8,6 +8,7 @@
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"build": "tsx ./script/cli.ts build",
 		"cli": "tsx ./script/cli.ts",
+		"build-pack": "tsx ./script/pack.ts",
 		"mod-major": "tsx ./script/cli.ts major",
 		"mod-minor": "tsx ./script/cli.ts minor",
 		"mod-patch": "tsx ./script/cli.ts patch",

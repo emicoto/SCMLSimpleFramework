@@ -1,0 +1,45 @@
+{
+    "name": "Simple Frameworks",
+    "version": "2.0.0",
+    "scriptFileList_inject_early": [
+        "Modules/0_Main Framework/00_simplewidget.js",
+        "Modules/1_EventHandle/0_iEventMain.js",
+        "Modules/1_EventHandle/1_iEventHandler.js",
+        "Modules/1_EventHandle/ActionData.js",
+        "Modules/1_EventHandle/EventChecker.js",
+        "Modules/1_EventHandle/SceneData.js",
+        "Modules/1_EventHandle/SceneSystem.js",
+        "Modules/1_EventHandle/SeriesData.js"
+    ],
+    "scriptFileList_earlyload": [],
+    "scriptFileList_preload": [],
+    "styleFileList": [
+        "css/0_Main Framework/general.css"
+    ],
+    "scriptFileList": [
+        "SC2Files/1_EventHandle/SFEsetup.js"
+    ],
+    "tweeFileList": [],
+    "imgFileList": [],
+    "additionFile": [],
+    "addonPlugin": [
+        {
+            "modName": "TweeReplacer",
+            "addonName": "TweeReplacerAddon",
+            "modVersion": "1.0.0",
+            "params": []
+        }
+    ],
+    "dependenceInfo": [
+        {
+            "modName": "TweeReplacer",
+            "version": "^1.0.0"
+        },
+        {
+            "modName": "ReplacePatcher",
+            "version": "^1.0.0"
+        }
+    ],
+    "build": 1,
+    "lastUpdate": "2024.12.08"
+}
