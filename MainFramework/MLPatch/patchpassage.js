@@ -377,7 +377,6 @@
             // add div to passage content
             passage.content = `<div id="passage-content">\n${passage.content}\n</div>`;
         }
-        
 
         // 处理过的就跳过
         if (patchedPassage[title]) return passage;
@@ -425,11 +424,6 @@
                         const text = txt[i];
                         if (set.find) {
                             const res = applysrc(text, set.find, set);
-                            source = source.replace(text, res);
-                        }
-                        else if (set.findmatch) {
-                            const [txt1, txt2] = text.match(set.findmatch);
-                            const res = applysrc(txt[i], txt1, set);
                             source = source.replace(text, res);
                         }
                         else {

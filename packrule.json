@@ -1,18 +1,19 @@
 {
     "VersionJs": {
-      "file": "Main Framework/Modules/00_simplewidget.js",
+      "file": "MainFramework/Main/0_Simplewidget.js",
       "regex": "^(const frameworkversion =)(.*)"
     },
     "ScriptFolder": {
         "styleFileList": ["css/**/*.css"],
         "scriptFileList_inject_early": [
+          "Main/*.js",
           "Modules/**/*.js"
         ],
         "scriptFileList": [
           "SC2Files/**/*.js"
         ],
         "scriptFileList_earlyload": [
-          "Main/*.js"
+          "MLPatch/*.js"
         ]
       }
 }

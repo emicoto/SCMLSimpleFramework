@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 // add your NPC here
 NamedNPC.add(
     new NamedNPC(

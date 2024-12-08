@@ -1,7 +1,5 @@
-setup.SFEonLoad = false;
-
 Save.onLoad.add(() => {
-    setup.SFEonLoad = true;
+    iEvent.state.onload = true;
 });
 
 Save.onSave.add(() => {
@@ -79,9 +77,9 @@ postrender.SFEInit = function () {
         return;
     }
 
-    if (setup.SFEonLoad) {
+    if (iEvent.state.isLoading() === true) {
         iEvent.onLoad();
-        setup.SFEonLoad = false;
+        iEvent.state.onload = false;
     }
 
     if (iEvent.state.isReady() === true) {

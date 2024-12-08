@@ -4,31 +4,7 @@
 //
 //------------------------------------------------------
 
-const lancheck = navigator.language || navigator.userLanguage;
-if (lancheck.includes('zh')) {
-    setup.language = 'CN';
-}
-else {
-    setup.language = 'EN';
-}
-
-
-$(document).one(':passagedisplay', () => {
-    if (passage() == 'Start' && setup.modCombatActions.length > 0) {
-        console.log('[SFDebug] Initializing Mod Combat Colours Setting...');
-        setup.modCombatActions.forEach(action => {
-            const { value, color, mainType } = action;
-            if (typeof color === 'string' && typeof mainType === 'string') {
-                combatActionColours[mainType][color].push(value);
-            }
-        });
-    }
-});
-
-$(document).on(':switchlanguage', () => {
-    NamedNPC.switchlan();
-    iMod.setCf('language', setup.language);
-});
+setup.language = Lang.check();
 
 // if the current passage does not implement the content div, then add it
 prehistory.updatePassageDiv = function () {
@@ -48,29 +24,23 @@ prehistory.updatePassageDiv = function () {
     }
 };
 
-postdisplay.onPost = function () {
-    const passage = this;
-    if (!passage || passage.tags.has('widget')) {
+
+postrender.iModInit = function () {
+    if (iMod.state.isReady() === true || iMod.state.isLoading() === false) {
         return;
     }
 
-    // if the language setting is not initialized
-    if (!iMod.getCf('language')) {
-        iMod.setCf('language', setup.language);
+    if (typeof V.iModConfig === 'undefined' || typeof V.iModVar === 'undefined') {
+        iMod.init();
     }
 
-    // when on load
-    if (setup.iModOnLoad) {
-        setup.language = iMod.getCf('language');
-    }
-
-    if (typeof V.tvar == 'undefined') {
+    if (typeof V.tvar === 'undefined') {
         V.tvar = {
             init : 1
         };
     }
 
-    if (typeof Tvar == 'undefined') {
+    if (typeof Tvar === 'undefined') {
         Object.defineProperty(window, 'Tvar', {
             get() {
                 return V.tvar;
@@ -78,6 +48,41 @@ postdisplay.onPost = function () {
         });
         console.log('[SF] variable Tvar is ready:', Tvar);
     }
+
+    const lang = iMod.getCf('language') ?? null;
+
+    // if the language setting is not initialized
+    if (lang === null) {
+        iMod.setCf('language', setup.language);
+    }
+
+    if (iMod.state.isLoading() === true && lang !== null) {
+        setup.language = iMod.getCf('language');
+    }
+
+    iMod.state.state = 'Ok';
+};
+
+
+postdisplay.updateModActions = function () {
+    if (passage() == 'Start' && setup.modCombatActions.length > 0) {
+        console.log('[SFDebug] Initializing Mod Combat Colours Setting...');
+        setup.modCombatActions.forEach(action => {
+            const { value, color, mainType } = action;
+            if (typeof color === 'string' && typeof mainType === 'string') {
+                combatActionColours[mainType][color].push(value);
+            }
+        });
+    }
+};
+
+
+postdisplay.SF_onPost = function () {
+    const passage = this;
+    if (!passage || passage.tags.has('widget')) {
+        return;
+    }
+
 
     if (!V.passage || passage.title.has('Start', 'Downgrade Waiting Room', 'Settings') !== false || V.passage.has('Start', 'Downgrade Waiting Room', 'Settings') !== false) {
         return;
@@ -93,12 +98,13 @@ postdisplay.onPost = function () {
     $(document).trigger(':postApplyZone');
 };
 
+
 //------------------------------------------------------
 //
 //  NPC相关进程处理
 //
 //------------------------------------------------------
-postdisplay.onPostNpc = function () {
+postdisplay.SF_onPostNpc = function () {
     const passage = this;
     if (!passage || passage.tags.has('widget')) {
         return;
@@ -115,3 +121,22 @@ postdisplay.onPostNpc = function () {
         setup.iModInit = false;
     }
 };
+
+
+//------------------------------------------------------
+//
+//  document事件监听
+//
+//------------------------------------------------------
+$(document).on(':switchlanguage', () => {
+    NamedNPC.onLan();
+    iMod.setCf('language', setup.language);
+});
+
+
+$(document).on(':passageend', () => {
+    if (HeaderMsg.logs.length > 0) {
+        HeaderMsg.show();
+        HeaderMsg.clear();
+    }
+});

@@ -237,6 +237,9 @@ var iEvent = (() => {
         isStartingUp() {
             return this.running.includes('starting:');
         },
+        isLoading() {
+            return this.onload === true;
+        },
         currentEvent() {
             if (!this.isRunning()) {
                 return '';
