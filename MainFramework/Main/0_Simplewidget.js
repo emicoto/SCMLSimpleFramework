@@ -1,5 +1,5 @@
 const frameworkversion = '2.0.0'
-const builds = 5;
+const builds = 6;
 const lastUpdate = '2024.12.08';
 
 const simpleFrameworks = {

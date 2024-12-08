@@ -257,31 +257,39 @@ var iEvent = (() => {
         }
     };
 
+    function _defineObj() {
+        if (typeof V.eFlags == 'undefined') {
+            V.eFlags = {};
+        }
+
+        if (typeof Flags == 'undefined') {
+            Object.defineProperty(window, 'Flags', {
+                get : () => V.eFlags
+            });
+        }
+    }
+
     function _initSystem() {
         for (const key in _data.events) {
             _sortEvents(_data.events[key]);
         }
 
-        if (typeof Flags == 'undefined' || typeof V.eFlags == 'undefined') {
-            V.eFlags = {};
-            Object.defineProperty(window, 'Flags', {
-                get() {
-                    return V.eFlags;
-                }
-            });
-            console.log('[SF/EventSystem] variable Flags is ready:', Flags);
-        }
+        _defineObj();
+        console.log('[SF/EventSystem] variable Flags is ready:', Flags);
 
         _state.running = 'ready';
         _state.init = true;
     }
 
     function _onLoad() {
-        if (_state.isReady() === false) {
-            _initSystem();
-        }
+        _defineObj();
 
-        _state.running = V.eFlags.systemState || 'idle';
+        if (V.eFlags.systemState) {
+            _state.running = V.eFlags.systemState;
+        }
+        else {
+            _state.running = 'idle';
+        }
 
         if (_state.isPlaying()) {
             const event = _state.currentEvent();
