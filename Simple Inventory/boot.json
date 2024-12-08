@@ -12,17 +12,17 @@
     }
   },
   "scriptFileList_inject_early": [
+    "modules/0SFStorage.js",
     "modules/InvUI.js",
     "modules/InvUtil.js",
     "modules/SFInvMain.js",
-    "modules/SFItem.js",
-    "modules/SFStorage.js"
+    "modules/SFItem.js"
   ],
   "scriptFileList_earlyload": [],
   "scriptFileList_preload": [],
   "styleFileList": [],
   "scriptFileList": [
-    "SC2/SFsetup.js"
+    "SC2/SFInvSetup.js"
   ],
   "tweeFileList": [],
   "imgFileList": [],
@@ -45,5 +45,5 @@
       "version": "^1.15.4"
     }
   ],
-  "build": "1"
+  "build": "4"
 }

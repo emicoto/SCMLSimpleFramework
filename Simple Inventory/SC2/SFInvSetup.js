@@ -1,11 +1,11 @@
 
 // eslint-disable-next-line no-var
 setup.SFInv_State = true;
-/**Save.onLoad.add(() => {
+Save.onLoad.add(() => {
     setup.SFInv_onLoad = true;
-});*/
+});
 
-postdisplay.InvInit = function () {
+postdisplay.SInvInit = function () {
     const passage = this;
     if (!passage || passage.tags.has('widget') || !V.passage) {
         return;

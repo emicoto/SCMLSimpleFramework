@@ -140,8 +140,8 @@ const iMod = (() => {
         init  : _init,
         setV  : _setV,
         getV  : _getV,
-        setCF : _setConfig,
-        getCF : _getConfig,
+        setCf : _setConfig,
+        getCf : _getConfig,
         
         register : _register,
         remove   : _remove,

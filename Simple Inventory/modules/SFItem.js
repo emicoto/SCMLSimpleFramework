@@ -119,7 +119,7 @@ var Items = (() => {
 
     // Expose public API
     return Object.freeze({
-        data          : _items,
+        get data() { return _items; },
         add           : _addItem,
         get           : _getItem,
         create        : _create,

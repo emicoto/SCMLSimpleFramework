@@ -26,11 +26,10 @@ prehistory.updatePassageDiv = function () {
 };
 
 
-postrender.iModInit = function () {
-    if (iMod.state.isReady() === true || iMod.state.isLoading() === false) {
-        return;
-    }
+prehistory.iModInit = function () {
+    if (iMod.state.isReady() === true)  return;
 
+    console.log('[SFDebug] onPreInit:', this, this.title);
     if (typeof V.iModConfig === 'undefined' || typeof V.iModVar === 'undefined') {
         iMod.init();
     }

@@ -498,9 +498,14 @@ const NamedNPC = (() => {
         console.log('[SFDebug] addNamedNPC', 'init mod npc from storyinit', V.NPCName, setup.NPCNameList);
     }
 
+    function _getNpcData(npcId) {
+        return _data.find(npc => npc.nam == npcId);
+    }
+
 
     Object.defineProperties(NamedNPC, {
         data  : { get : () => _data },
+        get   : { value : _getNpcData },
         add   : { value : _addNpc },
         clear : { value : _clearInvalidNpcs },
         has   : { value : _hasNpc },

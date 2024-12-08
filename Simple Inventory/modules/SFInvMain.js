@@ -54,7 +54,7 @@ const SFInventory = (() => {
 
     // 导出当前配置到外部模块的方法
     function _export() {
-        iMod.setCF('SimpleInventory', _config);
+        iMod.setCf('SimpleInventory', _config);
     }
 
     // 获取指定大小的最大容量，如果 size 是已知类型则返回对应容量
