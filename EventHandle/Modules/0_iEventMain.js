@@ -9,10 +9,12 @@ var iEvent = (() => {
     //---------------------------------------------
     const _data = {
         events : {
-            onScene   : new SeriesData('scene'),
-            onTime    : new SeriesData('time'),
-            onState   : new SeriesData('state'),
-            onPassage : {},
+            onScene     : new SeriesData('scene'),
+            onCondition : new SeriesData('condition')
+                .add(
+                    new ConditionSeries('common', 'condition')
+                        .Cond(() => true)
+                ),
 
             get(type, id) {
                 const storage = _data.events[type];
@@ -20,13 +22,13 @@ var iEvent = (() => {
                     console.error(`Event type ${type} is not defined`);
                     return;
                 }
-                return _data.events[type].get(id);
+                return id ? storage.get(id) : storage;
             }
         },
 
         actions : {
-            onScene : {},
-            onChara : {}
+            onLocation  : {},
+            onCharacter : {}
         },
 
         postFunc : {},
@@ -55,7 +57,7 @@ var iEvent = (() => {
             }
 
             eventStorage.set(eventData.Id, eventData);
-            return eventStorage;
+            return eventStorage.get(eventData.Id);
         },
 
         /**
@@ -139,7 +141,7 @@ var iEvent = (() => {
      * @returns {object| number | string | boolean}
      */
     function _getFlag(series, flag) {
-        _initFlag(series, flag);
+        _initFlag(series);
         return flag ? V.eFlags[series][flag] : V.eFlags[series];
     }
 
@@ -167,6 +169,11 @@ var iEvent = (() => {
     function _doPatch() {
         const passage = V.passage;
         let patchId = 'addAfterMsg';
+
+        // won't run if in combat
+        if (V.combat !== 0) {
+            return result;
+        }
 
         if (!_data.patches[passage]) {
             return;
@@ -213,6 +220,7 @@ var iEvent = (() => {
     const _state = {
         running : '',
         init    : false,
+        event   : null,
         isReady() {
             return this.init;
         },
@@ -220,35 +228,35 @@ var iEvent = (() => {
             return this.running === 'idle';
         },
         isPlaying() {
-            return this.running.includes('play:');
+            return this.running.includes('running:');
         },
         isRunning() {
             // if is running or playing
-            return this.running.includes('running:') || this.running.includes('play:');
+            return this.running.includes('running:') || this.running.includes('starting:');
+        },
+        isStartingUp() {
+            return this.running.includes('starting:');
         },
         currentEvent() {
             if (!this.isRunning()) {
                 return '';
             }
             return this.running.split(':')[1];
+        },
+        getEvent() {
+            if (this.event === null) {
+                console.error('[SF/EventSystem] Event is not set');
+                return;
+            }
+
+            const data = this.event;
+            return new SceneData(data.Id, data.type, data.priorty).setData(data);
         }
     };
 
     function _initSystem() {
         for (const key in _data.events) {
             _sortEvents(_data.events[key]);
-        }
-        
-        if (typeof Tvar == 'undefined' || typeof V.tvar == 'undefined') {
-            V.tvar = {
-                init : 1
-            };
-            Object.defineProperty(window, 'Tvar', {
-                get() {
-                    return V.tvar;
-                }
-            });
-            console.log('[SF/EventSystem] variable Tvar is ready:', Tvar);
         }
 
         if (typeof Flags == 'undefined' || typeof V.eFlags == 'undefined') {
@@ -276,19 +284,62 @@ var iEvent = (() => {
             const event = _state.currentEvent();
             console.log(`[SF/EventSystem] Event ${event} is running`);
 
-            // restore event running data
+            _play(Tvar.event).restore(Tvar.event);
         }
     }
 
-    function _play(eventData) {
-        // play event by given data
+    function _onSave() {
+        V.eFlags.systemState = _state.running;
+        // save event running data
+        Tvar.event = _state.event;
     }
 
+    // fast play event by given id on Current Stage
+    // only work if V.stage is valid
+    function _play(eventId, phase = 0) {
+        _state.event = new Scene('scene', eventId);
+        _state.running = `starting:${_state.event.fullTitle}`;
+        if (phase > 0) {
+            _state.event.maxPhase = phase;
+        }
+        return _state.event;
+    }
+
+    // set event and ready to play a event by given data
     function _setEvent(eventData) {
-        // set event data and ready to play by given data
+        _state.event = new Scene('scene', eventData.Id, eventData).initData();
+        _state.running = `starting:${_state.event.fullTitle}`;
 
+        console.log(`[SF/EventSystem] Event ${_state.event.fullTitle} is set to ready`);
+        return _state.event;
     }
 
+    // get event data by given seriesId and eventId
+    function _getEvent(seriesId, eventId) {
+        let data = _data.events.onScene.get(seriesId);
+        if (data) {
+            return data.get(eventId);
+        }
+
+        data = _data.events.onCondition.get(seriesId);
+        if (data) {
+            return data.get(eventId);
+        }
+        
+        return null;
+    }
+
+    function _unsetEvent() {
+        _state.event = null;
+        _state.running = 'idle';
+
+        V.phase = 0;
+        V.eFlags.systemState = 'idle';
+        Tvar.event = null;
+
+        wikifier('endevent');
+        wikifier('endcombat');
+    }
 
     return Object.seal({
         get data() {
@@ -300,11 +351,20 @@ var iEvent = (() => {
 
         init   : _initSystem,
         onLoad : _onLoad,
+        onSave : _onSave,
+        
+        set   : _setEvent,
+        get   : _getEvent,
+        play  : _play,
+        unset : _unsetEvent,
 
-        initFlag : _initFlag,
-        setFlag  : _setFlag,
-        getFlag  : _getFlag,
-        addFlag  : _addFlag,
+        flag : {
+            init : _initFlag,
+            set  : _setFlag,
+            get  : _getFlag,
+            add  : _addFlag
+        },
+        
         doPatch  : _doPatch,
         getFlags : _getFlagField
     });

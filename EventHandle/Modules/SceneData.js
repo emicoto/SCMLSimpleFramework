@@ -1,9 +1,12 @@
 /* eslint-disable no-use-before-define */
 
-class TriggerData {
-    constructor(type = 'scene', callback = () => true) {
+class Trigger {
+    constructor(type = 'scene', obj = null, callback = () => true) {
         this.type = type;
         this.cond = callback;
+        if (obj !== null) {
+            this.set(obj);
+        }
     }
     set(obj) {
         for (const key in obj) {
@@ -13,26 +16,28 @@ class TriggerData {
         }
         return this;
     }
-    onCheck(passage) {
+    onCheck(flags = {}, passage, prevPassage) {
+        if (this.prevPassage) {
+            if (this.prevPassage !== prevPassage.title) return false;
+        }
+
         if (this.type === 'scene') {
-            if (this.scene && this.scene === V.scene) {
-                return this.cond();
+            if (this.scene) {
+                return this.cond(flags, passage, prevPassage) && this.scene ===
             }
-            else if (!this.scene) {
-                return this.cond();
-            }
+            return this.cond(flags, passage, prevPassage);
         }
 
         if (this.type === 'passage') {
-            return this.checkPasssage(passage) && this.cond();
+            return this.checkPasssage(passage.title) && this.cond(flags, passage, prevPassage);
         }
 
         if (this.type === 'location') {
-            return this.checkLocation() && this.cond();
+            return this.checkLocation() && this.cond(flags, passage, prevPassage);
         }
 
         if (this.type === 'match') {
-            return this.checkMatch(passage) && this.cond();
+            return this.checkMatch(passage.title) && this.cond(flags, passage, prevPassage);
         }
 
         return false;
@@ -55,9 +60,6 @@ class TriggerData {
         }
         return this.passage === passage;
     }
-    checkCond() {
-        return this.cond();
-    }
     /**
      *
      * @param {string} passage
@@ -71,32 +73,15 @@ class TriggerData {
     }
 }
 
-class PlayOptions {
-    constructor(type = 'scene', arg = '') {
-        this.type = type;
-        this.arg = arg;
-    }
-    set(obj) {
-        for (const key in obj) {
-            if (!this[key]) {
-                this[key] = clone(obj[key]);
-            }
-        }
-        return this;
-    }
-}
-
-
 class SceneData {
     constructor(eventId = '', type = '', priority = 0) {
         this.type = type;
         this.Id = eventId;
         this.priority = priority;
 
-        this.trigger = new TriggerData();
-        this.playOptions = new PlayOptions();
+        this.trigger = new Trigger();
     }
-    setData(obj) {
+    set(obj) {
         for (const key in obj) {
             if (!this[key]) {
                 this[key] = clone(obj[key]);
@@ -109,7 +94,7 @@ class SceneData {
         if (this.branches && this.branches.length > 0) {
             this.branches = this.branches.map(
                 branch =>
-                    new BranchData(branch.Id, this.type, branch.priority ?? 0).setParent(this.Id).setData(branch)
+                    new BranchData(branch.Id, this.type, branch.priority ?? 0).setParent(this.Id).set(branch)
             );
         }
         return this;
@@ -121,7 +106,7 @@ class SceneData {
      * @returns {SceneData}
      */
     Flags(...fields) {
-        this.flagfields = fields;
+        this.flagfield = fields;
         return this;
     }
 
@@ -132,17 +117,19 @@ class SceneData {
 
     /**
      * set the trigger of this event
-     * @param {triggerOption} trigger
+     * @param {string} type
+     * @param {function} callback
+     * @param {*} obj
      * @returns {SceneData}
      */
-    Trigger(trigger) {
-        this.trigger = trigger;
+    Trigger(type, obj = null, callback) {
+        this.trigger = new Trigger(type, obj, callback);
         return this;
     }
 
     /**
      * set the play options of this event
-     * @param {playOption} options
+     * @param {*} options
      * @returns {SceneData}
      */
     PlayOptions(options) {
@@ -157,10 +144,17 @@ class SceneData {
 
     getRandomBranch() {
         if (this.branches.length === 0) {
-            return `No${Random(1, this.randomSize)}`;
+            return {
+                Id   : `No${Random(1, this.randomSize)}`,
+                data : null
+            };
         }
 
-        return this.branches[Random(0, this.branches.length - 1)];
+        const data = this.branches[Random(0, this.branches.length - 1)];
+        return {
+            Id : data.Id,
+            data
+        };
     }
 
     findBranch(id) {
@@ -174,16 +168,19 @@ class SceneData {
         }
 
         if (this.branches.length === 0) {
-            return false;
+            return null;
         }
 
         for (const branch of this.branches) {
             if (branch.cond()) {
-                return branch;
+                return {
+                    Id   : branch.Id,
+                    data : branch
+                };
             }
         }
 
-        return false;
+        return null;
     }
 
     sort() {
@@ -220,7 +217,7 @@ class SceneData {
 class BranchData extends SceneData {
     constructor(branchId = '', type = '', priority = 0) {
         super(branchId, type, priority);
-        this.trigger = new TriggerData('branch');
+        this.trigger = new Trigger('branch');
     }
     setParent(parentId) {
         this.parentId = parentId;

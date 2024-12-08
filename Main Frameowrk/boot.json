@@ -1,0 +1,67 @@
+{
+  "name": "Simple Frameworks",
+  "version": "2.0.0",
+  "modPacker": {
+    "modVersionJs": {
+      "file": "main/simplewidget.js",
+      "regex": "^(const frameworkversion =)(.*)"
+    },
+    "modScriptFolder": {
+      "styleFileList": "css/**/*.css",
+      "scriptFileList_inject_early":[
+        "main/**/*.js",
+        "modules/**/*.js"
+      ],
+      "scriptFileList": [
+        "SCFiles/**/*.js"
+      ]
+    }
+  },
+  "scriptFileList_inject_early": [
+    "main/simplewidget.js",
+    "modules/lib/util.js",
+    "modules/lib/selectcase.js"
+  ],
+  "scriptFileList_earlyload": [
+    "earlyload/patchpassage.js"
+  ],
+  "scriptFileList_preload": [],
+  "styleFileList": [
+    "css/general.css"
+  ],
+  "scriptFileList": [
+    "scripts/0_iModManager.js",
+    "scripts/CNCodeResolver.js",
+    "scripts/NamedNPC.js",
+    "scripts/applyZone.js",
+    "scripts/customUI.js",
+    "scripts/datasetup.js",
+    "scripts/domTool.js",
+    "scripts/simpleMacros.js",
+    "scripts/timeHandler.js",
+    "scripts/z_globalProcess.js"
+  ],
+  "tweeFileList": [],
+  "imgFileList": [],
+  "additionFile": [
+  ],
+  "addonPlugin": [
+    {
+      "modName": "TweeReplacer",
+      "addonName": "TweeReplacerAddon",
+      "modVersion": "1.0.0",
+      "params": []
+    }
+  ],
+  "dependenceInfo": [
+    {
+      "modName": "TweeReplacer",
+      "version": "^1.0.0"
+    },
+    {
+      "modName": "ReplacePatcher",
+      "version": "^1.0.0"
+    }
+  ],
+  "build": "0"
+}

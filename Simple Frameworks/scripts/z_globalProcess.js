@@ -63,6 +63,18 @@ postdisplay.onPost = function () {
     if (setup.iModOnLoad) {
         setup.language = iMod.getCf('language');
     }
+        
+    if (typeof Tvar == 'undefined' || typeof V.tvar == 'undefined') {
+        V.tvar = {
+            init : 1
+        };
+        Object.defineProperty(window, 'Tvar', {
+            get() {
+                return V.tvar;
+            }
+        });
+        console.log('[SF] variable Tvar is ready:', Tvar);
+    }
 
     if (!V.passage || passage.title.has('Start', 'Downgrade Waiting Room', 'Settings') !== false || V.passage.has('Start', 'Downgrade Waiting Room', 'Settings') !== false) {
         return;
