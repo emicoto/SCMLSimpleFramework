@@ -1,0 +1,36 @@
+{
+    "name": "Simple Frameworks",
+    "version": "2.0.0",
+    "scriptFileList_inject_early": [
+    ],
+    "scriptFileList_earlyload": [
+    ],
+    "scriptFileList_preload": [],
+    "styleFileList": [
+    ],
+    "scriptFileList": [
+    ],
+    "tweeFileList": [],
+    "imgFileList": [],
+    "additionFile": [],
+    "addonPlugin": [
+        {
+            "modName": "TweeReplacer",
+            "addonName": "TweeReplacerAddon",
+            "modVersion": "1.0.0",
+            "params": []
+        }
+    ],
+    "dependenceInfo": [
+        {
+            "modName": "TweeReplacer",
+            "version": "^1.0.0"
+        },
+        {
+            "modName": "ReplacePatcher",
+            "version": "^1.0.0"
+        }
+    ],
+    "build": 0,
+    "lastUpdate": "2024.12.08"
+}

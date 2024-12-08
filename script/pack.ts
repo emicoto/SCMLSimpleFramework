@@ -29,7 +29,6 @@ interface filedata {
     module: string; // module name
     realPath: string;
     path: string;
-    virtualPath: string;
 }
 
 class ProjectPackager {
@@ -38,6 +37,7 @@ class ProjectPackager {
     private packRule: PackRule;
     private bootTemplate: Record<string, any>;
     private gatheredFiles: filedata[];
+    private moduleorder: any;
 
     constructor(projectDir: string, outputDir: string, packRule: PackRule, bootTemplate: Record<string, any>) {
         /**
@@ -52,6 +52,7 @@ class ProjectPackager {
         this.outputDir = outputDir;
         this.packRule = packRule;
         this.bootTemplate = bootTemplate;
+        this.moduleorder = null;
         this.gatheredFiles = [];
     }
 
@@ -119,6 +120,8 @@ class ProjectPackager {
             const data = this.getModuleJson(module);
             modulejson[module] = data;
         });
+
+        this.moduleorder = modulejson;
         console.log("modulejson", modulejson);
         
         // sort the module folders by order
@@ -137,26 +140,17 @@ class ProjectPackager {
             // gather all files from the module folder include subfolders
             const files = glob.sync('**/*', { cwd: modulePath, nodir: true });
             //console.log(`Adding files from module: ${module}`, files);
-
             for (const file of files) {
                 if (file === 'module.json') continue;
 
                 const filePath = path.join(modulePath, file);
-                let filename = file.replace(/\\/g, "/");
-                // if the file is in a subfolder, add modulename/ to the path => folder(firstfolder)/modulename/file(rest of the path)
-                if (filename.indexOf("/") !== -1) {
-                    const fileParts = filename.split("/");
-                    filename = `${fileParts[0]}/${i}_${module}/${fileParts.slice(1).join("/")}`;
-                }
-
                 const result = {
                     module,
                     realPath: filePath,
-                    path: file,
-                    virtualPath: filename
+                    path: file
                 }
                 //console.log(`Adding file: ${file}, path: ${filePath}, virtualPath: ${filename}`);
-                archive.file(filePath, { name: filename });
+                archive.file(filePath, { name: file });
                 this.gatheredFiles.push(result);
             }
 
@@ -168,6 +162,13 @@ class ProjectPackager {
         const bootData = { ...this.bootTemplate };
         const folderfiles = {}
 
+        // sort the gathered files by module order
+        gatheredFiles = gatheredFiles.sort((a, b) => {
+            const aOrder = this.moduleorder[a.module].order || 0;
+            const bOrder = this.moduleorder[b.module].order || 0;
+            return aOrder - bOrder;
+        });
+        
         //console.log("gatheredFiles", gatheredFiles);
 
         // Register module-related files
@@ -177,44 +178,65 @@ class ProjectPackager {
             }
 
             console.log(`Processing type: ${script}, patterns:`, this.packRule.ScriptFolder[script]);
-
-            let filepathList: string[] = [];
             if (!folderfiles[script]) {
                 folderfiles[script] = [];
             }
+            const _dir = this.projectDir;
+            const patterns = this.packRule.ScriptFolder[script];
 
-            // add files from gatheredFiles that match the file pattern as FolderName/**/*.filetype
-            for (const pattern of this.packRule.ScriptFolder[script]) {
-                const files = gatheredFiles.filter(file => {
-                    const regex = new RegExp(pattern.replace(/\//g, "\\/").replace(/\*\*/g, "(.*)").replace(/\*/g, "(.*)"));
-                    return regex.test(file.virtualPath);
-                });
+            let files:any[] = []
 
-                //console.log(`Matched files for pattern: ${pattern}`, files);
+            gatheredFiles.forEach(file => {
+                const modulePath = path.join(_dir, file.module).replace(/\\/gim, "/") + "/";
+                const _path = glob.sync(patterns, { cwd: modulePath } );
+                files.push(..._path.map((item) => item.replace(/\\/gim, "/")));
+            });
 
-                files.forEach(file => filepathList.push(file.virtualPath));
-
-                //console.log(`Files added to ${script}:`, filepathList);
-
-                // sort the files by name smaller to bigger or a to z
-                filepathList = filepathList.sort((a, b) => {
-                    const aOrder = a.split("/").pop();
-                    const bOrder = b.split("/").pop();
+            files = [...new Set(files)];
+            //console.log(`Matched files for pattern: ${patterns}`, files);
+            // sort the files by last file name if same length
+            files.sort((a, b) => {
+                
+                let aOrder = a.split("/")
+                let bOrder = b.split("/")
+                if (aOrder.length == bOrder.length) {
+                    aOrder = aOrder[aOrder.length - 1]
+                    bOrder = bOrder[bOrder.length - 1]
                     return aOrder.localeCompare(bOrder);
-                });
+                }
+                return 0;
+            });
 
-                // sort the files by module order 
-                filepathList = filepathList.sort((a, b) => {
-                    const aOrder = a.split("/")[1];
-                    const bOrder = b.split("/")[1];
+            // if length is same, sort by first subfolder
+            files.sort((a, b) => {
+                if (a.length > 2 && b.length > 2) {
+                    let aOrder = a.split("/")[1]
+                    let bOrder = b.split("/")[1]
                     return aOrder.localeCompare(bOrder);
-                });
+                }
+                else {
+                    return 0;
+                }
+            })
 
-                console.log(`Sorted files for ${script}:`, filepathList);
+            // sort by length of path
+            files.sort((a, b) => {
+                return b.split("/").length - a.split("/").length;
+            });
 
-                folderfiles[script].push(...filepathList);
-            }
+            // sort by first folder order
+            files.sort((a, b) => {
+                let aOrder = a.split("/")[0]
+                let bOrder = b.split("/")[0]
+                return aOrder.localeCompare(bOrder);
+            });
+
+            console.log(`Sorted files for ${script}:`, files);
+
+            folderfiles[script].push(...files);
         }
+
+        console.log("folderfiles", folderfiles);
         
         // Merge and remove duplicate
         for (const key of ScriptJson) {
@@ -240,7 +262,7 @@ class ProjectPackager {
         console.log("moduleFolders", moduleFolders);
 
         // Define output zip file path
-        const zipFilename = path.join(this.outputDir, `SimpleFramework_ver${versions.version}_build${versions.buildnumber}.zip`);
+        const zipFilename = path.join(this.outputDir, `SimpleFramework ver${versions.version} build_${versions.buildnumber}.zip`);
 
         // Create zip file
         const output = fs.createWriteStream(zipFilename);
@@ -290,12 +312,23 @@ function getJson(directory: string, filename: string) {
     const projectDir = __dirname;
     const outputDir = path.join(__dirname, "build");
 
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir);
+    }
+    else {
+        fs.readdirSync(outputDir).forEach((file) => {
+            if (file.includes("SimpleFramework")) {
+			    fs.rmSync(path.join(outputDir, file), { recursive: true, force: true });
+            }
+		});
+    }
+
     const packRule: PackRule | null = getJson(__dirname, "packrule.json");
     if (!packRule) {
         throw new Error("Failed to load packrule.json. Please ensure the file exists and is valid.");
     }
 
-    const bootTemplate: Record<string, any> | null = getJson(__dirname, "boot.json");
+    const bootTemplate: Record<string, any> | null = getJson(__dirname, "bootTemplete.json");
     if (!bootTemplate) {
         throw new Error("Failed to load boot.json. Please ensure the file exists and is valid.");
     }

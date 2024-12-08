@@ -26,7 +26,9 @@ function buildZip() {
 	const buildDir = path.join(__dirname, "build");
 	if (!fs.existsSync(buildDir)) { fs.mkdirSync(buildDir) } else {
 		fs.readdirSync(buildDir).forEach((file) => {
+			if (file.includes(".zip") && !file.includes("SimpleFramework")) {
 			fs.rmSync(path.join(buildDir, file), { recursive: true, force: true });
+			}
 		});
 	};
 	fs.readdirSync(__dirname).forEach((file) => {
@@ -60,18 +62,21 @@ function buildZip() {
 					let filepathList: string[] = [];
 					switch(typeof modScriptFolderPath){
 						case "string":
-							console.log(modScriptFolderPath);
 							filepathList = glob.sync(modScriptFolderPath,{
 								"cwd": filepath,
 							});
+							
+							console.log('adding files:',modScriptFolderPath, filepath);
 							break;
 						case "object":
 							if(Array.isArray(modScriptFolderPath)){
 								filepathList = glob.sync(modScriptFolderPath,{cwd: filepath});
+								console.log('adding files:',modScriptFolderPath, filepath);
 								break;
 							}
 							const options = Object.assign({cwd: filepath}, modScriptFolderPath.options);
 							filepathList = glob.sync(modScriptFolderPath.glob, options);
+							console.log('adding files:',modScriptFolderPath, filepath);
 							break;
 					}
 				

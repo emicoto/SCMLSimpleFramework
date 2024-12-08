@@ -2,24 +2,39 @@
     "name": "Simple Frameworks",
     "version": "2.0.0",
     "scriptFileList_inject_early": [
-        "Main/0_MainFramework/0_Simplewidget.js",
-        "Modules/1_EventHandle/0_iEventMain.js",
-        "Modules/1_EventHandle/1_iEventHandler.js",
-        "Modules/1_EventHandle/ActionData.js",
-        "Modules/1_EventHandle/EventChecker.js",
-        "Modules/1_EventHandle/SceneData.js",
-        "Modules/1_EventHandle/SceneSystem.js",
-        "Modules/1_EventHandle/SeriesData.js"
+        "Main/0_Simplewidget.js",
+        "Modules/0_lib/selectcase.js",
+        "Modules/0_lib/util.js",
+        "Modules/1_main/0_iModManager.js",
+        "Modules/0_iEventMain.js",
+        "Modules/1_iEventHandler.js",
+        "Modules/ActionData.js",
+        "Modules/applyZone.js",
+        "Modules/customUI.js",
+        "Modules/domTool.js",
+        "Modules/EventChecker.js",
+        "Modules/language.js",
+        "Modules/NameNPC.js",
+        "Modules/SceneData.js",
+        "Modules/SceneSystem.js",
+        "Modules/SeriesData.js"
     ],
     "scriptFileList_earlyload": [
-        "MLPatch/0_MainFramework/patchpassage.js"
+        "MLPatch/patchpassage.js"
     ],
     "scriptFileList_preload": [],
     "styleFileList": [
-        "css/0_MainFramework/general.css"
+        "css/general.css"
     ],
     "scriptFileList": [
-        "SC2Files/1_EventHandle/SFEsetup.js"
+        "SC2Files/0_loadconfig.js",
+        "SC2Files/1_macromodif.js",
+        "SC2Files/NpcHookerHandle.js",
+        "SC2Files/SFEsetup.js",
+        "SC2Files/SimpleContents.js",
+        "SC2Files/SimpleMacro.js",
+        "SC2Files/TimeHandle.js",
+        "SC2Files/z_globalProcess.js"
     ],
     "tweeFileList": [],
     "imgFileList": [],
@@ -42,6 +57,6 @@
             "version": "^1.0.0"
         }
     ],
-    "build": 3,
+    "build": 1,
     "lastUpdate": "2024.12.08"
 }
