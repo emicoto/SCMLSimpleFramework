@@ -1,3 +1,5 @@
+console.log('[SFDebug] running timehandle.js');
+
 const oldPass = Time.pass;
 
 const TimeHandle = {

@@ -500,10 +500,7 @@ const NamedNPC = (() => {
 
 
     Object.defineProperties(NamedNPC, {
-        get data() {
-            return _data;
-        },
-
+        data  : { get : () => _data },
         add   : { value : _addNpc },
         clear : { value : _clearInvalidNpcs },
         has   : { value : _hasNpc },

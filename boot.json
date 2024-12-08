@@ -2,22 +2,22 @@
     "name": "Simple Frameworks",
     "version": "2.0.0",
     "scriptFileList_inject_early": [
+        "Main/0_lib/selectcase.js",
+        "Main/0_lib/util.js",
         "Main/0_Simplewidget.js",
-        "Modules/0_lib/selectcase.js",
-        "Modules/0_lib/util.js",
-        "Modules/1_main/0_iModManager.js",
-        "Modules/0_iEventMain.js",
-        "Modules/1_iEventHandler.js",
+        "Modules/00_iModManager.js",
+        "Modules/00_SceneData.js",
+        "Modules/00_SceneSystem.js",
+        "Modules/00_SeriesData.js",
+        "Modules/01_iEventMain.js",
+        "Modules/02_iEventHandler.js",
         "Modules/ActionData.js",
         "Modules/applyZone.js",
         "Modules/customUI.js",
         "Modules/domTool.js",
         "Modules/EventChecker.js",
         "Modules/language.js",
-        "Modules/NameNPC.js",
-        "Modules/SceneData.js",
-        "Modules/SceneSystem.js",
-        "Modules/SeriesData.js"
+        "Modules/NameNPC.js"
     ],
     "scriptFileList_earlyload": [
         "MLPatch/patchpassage.js"
@@ -29,8 +29,8 @@
     "scriptFileList": [
         "SC2Files/0_loadconfig.js",
         "SC2Files/1_macromodif.js",
+        "SC2Files/2_SFEsetup.js",
         "SC2Files/NpcHookerHandle.js",
-        "SC2Files/SFEsetup.js",
         "SC2Files/SimpleContents.js",
         "SC2Files/SimpleMacro.js",
         "SC2Files/TimeHandle.js",
@@ -57,6 +57,6 @@
             "version": "^1.0.0"
         }
     ],
-    "build": 1,
+    "build": 2,
     "lastUpdate": "2024.12.08"
 }

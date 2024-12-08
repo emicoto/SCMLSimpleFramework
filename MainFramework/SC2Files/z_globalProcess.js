@@ -1,3 +1,4 @@
+console.log('[SFDebug] running z_globalProcess.js');
 //------------------------------------------------------
 //
 //  进程处理

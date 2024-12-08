@@ -1,8 +1,8 @@
 const frameworkversion = '2.0.0'
-const builds = 1;
+const builds = 2;
 const lastUpdate = '2024.12.08';
 
-window.simpleFrameworks = {
+const simpleFrameworks = {
     version : frameworkversion,
     name    : 'Simple Frameworks',
     author  : 'Lune',
@@ -71,7 +71,7 @@ window.simpleFrameworks = {
 
     default : {
         iModInit  : () => '<<iModInitFunction>><<run setup.addBodyWriting()>>\n\n',
-        iModReady : () => '<<iModonReady>>\n\n',
+        iModReady : () => '\n',
         
         iModOptions : () => `
 <<setupOptions>>

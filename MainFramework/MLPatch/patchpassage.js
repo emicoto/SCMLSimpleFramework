@@ -183,8 +183,8 @@
                 to  : '<<ModRelationshipText $NPCName[_i].nam>>'
             },
             {
-                src : /<<NPC_CN_NAME _npc>>|\t\t\t_npc/,
-                to  : '<<=C.npc[_npc].displayname>>'
+                srcmatch : /<<NPC_CN_NAME _npc>>|\t\t\t_npc/,
+                to       : '<<=C.npc[_npc].displayname>>'
             }
         ],
         Widgets : [

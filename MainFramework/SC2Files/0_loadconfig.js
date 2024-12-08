@@ -1,3 +1,4 @@
+console.log('[SFDebug] running 0_loadconfig.js');
 Save.onLoad.add(() => {
     iMod.state.state = 'loading';
 });

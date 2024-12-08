@@ -6,14 +6,14 @@
     "ScriptFolder": {
         "styleFileList": ["css/**/*.css"],
         "scriptFileList_inject_early": [
-          "Main/*.js",
+          "Main/**/*.js",
           "Modules/**/*.js"
-        ],
-        "scriptFileList": [
-          "SC2Files/**/*.js"
         ],
         "scriptFileList_earlyload": [
           "MLPatch/*.js"
+        ],
+        "scriptFileList": [
+          "SC2Files/**/*.js"
         ]
       }
 }

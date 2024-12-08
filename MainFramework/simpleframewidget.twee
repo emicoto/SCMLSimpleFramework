@@ -50,7 +50,6 @@
 
 
 <<widget 'iModReady'>>
-<<iModonReady>>
 <<=iMod.play('iModReady')>>
 
 <</widget>>

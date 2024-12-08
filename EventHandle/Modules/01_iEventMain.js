@@ -206,7 +206,7 @@ var iEvent = (() => {
     }
 
     function _sortEvents(data) {
-        if (data instanceof SeriesData) {
+        if (data instanceof EventSeries) {
             data.sort();
         }
 

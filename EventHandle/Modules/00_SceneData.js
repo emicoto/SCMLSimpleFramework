@@ -23,7 +23,7 @@ class Trigger {
 
         if (this.type === 'scene') {
             if (this.scene) {
-                return this.cond(flags, passage, prevPassage) && this.scene ===
+                return this.cond(flags, passage, prevPassage) && this.scene === V.stage;
             }
             return this.cond(flags, passage, prevPassage);
         }

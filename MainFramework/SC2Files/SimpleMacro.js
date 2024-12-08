@@ -1,4 +1,5 @@
 /* eslint-disable max-len */
+console.log('[SFDebug] running SimpleMacro.js');
 
 Macro.add('randomdata', {
     tags : ['datas'],

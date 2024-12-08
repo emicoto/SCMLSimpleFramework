@@ -1,10 +1,10 @@
-Save.onLoad.add(() => {
+/**Save.onLoad.add(() => {
     iEvent.state.onload = true;
 });
 
 Save.onSave.add(() => {
 
-});
+});*/
 
 // if not a function should get error
 if (typeof Config.navigation.override !== 'function') {

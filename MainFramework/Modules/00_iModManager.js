@@ -82,7 +82,7 @@ const iMod = (() => {
     }
 
     function _playZone(zone, passageTItle) {
-        const data = simpleFramework.data[zone];
+        const data = simpleFrameworks.data[zone];
         console.log('[SFDebug] checkzone:', zone, data);
 
         if (!data) return '';

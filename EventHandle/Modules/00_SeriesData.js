@@ -25,6 +25,8 @@ class SeriesData {
             }
             this.data.set(item.Id, item);
         }
+
+        return this;
     }
 }
 

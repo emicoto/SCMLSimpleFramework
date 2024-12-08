@@ -1,3 +1,5 @@
+console.log('[SFDebug] running SimpleContents.js');
+
 setup.ModLocationPNG = [];
 setup.ModLocationGIF = [];
 
