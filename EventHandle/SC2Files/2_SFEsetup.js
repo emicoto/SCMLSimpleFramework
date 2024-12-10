@@ -53,11 +53,14 @@ Config.navigation.override = function (passageTitle) {
         return result;
     }
 
-    if (result === false) {
-        Tvar.backupPassage = passageTitle;
-    }
-    else {
-        Tvar.backupPassage = result;
+    // back up available passage for restore, should backup outside of event loop
+    if (passageTitle !== 'SFEventLoop' && iEvent.state.isPlaying() === false) {
+        if (result === false) {
+            Tvar.backupPassage = passageTitle;
+        }
+        else {
+            Tvar.backupPassage = result;
+        }
     }
 
     const prevPassage = Story.get(V.passage);
@@ -90,7 +93,7 @@ prehistory.SFE_Prehistory = function () {
     // save the stage. stage passage should be Stage <stageName>; no more space should be used
     // but if it's special stage can set after in the passage
     if (passage.tags.has('stage')) {
-        const stage = passage.title.split(' ')[1];
+        const stage = passage.title.replace('Stage ', '');
         setStage(stage);
     }
     // if not stage, then unset the stage

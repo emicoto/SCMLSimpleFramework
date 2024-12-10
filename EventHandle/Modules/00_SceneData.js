@@ -71,6 +71,54 @@ class Trigger {
         }
         return passage.match(this.match);
     }
+    bindSrc(source) {
+        this.source = source;
+        return this;
+    }
+}
+
+class PlayOptions {
+    constructor(source, type, obj) {
+        this.source = source;
+        this.type = type;
+        for (const key in obj) {
+            if (!this[key]) {
+                this[key] = clone(obj[key]);
+            }
+        }
+    }
+    onGet() {
+        switch (this.type) {
+        case 'scene':
+            if (this.stage) {
+                return `Stage ${this.stage}`;
+            }
+            return Story.get(`Stage ${this.source.seriesId}`) ? `Stage ${this.source.seriesId}` : `Stage ${V.stage}`;
+        case 'stage':
+            if (this.stage) {
+                return `Stage ${this.stage}`;
+            }
+            if (Story.get(`Stage ${this.source.seriesId}`)) {
+                return `Stage ${this.source.seriesId}`;
+            }
+            return V.stage ? `Stage ${V.stage}` : 'SFEventLoop';
+        case 'passage':
+            if (this.passage) {
+                return this.passage;
+            }
+            return null;
+        }
+        return null;
+    }
+
+    onCheckScene(passageTitle) {
+        if (this.type !== 'scene') {
+            return true;
+        }
+
+        if (this.stage) return passageTitle.has(this.stage);
+        if (this.location) return this.location.includes(V.location);
+    }
 }
 
 class SceneData {
@@ -123,17 +171,17 @@ class SceneData {
      * @returns {SceneData}
      */
     Trigger(type, obj = null, callback) {
-        this.trigger = new Trigger(type, obj, callback);
+        this.trigger = new Trigger(type, obj, callback).bindSrc(this);
         return this;
     }
 
     /**
      * set the play options of this event
-     * @param {*} options
+     * @param {playOptions} options
      * @returns {SceneData}
      */
     PlayOptions(options) {
-        this.playOptions = options;
+        this.playOptions = new PlayOptions(this, options.type, options);
         return this;
     }
 
@@ -209,8 +257,12 @@ class SceneData {
 
         return this;
     }
-}
 
+    restore() {
+        this.trigger = this.Trigger(this.trigger.type, this.trigger, this.trigger.cond);
+        this.playOptions = this.PlayOptions(this.playOptions);
+    }
+}
 
 class BranchData extends SceneData {
     constructor(branchId = '', type = '', priority = 0) {

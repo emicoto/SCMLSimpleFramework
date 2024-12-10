@@ -132,6 +132,27 @@ const iMod = (() => {
         }
     };
 
+    function _getModList() {
+        const MLlist = modUtils.getModListName();
+        // if utils not avaqilable, return empty array
+        if (!MLlist) return [];
+
+        // find index of Simple Frameworks
+        const index = MLlist.indexOf('Simple Frameworks');
+        // then get rest after Simple Frameworks
+        const rest = MLlist.slice(index + 1);
+        return rest;
+    }
+
+    function _autoRegister() {
+        const modList = _getModList();
+        if (modList.length == 0) return;
+
+        for (const modId of modList) {
+            _register(modId);
+        }
+    }
+
     return Object.freeze({
         get state() {
             return _state;

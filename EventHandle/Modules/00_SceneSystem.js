@@ -157,24 +157,21 @@ class Scene {
 
     getStage() {
         const data = this.data;
+
         if (!data.playOptions) {
             if (data.type === 'scene') {
-                return Story.get(`Stage ${this.seriesId}`) ? `Stage ${this.seriesId}` : `Stage ${V.stage}`;
+                if (Story.get(`Stage ${this.seriesId}`)) {
+                    return `Stage ${this.seriesId}`;
+                }
+                return data.stage ?? `Stage ${V.stage}`;
             }
+
             return data.stage ?? 'SFEventLoop';
         }
 
-        const option = data.playOptions;
-        if (option.type === 'scene' && V.stage) {
-            return `Stage ${V.stage}`;
-        }
-
-        if (option.type === 'stage' && option.stage) {
-            return `Stage ${option.stage}`;
-        }
-
-        if (option.type === 'passage' && option.passage) {
-            return option.passage;
+        const stage = playOptions.onGet();
+        if (stage !== null) {
+            return stage;
         }
 
         return data.stage ?? 'SFEventLoop';
@@ -205,6 +202,11 @@ class Scene {
         if (scene) {
             for (const key in scene) {
                 this[key] = scene[key];
+            }
+            if (scene.source) {
+                const src = new SceneData(scene.source.Id, scene.source.type, scene.source.priority);
+                src.setData(scene.source);
+                src.restore();
             }
         }
         else if (this.source) {

@@ -13,8 +13,8 @@ var iEvent = (() => {
             onTime      : new SeriesData('time'),
             onCondition : new SeriesData('condition')
                 .add(
-                    new ConditionSeries('common', 'condition')
-                        .Cond(() => true)
+                    new ConditionSeries('passout', 'condition').Cond(() => iEvent.passoutCheck()),
+                    new ConditionSeries('common', 'condition').Cond(() => true)
                 )
         },
 
@@ -28,6 +28,13 @@ var iEvent = (() => {
         patches : {},
 
         listener : [],
+
+        passoutconditions : [
+            // default passout condition
+            function () {
+                return V.stress >= V.stressmax;
+            }
+        ],
 
         /**
          * add event to events storage
@@ -89,6 +96,14 @@ var iEvent = (() => {
          */
         listen(listenerObj) {
             this.listener.push(listenerObj);
+        },
+
+        /**
+         * the param condition should be function that return boolean
+         * @param {function} condition
+         */
+        newPassoutCondition(condition) {
+            this.passoutconditions.push(condition);
         },
 
         get(type, id) {
@@ -193,6 +208,35 @@ var iEvent = (() => {
         });
     }
 
+    function _doPostFunc(passage, prevPassage) {
+        const keys = Object.keys(_data.postFunc);
+        if (keys.length === 0) {
+            return;
+        }
+        for (const [key, value] of Object.entries(_data.postFunc)) {
+            if (value.passage && value.passage.includes(passage)) {
+                value.func();
+            }
+            else if (value.prevPassage && value.prevPassage.includes(prevPassage)) {
+                value.func();
+            }
+            else if (value.passage === undefined && value.prevPassage === undefined) {
+                value.func();
+            }
+        }
+    }
+
+
+    function _onPassoutCheck() {
+        const conditions = _data.passoutconditions;
+        for (const condition of conditions) {
+            if (condition()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     function _getFlagField(flagKeys) {
         const flags = {};
         if (!flagKeys || flagKeys.length === 0) {
@@ -266,7 +310,7 @@ var iEvent = (() => {
         },
 
         /**
-         * ensure return a SceneData object
+         * ensure return a SceneData object of current event
          * @returns {SceneData}
          */
         getEvent() {
@@ -275,8 +319,14 @@ var iEvent = (() => {
                 return;
             }
 
-            const data = this.event;
-            return new SceneData(data.Id, data.type, data.priorty).setData(data.data);
+            const src = this.event.source;
+            if (src instanceof SceneData === false) {
+                const data = new SceneData(src.Id, src.type, src.priorty).setData(src);
+                data.restore();
+                this.event.source = data;
+            }
+
+            return this.event.source;
         }
     };
 
@@ -402,7 +452,9 @@ var iEvent = (() => {
             add  : _addFlag
         },
         
-        doPatch  : _doPatch,
-        getFlags : _getFlagField
+        doPatch      : _doPatch,
+        doPostFunc   : _doPostFunc,
+        getFlags     : _getFlagField,
+        passoutCheck : _onPassoutCheck
     });
 })();

@@ -54,13 +54,10 @@ const iEventHandler = (() => {
     function _onPreHistroy(passage, prevPassage) {
         // fix wrong event at this point if player cheated
         // backup last variables and restore
-
-        if (iEvent.state.isPlaying()) {
-            const condition = _onFixEvent(passage);
-            if (condition.has('restore')) {
-                _bakRestore(condition.split(':')[1]);
-                return;
-            }
+        const condition = _onFixEvent(passage);
+        if (condition.has('restore')) {
+            _bakRestore(condition.split(':')[1]);
+            return;
         }
 
         // setup a listner for variable change
@@ -75,6 +72,10 @@ const iEventHandler = (() => {
         if (iEvent.state.isStartingUp()) {
             _initEvent();
         }
+
+        // bak passage and prevPassage to Tvar
+        Tvar.passage = passage.title;
+        Tvar.prevPassage = prevPassage.title;
     }
 
     function _onBeforeHeader(passage) {
@@ -86,16 +87,31 @@ const iEventHandler = (() => {
         // if event is setup, do event
         if (iEvent.state.isPlaying()) {
             _doEvent();
+            T.link = true;
+        }
+
+        // auto set danger rate if in stage when not in event loop;
+        if (iEvent.stage.isRunning() === false && passage.tags.includes('stage') && V.eventskip === 0) {
+            V.danger = random(1, 100000);
+            V.dangerevent = 0;
         }
     }
 
     // after passage is shown
     function _onPostPassage() {
         const passage = Story.get(V.passage);
-        const lastPassage = Story.get(V.lastPassage);
+        const prevPassage = Story.get(Tvar.prevPassage);
         
         // won't rest run if in combat
         if (V.combat !== 0) {
+            return;
+        }
+
+        // do post function of iEvent system
+        iEvent.doPostFunc(passage, prevPassage);
+
+        // if not running just return
+        if (iEvent.state.isPlaying() === false) {
             return;
         }
 
@@ -179,13 +195,65 @@ const iEventHandler = (() => {
         _checkCondition(iEvent.data.get('onTime'), eventResult, passed, passage);
     }
 
+    function _isValidStage(passage) {
+        return passage.tags.includes('stage') || passage.title === 'SFEventLoop' || passage.text.has('<<iStage>>', '<<include $tvar.eventTitle>>');
+    }
+
     /**
-     *
+     * fix wrong event at this point if player cheated
      * @param {passageObj} passage;
      * @returns {'restore' | 'ok'} condition
      */
     function _onFixEvent(passage) {
-        // fix wrong event at this point if player cheated
+        // if not running, but still in event loop, restore;
+        if (iEvent.state.isRunning() === false && passage.title === 'SFEventLoop') {
+            iEvent.unset();
+            return `restore:${Tvar.backupPassage}`;
+        }
+        // if not running but event still exist, unset it;
+        if (iEvent.state.isRunning() === false && iEvent.state.event !== null) {
+            iEvent.unset();
+            return `restore:${Tvar.backupPassage}`;
+        }
+        // if not running, return;
+        if (iEvent.state.isRunning() === false) return 'ok';
+
+        // if already in event loop, return;
+        if (iEvent.state.isPlaying() === true && _isValidStage(passage)) return 'ok';
+
+        const event = iEvent.state.event;
+        // if the time not passing, means still starting up, then return;
+        if (event.startTime === V.timeStamp) return 'ok';
+
+        // beacause no more async event, so no need to double check if event is trying to starting up.
+        // so at this point, all event should be in valid stage or their own special passage, if not just unset it.
+        if (_isValidStage(passage) === false && passage.title !== event.stage) {
+            console.warn(`Event ${event.baseTitle} is not in valid stage. current passage: ${passage.title}, event stage: ${event.stage}`);
+            iEvent.unset();
+            return `restore:${Tvar.backupPassage}`;
+        }
+
+        // ------------- end of event type start scene type ----------------------
+
+        // scene is short inframe event, should be in stage and have stage tag
+        // but some scene should match their location
+        // get play options from event.data
+        const option = iEvent.getEvent().playOptions;
+        if (!option) {
+            if (event.type === 'scene' && passage.title.has(event.seriesId, V.stage) === false) {
+                console.warn(`Event ${event.baseTitle} is not in correct passage, current passage: ${passage.title}, scene series: ${event.seriesId}`);
+                iEvent.unset();
+                return `restore:${Tvar.backupPassage}`;
+            }
+        }
+        else if (option.onCheckScene(passage.title) === false) {
+            // if has option just check the current passage.title has the correct stage of setting
+            console.warn(`Event ${event.baseTitle} is not in correct stage or location, current passage: ${passage.title}, playoptions:`, option);
+            iEvent.unset();
+            return `restore:${Tvar.backupPassage}`;
+        }
+
+        return 'ok';
     }
 
     function _getFlags(series, eventflags) {
@@ -200,7 +268,7 @@ const iEventHandler = (() => {
         return flag;
     }
     /**
-     * 
+     *
      * @param { SceneData[] } eventList - list of event to check
      * @param {object} feedback - the feedback object to return
      * @param { passageObj } passage - current passage, will be passed for time check
@@ -240,7 +308,7 @@ const iEventHandler = (() => {
 
     function _getEventOnCondition(feedback, passage, prevPassage) {
         const serieslist = iEvent.data.get('onCondition');
-        const series = [...serieslist.get('common').data];
+        const series = [...serieslist.get('passout').data].concat([...serieslist.get('common').data]);
 
         if (serieslist.size > 1) {
             console.log('Multiple condition series detected');
@@ -264,10 +332,17 @@ const iEventHandler = (() => {
         const scene = iEvent.set(data);
 
         let stage = scene.getStage();
-        if (!Story.has(stage)) {
-            console.warn(`Scene ${stage} not found, set to alternative`);
+        if (!Story.has(stage) && scene.type !== 'scene') {
             stage = 'SFEventLoop';
+            console.warn(`Scene ${stage} not found, try set to alternative stage`);
         }
+        else if (!Story.has(stage)) {
+            console.warn(`Scene ${stage} not found, ${scene.data.Id} is unset`, scene);
+            iEvent.unset();
+            resultdata.data = null;
+            resultdata.passageTitle = false;
+        }
+
         resultdata.passageTitle = stage;
     }
 
@@ -406,24 +481,34 @@ const iEventHandler = (() => {
         if (scene.maxPhase > 0 && V.phase < scene.maxPhase) {
             V.phase++;
         }
-
+        // at least pass 10 second for every phase
+        Time.pass(10);
         console.log(`Event ${scene.fullTitle} is running`, scene);
-        
         T.link = true;
     }
 
     return Object.freeze({
         onNavi       : _onNavigator,
         onPre        : _onPreHistroy,
+        onBefore     : _onBeforeHeader,
         onPost       : _onPostPassage,
         onDone       : _onRenderDone,
         onLinkDetect : _onLinkDetect,
+        onTime       : _onTimeHandle,
+        onFix        : _onFixEvent,
 
         checkCond  : _checkCondition,
         getEvent   : _getEventOnStage,
         getCEvent  : _getEventOnCondition,
         bakRestore : _bakRestore,
+        doRestore  : _doRestore,
         
-        endEvent : _endEvent
+        setEvent  : _setEvent,
+        endEvent  : _endEvent,
+        initEvent : _initEvent,
+        doEvent   : _doEvent,
+
+        setListner : _setupVariableChange,
+        doListner  : _checkVariableChange
     });
 })();
