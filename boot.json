@@ -29,13 +29,14 @@
     "scriptFileList": [
         "SC2Files/0_loadconfig.js",
         "SC2Files/1_macromodif.js",
-        "SC2Files/2_SFEsetup.js",
+        "SC2Files/2_sugarcubeconfig.js",
         "SC2Files/eventmacros.js",
         "SC2Files/NpcHookerHandle.js",
         "SC2Files/SimpleContents.js",
         "SC2Files/SimpleMacro.js",
         "SC2Files/TimeHandle.js",
-        "SC2Files/z_globalProcess.js"
+        "SC2Files/z_globalProcess.js",
+        "SC2Files/zz_SFE_globalProcess.js"
     ],
     "tweeFileList": [],
     "imgFileList": [],
@@ -58,6 +59,6 @@
             "version": "^1.0.0"
         }
     ],
-    "build": 8,
-    "lastUpdate": "2024.12.08"
+    "build": 15,
+    "lastUpdate": "2024.12.13"
 }

@@ -51,7 +51,7 @@ const iEventHandler = (() => {
     }
 
     // before variable change
-    function _onPreHistroy(passage, prevPassage) {
+    function _onPreHistory(passage, prevPassage) {
         // fix wrong event at this point if player cheated
         // backup last variables and restore
         const condition = _onFixEvent(passage);
@@ -91,7 +91,7 @@ const iEventHandler = (() => {
         }
 
         // auto set danger rate if in stage when not in event loop;
-        if (iEvent.stage.isRunning() === false && passage.tags.includes('stage') && V.eventskip === 0) {
+        if (iEvent.state.isRunning() === false && passage.tags.includes('stage') && V.eventskip === 0) {
             V.danger = random(1, 100000);
             V.dangerevent = 0;
         }
@@ -489,7 +489,7 @@ const iEventHandler = (() => {
 
     return Object.freeze({
         onNavi       : _onNavigator,
-        onPre        : _onPreHistroy,
+        onPre        : _onPreHistory,
         onBefore     : _onBeforeHeader,
         onPost       : _onPostPassage,
         onDone       : _onRenderDone,

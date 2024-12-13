@@ -188,7 +188,7 @@ var iEvent = (() => {
 
         // won't run if in combat
         if (V.combat !== 0) {
-            return result;
+            return;
         }
 
         if (!_data.patches[passage]) {
