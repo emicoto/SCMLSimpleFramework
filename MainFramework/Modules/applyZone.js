@@ -15,9 +15,14 @@ const ApplyZone = (() => {
         return null;
     }
 
-    function createDiv(id) {
+    function createDiv(eId = 'patchContent') {
+        const element = document.getElementById(eId);
+        if (element) {
+            return element;
+        }
+
         const div = document.createElement('div');
-        div.id = id;
+        div.id = eId;
         return div;
     }
 
