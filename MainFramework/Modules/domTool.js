@@ -5,93 +5,140 @@
 const htmlTools = (() => {
     'use strict';
 
-    function isIconImg(node) {
-        if (node?.nodeName === 'SPAN' && (node.classList.contains('icon') || node.classList.contains('icon-container'))) {
-            return true;
-        }
-        return node?.nodeName === 'IMG' && node.classList.contains('icon') && (isInteractive(node.nextElementSibling) === true || node?.onClick !== null);
-    }
-
-    /**
-     * @description append a new div with id before the first image or link in div passage-content
-     * @param {string} eId
-     * @returns {HTMLElement}
-     * @example
-     * appendPatch('<<anywidget>>')
-     * will append a new div with id extraContent and content <<anywidget>>
-     *
-     * appendPatch('myContent', '<<anywidget>>')
-     * 'myContent' is the id of the new div, and <<anywidget>> is the content
-     *
-     * appendPatch()
-     * will just append a new div with id 'extraContent'
-     */
-    function appendPatch(pos, ... args) {
-        let eId;
-        let content = '';
-
-        switch (args.length) {
-        case 0:
-            eId = 'extraContent';
-            break;
-        case 1:
-            eId = 'extraContent';
-            content = args[0];
-            break;
-        default:
-            eId = args[0];
-            content = args[1];
-            break;
-        }
-
-        if (pos == 'before') {
-            // find the first image in div passage-content, else find the first link
-            let element = document.querySelector('#passage-content .macro-link');
-            // check if has image before link
-            if (element && isIconImg(element.previousElementSibling)) {
-                element = element.previousElementSibling;
-            }
-
-            // make a new div with id extraContent
-            const div = document.createElement('div');
-            div.id = eId;
-
-            // insert the new div before the element
-            element.insertAdjacentElement('beforebegin', div);
-            new Wikifier(null, `<<append "#${eId}">>${content}<</append>>`);
-
-            return div;
-        }
-
-        // if position is after, then find the last link in div passage-content
+    function _applyBeforeContent(eId = 'patchContent', content) {
+        const div = createDiv(eId);
         const dom = document.getElementById('passage-content');
-        const links = dom.getElementsByClassName('macro-link');
-        const element = links[links.length - 1];
-        
-        const div = document.createElement('div');
-        div.id = eId;
-        element.insertAdjacentElement('afterend', div);
-        new Wikifier(null, `<<append "#${eId}">>${content}<</append>>`);
+        dom.insertBefore(div, dom.firstChild);
 
+        _wikifyTo(eId, content);
         return div;
     }
 
-    function append(pos, eId) {
-        let element = createDiv(eId);
+    // apply content to the end of main content, before the first image or link
+    // should already has a div with id 'addAfterMsg' by ApplyZone patched
+    // if something wrent wrong the addAfterMsg not found, then create a new patch div
+    function _applyAfterText(eId = 'patchContent', content) {
+        const div = createDiv(eId);
+        let dom = document.getElementById('addAfterMsg');
+        if (!dom) {
+            let el = document.querySelector('#passage-content .macro-link');
+            if (el && isIconImg(el.previousElementSibling)) {
+                el = el.previousElementSibling;
+            }
+            const newDiv = createDiv('extraPatch_afterContent');
+            el.insertAdjacentElement('beforebegin', newDiv);
+            dom = document.getElementById('extraPatch_afterContent');
+        }
+
+        dom.appendChild(div);
+
+        _wikifyTo(eId, content);
+        return div;
+    }
+
+    function _applyBeforeLinks(eId = 'patchContent', content) {
+        const el = document.querySelector('#passage-content .macro-link');
+        return _applyBeforeElment(el, eId, content);
+    }
+
+    function _applyAfterLinks(eId = 'patchContent', content) {
+        const dom = document.getElementById('passage-content');
+        const links = dom.getElementsByClassName('macro-link');
+        const el = links[links.length - 1];
+        return _applyAfterElment(el, eId, content);
+    }
+
+    function _applyAfterElment(elment, eId = 'patchContent', content) {
+        if (!elment) return;
+        const div = createDiv(eId);
+        if (elment.nextElementSibling.tagName == 'BR') {
+            elment = elment.nextElementSibling;
+        }
+        elment.after(div);
+        _wikifyTo(eId, content);
+        return div;
+    }
+    
+    function _applyBeforeElment(elment, eId = 'patchContent', content) {
+        if (!elment) return;
+        const div = createDiv(eId);
+        if (isIconImg(elment.previousElementSibling)) {
+            elment = elment.previousElementSibling;
+        }
+        _wikifyTo(eId, content);
+        return div;
+    }
+
+    // apply content after to the specific text node
+    // should run after ApplyZone patched
+    function _applyToText(text, eId = null, content) {
+        // apply content to the text node include the text on page
+        const textNodes = ApplyZone.instance.allNodes;
+        const txt = lanSwitch(text);
+        let node;
+        for (let i = 0; i < textNodes.length; i++) {
+            const txtnode = textNodes[i];
+            if (txtnode.textContent.has(txt)) {
+                node = txtnode;
+                break;
+            }
+        }
+        if (!node) return;
+
+        const div = createDiv(eId);
+        node.parentNode.insertBefore(div, node.nextSibling);
+        if (eId == null) {
+            eId = `patchText_${htmlTools.applyCount}`;
+        }
+
+        _wikifyTo(eId, content);
+        htmlTools.applyCount++;
+        return div;
+    }
+
+    // replace the old text with new text
+    // should run after ApplyZone patched
+    function _replaceText(oldtext, newtext) {
+        const textNodes = ApplyZone.instance.allNodes;
+        const txt = lanSwitch(oldtext);
+        let target;
+        for (let i = 0; i < textNodes.length; i++) {
+            const node = textNodes[i];
+            if (node.textContent.has(txt)) {
+                target = textNodes[i];
+                break;
+            }
+        }
+        // apply a new span with id after the text node
+        const span = document.createElement('span');
+        span.id = `replaceText_${htmlTools.applyCount}`;
+        target.parentNode.insertBefore(span, target.nextSibling);
+
+        // clear the target text
+        target.textContent = '';
+        _wikifyTo(`replaceText_${htmlTools.applyCount}`, newtext, true);
+        htmlTools.applyCount++;
+        return span;
+    }
+
+    function _append(pos, eId = 'extraContent', content = '') {
+        const element = createDiv(eId);
 
         switch (pos) {
-        case 'before':
-            element = appendPatch(pos, eId);
-            break;
-        case 'after':
-            element = appendPatch(pos, eId);
-            break;
+        case 'beforelinks':
+            return _applyBeforeLinks(eId, content);
+        case 'afterlinks':
+            return _applyAfterLinks(eId, content);
         case 'beforemain':
             document.getElementById('passage-content').insertAdjacentElement('afterbegin', element);
             break;
         case 'aftermain':
             document.getElementById('passage-content').insertAdjacentElement('beforeend', element);
             break;
+        }
+
+        if (content && content.length > 0) {
+            _wikifyTo(eId, content);
         }
 
         return element;
@@ -106,16 +153,15 @@ const htmlTools = (() => {
      * replaceLink('oldlink', '<<link newlink>><</link>>')
      * replacelink({CN:'旧链接', EN:'oldlink'}, '<<link newlink>><</link>>')
     */
-    function replaceLink(oldlink, newlink) {
-        if (typeof oldlink == 'object') {
-            oldlink = lanSwitch(oldlink);
-        }
+    function _replaceLink(oldlink, newlink) {
+        const txt = lanSwitch(oldlink);
 
         // find the oldlink in elements
-        const links = document.getElementsByClassName('macro-link');
+        const dom = document.getElementById('passage-content');
+        const links = dom.getElementsByClassName('macro-link');
         let elements;
         for (let i = 0; i < links.length; i++) {
-            if (links[i].innerHTML.has(oldlink)) {
+            if (links[i].textContent.has(txt)) {
                 // replace the oldlink with newlink
                 elements = links[i];
                 break;
@@ -126,22 +172,28 @@ const htmlTools = (() => {
         // replace the oldlink with newlink
         const parent = elements.parentNode;
         const newlinkPatch = document.createElement('div');
-        newlinkPatch.id = 'patchlink';
+        newlinkPatch.id = `patchlink_${htmlTools.applyCount}`;
         parent.replaceChild(newlinkPatch, elements);
 
         // wikifier the newlink
-        new Wikifier(null, `<<replace "#patchlink">>${newlink}<</replace>>`);
+        _wikifyTo(`patchlink_${htmlTools.applyCount}`, newlink, true);
+        htmlTools.applyCount++;
 
         return newlinkPatch;
     }
 
 
-    function _wikify(eId = 'patchContent', content) {
+    function _wikifyTo(eId = 'patchContent', content, replace = false) {
+        if (replace) {
+            new Wikifier(null, `<<replace "#${eId}">>${content}<</replace>>`);
+            return;
+        }
+
         new Wikifier(null, `<<append "#${eId}">>${content}<</append>>`);
     }
 
     /**
-     * @description append content to certain element.
+     * @description append content after to certain element.
      * first parameter is the type of element, it can be 'text', 'link', 'div', 'span', 'u', 'b', 'i'
      * second parameter is the id of the element or the text of the element
      * third parameter is the content to append
@@ -157,15 +209,16 @@ const htmlTools = (() => {
      * appendTo('div', 'divId', '<<anywidget>> or text')
      * - will append a new div with content after the specified div
      */
-    function appendTo(tag, txt, content, divId = null) {
+    function _appendTo(tag, txt, content, divId = null) {
         const eType = tag;
         const eId = txt;
-        const count = this.applyCount + 1;
+        const count = htmlTools.applyCount + 1;
         const dId = divId === null ? `patch${tag}${count}` : divId;
+        const dom = document.getElementById('passage-content');
 
         // if the tag is a text node
         if (eType === 'text') {
-            const textNodes = document.getElementById('passage-content').childNodes;
+            const textNodes = ApplyZone.instance.allNodes;
             const txt = lanSwitch(eId);
             let node;
             for (let i = 0; i < textNodes.length; i++) {
@@ -174,13 +227,14 @@ const htmlTools = (() => {
                     break;
                 }
             }
+            if (!node) return;
             // append the content after the text node
             const div = createDiv(dId);
             node.parentNode.insertBefore(div, node.nextSibling);
-            _wikify(dId, content);
+            _wikifyTo(dId, content);
         }
         else if (eType === 'link') {
-            const links = document.getElementsByClassName('macro-link');
+            const links = dom.getElementsByClassName('macro-link');
             const txt = lanSwitch(eId);
             let node;
             for (let i = 0; i < links.length; i++) {
@@ -189,25 +243,24 @@ const htmlTools = (() => {
                     break;
                 }
             }
+            if (!node) return;
             // append the content after the link
-            const div = createDiv(dId);
-            node.parentNode.insertBefore(div, node.nextSibling);
-            _wikify(dId, content);
+            _applyAfterElment(node, dId, content);
         }
         else if (eType === 'span' || eType === 'u' || eType === 'b' || eType === 'i') {
             let nodes;
             switch (eType) {
             case 'span':
-                nodes = document.getElementsByTagName('span');
+                nodes = dom.getElementsByTagName('span');
                 break;
             case 'u':
-                nodes = document.getElementsByTagName('u');
+                nodes = dom.getElementsByTagName('u');
                 break;
             case 'b':
-                nodes = document.getElementsByTagName('b');
+                nodes = dom.getElementsByTagName('b');
                 break;
             case 'i':
-                nodes = document.getElementsByTagName('i');
+                nodes = dom.getElementsByTagName('i');
                 break;
             }
 
@@ -219,21 +272,15 @@ const htmlTools = (() => {
                     break;
                 }
             }
-            // append the content after the span
-            const div = createDiv(dId);
-            node.insertAdjacentElement('afterend', div);
-            _wikify(dId, content);
+            if (!node) return;
+            _applyAfterElment(node, dId, content);
         }
         else if (eId) {
-            const element = document.getElementById(eId);
+            const element = dom.getElementById(eId);
             if (!element) {
                 throw new Error(`Element with id ${eId} not found`);
             }
-
-            // append the content after the element
-            const div = this.createDiv(`patch${eId}${count}`);
-            element.insertAdjacentElement('afterend', div);
-            this._wikify(`patch${eId}${count}`, content);
+            _applyAfterElment(element, dId, content);
         }
         else {
             throw new Error('Invalid element type');
@@ -258,7 +305,7 @@ const htmlTools = (() => {
      * insertToLink({eId: 'myContent', link: 'linktext', content:'<<anywidget>>'})
      * //'myContent' is the id of the new div
      */
-    function insertToLink(options) {
+    function _insertToLink(options) {
         if (typeof options.link == 'object') {
             link = lanSwitch(options.link);
         }
@@ -274,83 +321,45 @@ const htmlTools = (() => {
         }
         if (!element) return;
 
-        // check div if already exist, if not then create a new one
-        let div = document.getElementById(options.eId);
         const eID = options.eId ?? 'patchContent';
-    
-        if (!div) {
-            div = document.createElement('div');
-            div.id = eID;
+        if (options.pos == 'before') {
+            return _applyBeforeElment(element, eID, options.content);
         }
-
-        let pos = 'beforebegin';
-        if (options.pos == 'after') {
-            pos = 'afterend';
-        }
-
-        // if position is before then check the link previous sibling is image or not
-        // if so then insert before the image
-        if (pos == 'beforebegin') {
-            if (element.previousElementSibling.tagName == 'IMG') {
-                element = element.previousElementSibling;
-            }
-        }
-
-        element.insertAdjacentElement(pos, div);
-
-        // wikifier the content
-        new Wikifier(null, `<<append "#${eID}">>${options.content ?? ''}<</append>>`);
-
-        return div;
+        
+        return _applyAfterElment(element, eID, options.content);
     }
 
-    /**
-     * @description replace text at TEXT_NODE
-     * @param {string | language} oldtext
-     * @param {string | language} newtext
-     * @example
-     * replaceText('oldtext', 'newtext')
-     * replaceText({CN:'旧文本', EN:'oldtext'}, 'newtext')
-     * replaceText('oldtext', {CN:'新文本', EN:'newtext'})
-     */
-    function replaceText(oldtext, newtext) {
-        const doc = document.getElementById('passage-content');
-        const textNodes = doc.childNodes;
-        if (!textNodes) return;
-
-        if (typeof oldtext == 'object') {
-            oldtext = lanSwitch(oldtext);
+    const state = {
+        count : 0,
+        init() {
+            state.count = 0;
         }
-
-        if (typeof newtext == 'object') {
-            newtext = lanSwitch(newtext);
-        }
-
-        for (let i = 0; i < textNodes.length; i++) {
-            const node = textNodes[i];
-            if (node.textContent.has(oldtext)) {
-                node.textContent = node.textContent.replace(oldtext, newtext);
-                break;
-            }
-        }
-    }
+    };
 
     return Object.seal({
-        _count : 0,
         get applyCount() {
-            return this._count ?? 0;
+            return state.count;
         },
         set applyCount(value) {
-            this._count = value;
+            state.count = value;
         },
-        isIconImg,
-        appendPatch,
-        append,
-        replaceLink,
-        wikify : _wikify,
-        appendTo,
-        insertToLink,
-        replaceText
+
+        init : state.init,
+
+        wiki         : _wikifyTo,
+        append       : _append,
+        appendTo     : _appendTo,
+        insertToLink : _insertToLink,
+        replaceLink  : _replaceLink,
+        applyToTxt   : _applyToText,
+        replaceTxt   : _replaceText,
+
+        applyAfterText     : _applyAfterText,
+        applyBeforeContent : _applyBeforeContent,
+        applyBeforeLinks   : _applyBeforeLinks,
+        applyAfterLinks    : _applyAfterLinks,
+        applyBeforeElment  : _applyBeforeElment,
+        applyAfterElment   : _applyAfterElment
     });
 })();
 

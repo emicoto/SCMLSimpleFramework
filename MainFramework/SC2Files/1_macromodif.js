@@ -2,8 +2,6 @@ console.log('[SFDebug] running 1_macromodif.js');
 
 Macro.delete('runeventpool');
 
-console.log('[SFDebug] Macro:', Macro, Macro.add);
-
 Macro.add('runeventpool', {
     skipArgs : true,
     handler() {

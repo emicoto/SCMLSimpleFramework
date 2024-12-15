@@ -76,14 +76,14 @@ const Lang = (() => {
     };
 
     function _CheckLanguage() {
-        const lancheck = navigator.language || navigator.userLanguage;
+        const lancheck = setup.language || navigator.language || navigator.userLanguage;
         let lan = 'EN';
         if (lancheck.includes('zh')) {
             lan = 'CN';
         }
 
-        if (V && V.iModConfig?.language) {
-            lan = V.iModConfig.language;
+        if (V && V.iModConfigs?.language) {
+            lan = V.iModConfigs.language;
         }
 
         return lan;

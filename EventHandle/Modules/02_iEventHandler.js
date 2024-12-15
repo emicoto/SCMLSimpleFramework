@@ -13,6 +13,11 @@ const iEventHandler = (() => {
             return false;
         }
 
+        // if already set by time handle, return jumpPassage
+        if (Tvar.jumpPassage) {
+            return Tvar.jumpPassage;
+        }
+
         const eventResult = {};
 
         _getEventOnCondition(eventResult, passage, prevPassage);
@@ -85,10 +90,7 @@ const iEventHandler = (() => {
         }
         
         // if event is setup, do event
-        if (iEvent.state.isPlaying()) {
-            _doEvent();
-            T.link = true;
-        }
+        _doEvent();
 
         // auto set danger rate if in stage when not in event loop;
         if (iEvent.state.isRunning() === false && passage.tags.includes('stage') && V.eventskip === 0) {
@@ -117,6 +119,20 @@ const iEventHandler = (() => {
 
         // check after passage event
         const data = iEvent.state.getEvent();
+        const action = data.data.action ?? {};
+        if (typeof action.after == 'function') {
+            action.after();
+        }
+        else if (typeof action.after == 'string') {
+            new Wikifier(null, action.after);
+        }
+
+        // if has special passage of current event
+        const afterTitle = `${iEvent.event.getfullTitle()}::postdisplay`;
+        if (Story.has(afterTitle)) {
+            const content = Story.get(afterTitle).text;
+            new Wikifier(null, content);
+        }
     }
 
     function _onRenderDone() {
@@ -193,6 +209,13 @@ const iEventHandler = (() => {
 
         const eventResult = {};
         _checkCondition(iEvent.data.get('onTime'), eventResult, passed, passage);
+        if (eventResult.ready) {
+            _setEvent(eventResult);
+            Tvar.jumpPassage = eventResult.passageTitle;
+        }
+        else {
+            Tvar.jumpPassage = false;
+        }
     }
 
     function _isValidStage(passage) {
@@ -357,6 +380,13 @@ const iEventHandler = (() => {
             new Wikifier(null, action.end);
         }
 
+        // if has special passage of current event
+        const endTitle = `${event.getfullTitle()}::end`;
+        if (Story.has(endTitle)) {
+            const content = Story.get(endTitle).text;
+            new Wikifier(null, content);
+        }
+
         iEvent.unset();
     }
 
@@ -435,6 +465,13 @@ const iEventHandler = (() => {
         }
         // do init action
         scene.init();
+
+        // if has special passage of current event
+        const initTitle = `${scene.getfullTitle()}::init`;
+        if (Story.has(initTitle)) {
+            const content = Story.get(initTitle).text;
+            new Wikifier(null, content);
+        }
     }
 
     function _doEvent() {
@@ -444,23 +481,26 @@ const iEventHandler = (() => {
         const scene = iEvent.state.event;
         const fullTitle = scene.getLanguage();
 
-        // check if just just started
+        // check if just just started， backup the settings to Tvar
         if (iEvent.state.isStartingUp()) {
-            Tvar.eventTitle = scene.fullTitle;
+            Tvar.event = scene;
+
+            Tvar.baseTitle = scene.getfullTitle();
+            Tvar.eventId = scene.baseTitle;
+            Tvar.eventTitle = scene.initLanguage();
             iEvent.state.set(`running:${scene.baseTitle}`);
         }
         else {
             Tvar.eventTitle = fullTitle;
         }
 
-        let code = '';
         // check if there is a phase code to run
         const phase = `phase_${V.phase + 1}`;
         if (typeof actions[phase] === 'function') {
             actions[phase]();
         }
         else if (typeof actions[phase] === 'string') {
-            code += actions[phase];
+            new Wikifier(null, actions[phase]);
         }
 
         // check if there is a branch code to run
@@ -472,15 +512,21 @@ const iEventHandler = (() => {
                 actions[branchCode]();
             }
             else if (typeof actions[branchCode] === 'string') {
-                code += actions[branchCode];
+                new Wikifier(null, actions[branchCode]);
             }
         }
 
-        new Wikifier(null, code);
+        // if has special passage of current event
+        const runTitle = `${scene.getfullTitle()}::predisplay`;
+        if (Story.has(runTitle)) {
+            const content = Story.get(runTitle).text;
+            new Wikifier(null, content);
+        }
 
         if (scene.maxPhase > 0 && V.phase < scene.maxPhase) {
             V.phase++;
         }
+
         // at least pass 10 second for every phase
         Time.pass(10);
         console.log(`Event ${scene.fullTitle} is running`, scene);
@@ -503,12 +549,12 @@ const iEventHandler = (() => {
         bakRestore : _bakRestore,
         doRestore  : _doRestore,
         
-        setEvent  : _setEvent,
-        endEvent  : _endEvent,
-        initEvent : _initEvent,
-        doEvent   : _doEvent,
-
         setListner : _setupVariableChange,
-        doListner  : _checkVariableChange
+        doListner  : _checkVariableChange,
+
+        set  : _setEvent,
+        end  : _endEvent,
+        init : _initEvent,
+        run  : _doEvent
     });
 })();

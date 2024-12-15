@@ -53,6 +53,8 @@ Config.navigation.override = function (passageTitle) {
         return result;
     }
 
+    console.log(`[SFDebug] onNavigation: ${passageTitle}, result: ${result}`);
+
     // back up available passage for restore, should backup outside of event loop
     if (passageTitle !== 'SFEventLoop' && iEvent.state.isPlaying() === false) {
         if (result === false) {

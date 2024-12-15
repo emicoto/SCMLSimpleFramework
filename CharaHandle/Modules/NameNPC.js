@@ -490,12 +490,23 @@ const NamedNPC = (() => {
         _updateDisplayNames();
     }
 
+    const _state = {
+        state : null,
+        isReady() {
+            return this.state == 'ready';
+        },
+        setReady() {
+            _state.state = 'ready';
+        }
+    };
+
     /**
      * Initialize the NPCs by updating them.
      */
     function _onInit() {
         _onUpdate();
         console.log('[SFDebug] addNamedNPC', 'init mod npc from storyinit', V.NPCName, setup.NPCNameList);
+        _state.setReady();
     }
 
     function _getNpcData(npcId) {
@@ -504,6 +515,7 @@ const NamedNPC = (() => {
 
 
     Object.defineProperties(NamedNPC, {
+        state : { get : () => _state },
         data  : { get : () => _data },
         get   : { value : _getNpcData },
         add   : { value : _addNpc },

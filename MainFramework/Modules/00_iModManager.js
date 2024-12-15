@@ -30,6 +30,44 @@ const iMod = (() => {
         return V.iModVar[modId] && prop ? V.iModVar[modId][prop] : V.iModVar[modId];
     }
 
+    /**
+     * 更新二个对象的值
+     * @param {Object} refObj 参考对象
+     * @param {Object} newObj 新值对象
+     * @param {boolean} overwrite 是否覆盖存在的值
+     * @returns {Object} 更新后的新对象
+     */
+    function _updateObj(refObj, newObj, overwrite = false) {
+        const data = {};
+
+        for (const key in refObj) {
+            // 如果 newObj[key] 有效并且类型与 refObj[key] 相同
+            if (isValid(newObj[key]) && typeof newObj[key] === typeof refObj[key]) {
+                if (Array.isArray(refObj[key])) {
+                    // 如果是数组并且长度不同而且不覆盖
+                    if (newObj[key].length !== refObj[key].length && overwrite === false) {
+                        data[key] = clone(refObj[key]);
+                    }
+                    else {
+                        data[key] = clone(newObj[key]);
+                    }
+                }
+                else if (String(newObj[key]) === '[object Object]') {
+                    // 如果是对象，再次调用 updateObj 函数
+                    data[key] = updateObj(refObj[key], newObj[key], overwrite);
+                }
+                else {
+                    data[key] = newObj[key];
+                }
+            }
+            else {
+                data[key] = clone(refObj[key]);
+            }
+        }
+
+        return data;
+    }
+
     function _register(modId, defaultConfig = null, defaultVariables = null) {
         if (!V.iModVar[modId]) {
             V.iModVar[modId] = {};
@@ -39,21 +77,14 @@ const iMod = (() => {
         }
         
         if (defaultConfig !== null) {
-            for (const [key, value] of Object.entries(defaultConfig)) {
-                if (!V.iModConfigs[modId][key]) {
-                    V.iModConfigs[modId][key] = clone(value);
-                }
-            }
+            _updateObj(V.iModConfigs[modId], defaultConfig);
         }
 
         if (defaultVariables !== null) {
-            for (const [key, value] of Object.entries(defaultVariables)) {
-                if (!V.iModVar[modId][key]) {
-                    V.iModVar[modId][key] = clone(value);
-                }
-            }
+            _updateObj(V.iModVar[modId], defaultVariables);
         }
     }
+
     function _gatherModV(modId, ...args) {
         const obj = {};
         for (const arg of args) {
@@ -77,8 +108,34 @@ const iMod = (() => {
     }
 
     function _init() {
-        V.iModConfigs = { };
-        V.iModVar = {};
+        if (typeof V.iModConfigs === 'undefined') {
+            V.iModConfigs = {};
+        }
+        if (typeof V.iModVar === 'undefined') {
+            V.iModVar = {};
+        }
+
+        if (typeof V.tvar === 'undefined') {
+            V.tvar = {
+                init : 1
+            };
+        }
+    
+        if (typeof Tvar === 'undefined') {
+            Object.defineProperty(window, 'Tvar', {
+                get() {
+                    return V.tvar;
+                }
+            });
+            console.log('[SF] variable Tvar is ready:', Tvar);
+        }
+
+        const lang = _getConfig('language') ?? null;
+
+        // if the language setting is not initialized
+        if (lang === null) {
+            _setConfig('language', setup.language);
+        }
     }
 
     function _playZone(zone, passageTItle) {
@@ -129,6 +186,12 @@ const iMod = (() => {
         },
         isRunning() {
             return this.state === 'Ok';
+        },
+        setReady() {
+            _state.state = 'Ok';
+        },
+        setLoading() {
+            _state.state = 'loading';
         }
     };
 
@@ -153,6 +216,8 @@ const iMod = (() => {
         }
     }
 
+    Object.defineProperty(window, 'updateObj', { value : _updateObj });
+
     return Object.freeze({
         get state() {
             return _state;
@@ -166,6 +231,7 @@ const iMod = (() => {
         
         register : _register,
         remove   : _remove,
+        initMods : _autoRegister,
         
         gatherModV     : _gatherModV,
         gatherVariable : _gatherVariable,

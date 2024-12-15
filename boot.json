@@ -15,7 +15,6 @@
         "Modules/applyZone.js",
         "Modules/customUI.js",
         "Modules/domTool.js",
-        "Modules/EventChecker.js",
         "Modules/language.js",
         "Modules/NameNPC.js"
     ],
@@ -59,6 +58,6 @@
             "version": "^1.0.0"
         }
     ],
-    "build": 16,
-    "lastUpdate": "2024.12.14"
+    "build": 26,
+    "lastUpdate": "2024.12.15"
 }
