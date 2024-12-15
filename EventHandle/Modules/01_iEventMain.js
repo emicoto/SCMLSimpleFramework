@@ -106,10 +106,46 @@ var iEvent = (() => {
             this.passoutconditions.push(condition);
         },
 
+        addActions(type, seriesId, ...actions) {
+            let entry;
+            if (type === 'stage') {
+                entry = 'onLocation';
+            }
+            else if (type === 'chara') {
+                entry = 'onCharacter';
+            }
+            else {
+                entry = type;
+                if (!this.actions[entry]) {
+                    this.actions[entry] = {};
+                }
+            }
+
+            if (!this.actions[entry][seriesId]) {
+                this.actions[entry][seriesId] = [];
+            }
+
+            actions.forEach(action => {
+                const data = new Actions(type, action);
+                data.set('sId', seriesId);
+                this.actions[entry][seriesId].push(data);
+            });
+
+            return this.actions[entry][seriesId];
+        },
+
         get(type, id) {
-            const storage = _data.events[type];
+            let typeId;
+            if (type.includes('on')) {
+                typeId = type;
+            }
+            else {
+                typeId = `on${type[0].toUpperCase()}${type.slice(1)}`;
+            }
+
+            const storage = _data.events[typeId];
             if (!storage) {
-                console.error(`Event type ${type} is not defined`);
+                console.error(`Event type ${typeId} is not defined`);
                 return;
             }
             return id ? storage.get(id) : storage;
@@ -240,6 +276,93 @@ var iEvent = (() => {
                 value.func();
             }
         }
+    }
+
+    function _getActions(stageId) {
+        return _getActionList('stage', stageId);
+    }
+
+    function _getActionList(type, id) {
+        if (type === 'stage') {
+            type = 'onLocation';
+        }
+        else if (type === 'chara') {
+            type = 'onCharacter';
+        }
+        else {
+            console.error(`[SF/EventSystem] Invalid action type: ${type}`);
+            return '';
+        }
+
+        const actions = _data.actions[type][id];
+        if (actions && actions.length > 0) {
+            return _generateActionLinks(actions);
+        }
+        return '';
+    }
+
+    function _generateTimeStr(time) {
+        const hour = Math.floor(time / 60);
+        const minute = time % 60;
+        return `(${hour}:${minute < 10 ? `0${minute}` : minute})`;
+    }
+
+    function _generateActionLinks(actions) {
+        const getString = data => {
+            if (typeof data === 'string') {
+                return data;
+            }
+            if (typeof data === 'function') {
+                return data();
+            }
+            return '';
+        };
+
+        const html = [];
+        for (let i = 0; i < actions.length; i++) {
+            const data = actions[i];
+
+            if (!data.onCheck()) continue;
+
+            const displayTxt = lanSwtich(data.text);
+            let target = '';
+            if (data.target) {
+                target = ` "${getString(data.target)}"`;
+            }
+
+            let img = '';
+            if (data.img) {
+                img = `<<icon "${getString(data.img)}">>`;
+            }
+
+            const timeStr = data.time ? _generateTimeStr(data.time) : '(0:01)';
+
+            const pass = `<<pass ${data.time ?? 1}>>`;
+
+            let _html = `${img} <<link "${displayTxt} ${timeStr}"${target}>>`;
+            if (!data.nopass) {
+                _html += pass;
+            }
+            _html += `${data.code ?? ''}<</link>><br>`;
+
+            html.push(_html);
+        }
+        return html.join('');
+    }
+
+    function _generalStreetEvent() {
+        let result = '';
+
+        if (V.exposed >= 1) {
+            result += '<<exhibitionism "street">>';
+        }
+        if (V.arousal >= V.arousalmax) {
+            result += '<<orgasmstreet>>';
+        }
+        if (V.stress >= V.stressmax && !V.possessed) {
+            result += '<<passoutstreet>>';
+        }
+        return result;
     }
 
 
@@ -439,10 +562,18 @@ var iEvent = (() => {
         V.phase = 0;
         V.eFlags.systemState = _state.running;
         Tvar.event = null;
+        Tvar.eventId = null;
+        Tvar.eventTitle = null;
+        Tvar.baseTitle = null;
 
         wikifier('endevent');
         wikifier('endcombat');
     }
+
+    Object.defineProperties(window, {
+        generateTimeStr     : { value : _generateTimeStr },
+        generateActionLinks : { value : _generateActionLinks }
+    });
 
     return Object.seal({
         get data() {
@@ -471,9 +602,13 @@ var iEvent = (() => {
             add  : _addFlag
         },
         
-        doPatch      : _doPatch,
-        doPostFunc   : _doPostFunc,
-        getFlags     : _getFlagField,
-        passoutCheck : _onPassoutCheck,
+        doPatch       : _doPatch,
+        doPostFunc    : _doPostFunc,
+        getFlags      : _getFlagField,
+        passoutCheck  : _onPassoutCheck,
+        getAcition    : _getActions,
+        getActionList : _getActionList,
+
+        generalStreetEvent : _generalStreetEvent
     });
 })();

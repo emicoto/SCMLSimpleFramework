@@ -19,11 +19,11 @@ prehistory.SFE_Prehistory = function () {
     // but if it's special stage can set after in the passage
     if (passage.tags.has('stage')) {
         const stage = passage.title.replace('Stage ', '');
-        setStage(stage);
+        iEventUtils.setStage(stage);
     }
     // if not stage, then unset the stage
     else {
-        unsetStage();
+        iEventUtils.unsetStage();
     }
 
     if (iEvent.state.isReady() === false) {

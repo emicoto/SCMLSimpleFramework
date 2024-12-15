@@ -1,7 +1,7 @@
 
 // eslint-disable-next-line no-var
 Save.onLoad.add(() => {
-    SFInventory.state.set('loading');
+    SFInventory.state.setState('loading');
 });
 
 postrender.SInvInit = function () {
@@ -38,7 +38,7 @@ postrender.SInvInit = function () {
         if (iMod.getCf('SimpleInventory')) {
             SFInventory.import();
         }
-        SFInventory.state.set('idle');
+        SFInventory.state.setState('idle');
     }
     $(document).trigger(':inventoryInitDone');
 };

@@ -1,0 +1,68 @@
+
+<!-- 
+the locationId should be cameral style or snake style. 
+anyway, it should be merged together,
+no more space!
+
+地点ID应该是驼峰式或者蛇式，总之应该合并到一起，
+不要有更多的空格！
+-->
+
+:: Stage LocationId [stage]
+<<effects>> <!-- general effects if you need it happen on your location -->
+<div id = "locationDescription">
+   <<if $phase is 0 and iEvent.state.isRunning() is false>>
+        a general description of the location when not event happend.
+    <<else>>
+        something when event is running.
+    <</if>>
+</div>
+
+<div id = "eventcontent">
+    <!-- if your loacation need a general street event as exhibitionism/orgasmstreet/passoutstreet -->
+    <<if iEvent.generalStreetEvent().length > 1>>
+        <<=iEvent.generalStreetEvent()>>
+    <<elseif $tvar.eventTitle>>
+        <!-- will show general location situation by event system if registered any situation events -->
+        <<include $tvar.eventTitle>>
+    <<else>>
+        <<include "defaultScenePassageTitleByYourOwn">>
+    <</if>>
+</div>
+<br>
+
+<!-- leave a aftermsg and beforelink div for other mod to interaction -->
+<!-- 留下一个aftermsg和beforelink的div供其他MOD交互 -->
+<div id="addAfterMsg"></div>
+<div id="beforeLink"><<BeforeLinkZone>></div>
+
+<!-- all your default link should wrap inside the linkzone -->
+<!-- 所有默认的链接应该包含在linkzone内 -->
+<div id="linkzone">
+    <<if iEvent.state.isRunning()>>
+        <!-- 
+            if the event is running, show the selections, 
+            you can add selections by <<addselection 'link', 'actioncode'>> in event or at done stage.
+            如果事件正在进行，则会显示选项，如果没有连接事件系统会自动添加下一步的按钮。
+            如果没必要其实可以只留selections的div，然后在事件运行的passage内添加需要的选项。
+            添加选项的方法是在事件或者SugarCube进程的done阶段使用<<addselection 'link', 'actioncode'>>。
+        -->
+        <div id="selections"></div>
+    <<else>>
+        <!--
+            any general interaction link should be here.
+            or regist your action by iEvent, then get by iEvent.getActions('stageId')
+            actually you don't need this, because the system will auto add actions when your stageId is same as the LocationId in passageTitle.
+            任何一般的交互链接应该在这里。
+            或者通过iEvent注册你的交互列表，然后通过iEvent.getActions('stageId')获取。
+            其实不用这个也可以，因为系统运行时会自动添加，只要你的StageId与当前passageTitle里的LocationId一致。
+         -->
+         <<=iEvent.getAction('stageId')>>
+         <!--
+           also can leave a extra link zone for other mod to interaction before your leave link.
+            也可以在离开这个页面的链接之前留下一个额外的链接区域供其他MOD交互。
+         -->
+         <div id="extraLink"><<ExtraLinkZone>></div>
+         <<link 'LeaveText' 'targetPassage'>><</link>>
+    <</if>>
+</div>

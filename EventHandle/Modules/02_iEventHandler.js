@@ -35,33 +35,13 @@ const iEventHandler = (() => {
         return false;
     }
 
-    function _bakRestore(restorePassage) {
-        window.variableBackup = clone(V);
-        setup.restoredPassage = restorePassage;
-    }
-
-    function _doRestore() {
-        for (const key in window.variableBackup) {
-            V[key] = clone(window.variableBackup[key]);
-        }
-        delete window.variableBackup;
-        const passage = setup.backupPassage.split(':')[1];
-        setTimeout(() => {
-            Engine.play(passage);
-            delete setup.restoredPassage;
-
-            // return feedback to listener after restore
-            _checkVariableChange(Story.get(passage));
-        }, 300);
-    }
-
     // before variable change
     function _onPreHistory(passage, prevPassage) {
         // fix wrong event at this point if player cheated
         // backup last variables and restore
         const condition = _onFixEvent(passage);
         if (condition.has('restore')) {
-            _bakRestore(condition.split(':')[1]);
+            iEventUtils.backRestore(condition.split(':')[1]);
             return;
         }
 
@@ -89,6 +69,10 @@ const iEventHandler = (() => {
             return;
         }
         
+        // won't run if not ready
+        if (iEvent.state.isReady() === false) {
+            return;
+        }
         // if event is setup, do event
         _doEvent();
 
@@ -145,7 +129,7 @@ const iEventHandler = (() => {
 
         // clear backup and do restore if needed
         if (typeof setup.restoredPassage === 'string') {
-            _doRestore();
+            iEventUtils.doRestore();
         }
         else {
             // return feedback to listener
@@ -216,10 +200,6 @@ const iEventHandler = (() => {
         }
     }
 
-    function _isValidStage(passage) {
-        return passage.tags.includes('stage') || passage.title === 'SFEventLoop' || passage.text.has('<<iStage>>', '<<include $tvar.eventTitle>>');
-    }
-
     /**
      * fix wrong event at this point if player cheated
      * @param {passageObj} passage;
@@ -240,7 +220,7 @@ const iEventHandler = (() => {
         if (iEvent.state.isRunning() === false) return 'ok';
 
         // if already in event loop, return;
-        if (iEvent.state.isPlaying() === true && _isValidStage(passage)) return 'ok';
+        if (iEvent.state.isPlaying() === true && iEventUtils.isValidStage(passage)) return 'ok';
 
         const event = iEvent.current;
         // if the time not passing, means still starting up, then return;
@@ -248,7 +228,7 @@ const iEventHandler = (() => {
 
         // beacause no more async event, so no need to double check if event is trying to starting up.
         // so at this point, all event should be in valid stage or their own special passage, if not just unset it.
-        if (_isValidStage(passage) === false && passage.title !== event.stage) {
+        if (iEventUtils.isValidStage(passage) === false && passage.title !== event.stage) {
             console.warn(`Event ${event.baseTitle} is not in valid stage. current passage: ${passage.title}, event stage: ${event.stage}`);
             iEvent.unset();
             return `restore:${Tvar.backupPassage}`;
@@ -277,16 +257,6 @@ const iEventHandler = (() => {
         return 'ok';
     }
 
-    function _getFlags(seriesData, eventflags) {
-        const flag = iEvent.flag.get(seriesData.flagfield ?? '') ?? {};
-
-        if (eventflags) {
-            for (const key of eventflags) {
-                flag[key] = iEvent.flag.get(key);
-            }
-        }
-        return flag;
-    }
     /**
      *
      * @param { SceneData[] } eventList - list of event to check
@@ -301,7 +271,7 @@ const iEventHandler = (() => {
             const { trigger, cond } = event;
             if (typeof cond == 'function' && !cond(passage, prevPassage)) continue;
 
-            const flags = _getFlags(event.parent, event.flagfield);
+            const flags = iEventUtils.getFlags(event.parent, event.flagfield);
             if (trigger.onCheck(flags, passage, prevPassage) === false) continue;
 
             feedback.ready = true;
@@ -368,6 +338,37 @@ const iEventHandler = (() => {
         }
 
         resultdata.passageTitle = stage;
+    }
+
+    function _startEvent(eventType, seriesId, eventId) {
+        // direct start event by given type and id
+        const series = iEvent.data.get(eventType, seriesId);
+        if (!series) return;
+
+        const result = {};
+        // if not eventId, just run condition check
+        if (!eventId) {
+            const psg = Story.get(V.passage);
+            const prevPsg = Story.get(V.lastPassage);
+            _checkCondition(series, result, psg, prevPsg);
+        }
+        else {
+            const data = series.get(eventId);
+            if (data) {
+                result.ready = true;
+                result.data = _data;
+            }
+        }
+
+        if (result.ready) {
+            _setEvent(result);
+        }
+
+        if (result.passageTitle) {
+            Tvar.jumpPassage = result.passageTitle;
+        }
+
+        return result.data;
     }
 
     function _endEvent() {
@@ -446,7 +447,7 @@ const iEventHandler = (() => {
             iEvent.unset();
 
             // backup last variables ready to restore
-            _bakRestore(Tvar.backupPassage);
+            iEventUtils.backRestore(Tvar.backupPassage);
             return;
         }
         // do init action
@@ -508,11 +509,9 @@ const iEventHandler = (() => {
         onTime       : _onTimeHandle,
         onFix        : _onFixEvent,
 
-        checkCond  : _checkCondition,
-        getEvent   : _getEventOnStage,
-        getCEvent  : _getEventOnCondition,
-        bakRestore : _bakRestore,
-        doRestore  : _doRestore,
+        checkCond : _checkCondition,
+        getEvent  : _getEventOnStage,
+        getCEvent : _getEventOnCondition,
         
         setListner : _setupVariableChange,
         doListner  : _checkVariableChange,
@@ -521,6 +520,8 @@ const iEventHandler = (() => {
         set  : _setEvent,
         end  : _endEvent,
         init : _initEvent,
-        run  : _doEvent
+        run  : _doEvent,
+
+        start : _startEvent
     });
 })();
