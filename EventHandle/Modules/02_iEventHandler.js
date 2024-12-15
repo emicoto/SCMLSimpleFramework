@@ -99,6 +99,23 @@ const iEventHandler = (() => {
         }
     }
 
+    function _doActions(key, specialTitle) {
+        const data = iEvent.current.data;
+        const action = data.actions ?? {};
+        if (typeof action[key] == 'function') {
+            action[key]();
+        }
+        else if (typeof action[key] == 'string') {
+            new Wikifier(null, action[key]);
+        }
+
+        const title = `${iEvent.current.getfullTitle()}::${specialTitle}`;
+        if (Story.has(title)) {
+            const content = Story.get(title).text;
+            new Wikifier(null, content);
+        }
+    }
+
     // after passage is shown
     function _onPostPassage() {
         const passage = Story.get(V.passage);
@@ -118,21 +135,7 @@ const iEventHandler = (() => {
         }
 
         // check after passage event
-        const data = iEvent.state.getEvent();
-        const action = data.data.action ?? {};
-        if (typeof action.after == 'function') {
-            action.after();
-        }
-        else if (typeof action.after == 'string') {
-            new Wikifier(null, action.after);
-        }
-
-        // if has special passage of current event
-        const afterTitle = `${iEvent.event.getfullTitle()}::postdisplay`;
-        if (Story.has(afterTitle)) {
-            const content = Story.get(afterTitle).text;
-            new Wikifier(null, content);
-        }
+        _doActions('after', 'postdisplay');
     }
 
     function _onRenderDone() {
@@ -164,15 +167,12 @@ const iEventHandler = (() => {
         if (_linkDetect()) return;
 
         // if not link detected, generate a next button for next step;
-        const scene = iEvent.state.event;
+        const scene = iEvent.current;
         /**
          * @type {SceneData}
          */
-        const data = scene.data;
-        const actions = data.actions;
-
         let code = '';
-        if (scene.maxPhase && V.phase < scene.maxPhase - 1) {
+        if (scene.maxPhase && V.phase < scene.maxPhase) {
             code += '<<set $phase to $phase + 1>>';
         }
         if (scene.maxPhase && V.phase === scene.maxPhase) {
@@ -182,14 +182,7 @@ const iEventHandler = (() => {
             code = '<<doEventEnd>>';
         }
 
-        if (actions) {
-            if (typeof actions.next === 'function') {
-                code += '<<run iEvent.state.data.actions.next()>>';
-            }
-            else if (typeof actions.next === 'string') {
-                code += actions.next;
-            }
-        }
+        code += '<<run iEventHandler.doAction("next", "onNext")>>';
 
         const $button = jQuery('<a>')
             .addClass('macro-link')
@@ -199,7 +192,12 @@ const iEventHandler = (() => {
             })
         ;
 
-        jQuery('#passage-content').append($button);
+        let target = '#selections';
+        if (document.querySelector('#selections') === null) {
+            target = '#passage-content';
+        }
+
+        jQuery(target).append($button);
     }
 
     // on time handle if needed
@@ -234,7 +232,7 @@ const iEventHandler = (() => {
             return `restore:${Tvar.backupPassage}`;
         }
         // if not running but event still exist, unset it;
-        if (iEvent.state.isRunning() === false && iEvent.state.event !== null) {
+        if (iEvent.state.isRunning() === false && iEvent.current !== null) {
             iEvent.unset();
             return `restore:${Tvar.backupPassage}`;
         }
@@ -244,7 +242,7 @@ const iEventHandler = (() => {
         // if already in event loop, return;
         if (iEvent.state.isPlaying() === true && _isValidStage(passage)) return 'ok';
 
-        const event = iEvent.state.event;
+        const event = iEvent.current;
         // if the time not passing, means still starting up, then return;
         if (event.startTime === V.timeStamp) return 'ok';
 
@@ -279,15 +277,14 @@ const iEventHandler = (() => {
         return 'ok';
     }
 
-    function _getFlags(series, eventflags) {
-        const flag = _getFlag(series.flagfield ?? '') ?? {};
+    function _getFlags(seriesData, eventflags) {
+        const flag = iEvent.flag.get(seriesData.flagfield ?? '') ?? {};
 
         if (eventflags) {
             for (const key of eventflags) {
-                flag[key] = _getFlag(key);
+                flag[key] = iEvent.flag.get(key);
             }
         }
-
         return flag;
     }
     /**
@@ -304,7 +301,7 @@ const iEventHandler = (() => {
             const { trigger, cond } = event;
             if (typeof cond == 'function' && !cond(passage, prevPassage)) continue;
 
-            const flags = _getFlags(series, event.flagfield);
+            const flags = _getFlags(event.parent, event.flagfield);
             if (trigger.onCheck(flags, passage, prevPassage) === false) continue;
 
             feedback.ready = true;
@@ -318,10 +315,10 @@ const iEventHandler = (() => {
     function _getEventOnStage(feedback, passage, prevPassage) {
         if (!V.stage) return;
 
-        const series = iEvent.data.get('onScene', V.stage);
+        // try get series data by stage name
+        const series = iEvent.data.get('onScene', V.stage) ?? iEvent.data.get('onScene', V.stage.toLowerCase());
         if (!series) return;
         if (series.length === 0) return;
-        if (series.seriesType !== 'scene') return;
         if (typeof series.cond == 'function' && !series.cond(passage, prevPassage)) return;
 
         _checkCondition(series, feedback, passage, prevPassage);
@@ -333,11 +330,15 @@ const iEventHandler = (() => {
         const serieslist = iEvent.data.get('onCondition');
         const series = [...serieslist.get('passout').data].concat([...serieslist.get('common').data]);
 
-        if (serieslist.size > 1) {
-            console.log('Multiple condition series detected');
+        if (serieslist.size > 2) {
+            console.log('Multiple additional condition series detected');
             // check condition series availability
             const list = serieslist.values();
             for (const item of list) {
+                // skip common and passout series
+                if (item.Id == 'common' || item.Id == 'passout') continue;
+                if (typeof item.cond !== 'function') continue;
+
                 if (item.cond()) {
                     series.push(...item.data);
                 }
@@ -357,7 +358,7 @@ const iEventHandler = (() => {
         let stage = scene.getStage();
         if (!Story.has(stage) && scene.type !== 'scene') {
             stage = 'SFEventLoop';
-            console.warn(`Scene ${stage} not found, try set to alternative stage`);
+            console.warn(`Scene ${stage} not found, but is general event, set to alternative stage: ${stage}`, scene);
         }
         else if (!Story.has(stage)) {
             console.warn(`Scene ${stage} not found, ${scene.data.Id} is unset`, scene);
@@ -371,22 +372,7 @@ const iEventHandler = (() => {
 
     function _endEvent() {
         // end event and clear event data
-        const event = iEvent.state.getEvent();
-        const action = event.data.action ?? {};
-        if (typeof action.end == 'function') {
-            action.end();
-        }
-        else if (typeof action.end == 'string') {
-            new Wikifier(null, action.end);
-        }
-
-        // if has special passage of current event
-        const endTitle = `${event.getfullTitle()}::end`;
-        if (Story.has(endTitle)) {
-            const content = Story.get(endTitle).text;
-            new Wikifier(null, content);
-        }
-
+        _doActions('end', 'end');
         iEvent.unset();
     }
 
@@ -442,7 +428,7 @@ const iEventHandler = (() => {
 
     function _initEvent() {
         // init event data
-        const scene = iEvent.state.event;
+        const scene = iEvent.current;
         scene.getBranch();
         scene.initData();
 
@@ -465,20 +451,14 @@ const iEventHandler = (() => {
         }
         // do init action
         scene.init();
-
-        // if has special passage of current event
-        const initTitle = `${scene.getfullTitle()}::init`;
-        if (Story.has(initTitle)) {
-            const content = Story.get(initTitle).text;
-            new Wikifier(null, content);
-        }
+        _doActions('init', 'init');
     }
 
     function _doEvent() {
         if (!iEvent.state.isRunning()) return;
 
         // try get available language title and update the title
-        const scene = iEvent.state.event;
+        const scene = iEvent.current;
         const fullTitle = scene.getLanguage();
 
         // check if just just started， backup the settings to Tvar
@@ -495,33 +475,18 @@ const iEventHandler = (() => {
         }
 
         // check if there is a phase code to run
-        const phase = `phase_${V.phase + 1}`;
-        if (typeof actions[phase] === 'function') {
-            actions[phase]();
-        }
-        else if (typeof actions[phase] === 'string') {
-            new Wikifier(null, actions[phase]);
-        }
+        _doActions(`step_${V.phase + 1}`, '');
 
         // check if there is a branch code to run
         const branch = scene.branch;
         if (branch.length > 0) {
             const branchId = branch.pop();
             const branchCode = `branch_${branchId}`;
-            if (typeof actions[branchCode] === 'function') {
-                actions[branchCode]();
-            }
-            else if (typeof actions[branchCode] === 'string') {
-                new Wikifier(null, actions[branchCode]);
-            }
+            _doActions(branchCode, '');
         }
 
         // if has special passage of current event
-        const runTitle = `${scene.getfullTitle()}::predisplay`;
-        if (Story.has(runTitle)) {
-            const content = Story.get(runTitle).text;
-            new Wikifier(null, content);
-        }
+        _doActions('', 'predisplay');
 
         if (scene.maxPhase > 0 && V.phase < scene.maxPhase) {
             V.phase++;
@@ -551,6 +516,7 @@ const iEventHandler = (() => {
         
         setListner : _setupVariableChange,
         doListner  : _checkVariableChange,
+        doAction   : _doActions,
 
         set  : _setEvent,
         end  : _endEvent,

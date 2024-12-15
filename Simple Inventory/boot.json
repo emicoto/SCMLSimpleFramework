@@ -16,7 +16,8 @@
     "modules/InvUI.js",
     "modules/InvUtil.js",
     "modules/SFInvMain.js",
-    "modules/SFItem.js"
+    "modules/SFItem.js",
+    "modules/SFRecipies.js"
   ],
   "scriptFileList_earlyload": [],
   "scriptFileList_preload": [],
@@ -45,5 +46,5 @@
       "version": "^2.0.0"
     }
   ],
-  "build": "5"
+  "build": "6"
 }

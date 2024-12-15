@@ -37,7 +37,9 @@
         "SC2Files/z_globalProcess.js",
         "SC2Files/zz_SFE_globalProcess.js"
     ],
-    "tweeFileList": [],
+    "tweeFileList": [
+        "Twees/EventLoop.twee"
+    ],
     "imgFileList": [],
     "additionFile": [],
     "addonPlugin": [
@@ -58,6 +60,6 @@
             "version": "^1.0.0"
         }
     ],
-    "build": 27,
+    "build": 28,
     "lastUpdate": "2024.12.15"
 }

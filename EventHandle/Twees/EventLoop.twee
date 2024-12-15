@@ -1,0 +1,8 @@
+
+:: SFEventLoop [stage]
+<<effects>>
+<div id = "eventcontent">
+    <<include $tvar.eventTitle>>
+</div>
+<br>
+<div id="selections"></div>

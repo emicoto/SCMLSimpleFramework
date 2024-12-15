@@ -45,22 +45,13 @@ class Scene {
     }
 
     init() {
-        const { chara , actions } = this.data;
+        const { chara } = this.data;
         if (chara) {
             chara.forEach(cha => {
                 wikifier('npc', cha);
             });
 
             wikifier('person1');
-        }
-
-        if (actions.init) {
-            if (typeof actions.init === 'function') {
-                actions.init();
-            }
-            else if (typeof actions.init === 'string') {
-                new Wikifier(null, actions.init);
-            }
         }
     }
 

@@ -58,9 +58,10 @@ class EventSeries {
         this.data.forEach(item => {
             item.seriesId = Id;
             item.seriesType = seriesType;
-            if (key) {
+            if (key && data) {
                 item[key] = data;
             }
+            item.parent = this;
         });
     }
     // add scene to the list

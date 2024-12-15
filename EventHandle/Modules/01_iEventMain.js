@@ -157,7 +157,9 @@ var iEvent = (() => {
      * @returns {object| number | string | boolean}
      */
     function _getFlag(series, flag) {
-        _initFlag(series);
+        if (V.eFlags[series] === undefined) {
+            return undefined;
+        }
         return flag ? V.eFlags[series][flag] : V.eFlags[series];
     }
 
@@ -170,7 +172,21 @@ var iEvent = (() => {
      */
     function _addFlag(series, flag, value) {
         _initFlag(series, flag);
-        V.eFlags[series][flag] += value;
+        if (typeof V.eFlags[series][flag] == 'number' && typeof value == 'number' && isValid(value)) {
+            V.eFlags[series][flag] += value;
+        }
+        // if is string, append value to string with , separator
+        else if (typeof V.eFlags[series][flag] == 'string') {
+            V.eFlags[series][flag] += `,${value}`;
+        }
+        // if is array, push value to array
+        else if (Array.isArray(V.eFlags[series][flag])) {
+            V.eFlags[series][flag].push(value);
+        }
+        // anyways, just set value
+        else {
+            V.eFlags[series][flag] = value;
+        }
         return V.eFlags[series][flag];
     }
 
@@ -435,6 +451,9 @@ var iEvent = (() => {
         get state() {
             return _state;
         },
+        get current() {
+            return _state.event;
+        },
 
         init   : _initSystem,
         onLoad : _onLoad,
@@ -455,6 +474,6 @@ var iEvent = (() => {
         doPatch      : _doPatch,
         doPostFunc   : _doPostFunc,
         getFlags     : _getFlagField,
-        passoutCheck : _onPassoutCheck
+        passoutCheck : _onPassoutCheck,
     });
 })();
