@@ -5,13 +5,14 @@
         "Main/0_lib/selectcase.js",
         "Main/0_lib/util.js",
         "Main/0_Simplewidget.js",
+        "Modules/00_ActionData.js",
         "Modules/00_iModManager.js",
         "Modules/00_SceneData.js",
         "Modules/00_SceneSystem.js",
         "Modules/00_SeriesData.js",
         "Modules/01_iEventMain.js",
         "Modules/02_iEventHandler.js",
-        "Modules/ActionData.js",
+        "Modules/03_iEventUtils.js",
         "Modules/applyZone.js",
         "Modules/customUI.js",
         "Modules/domTool.js",
@@ -60,6 +61,6 @@
             "version": "^1.0.0"
         }
     ],
-    "build": 29,
+    "build": 30,
     "lastUpdate": "2024.12.15"
 }
