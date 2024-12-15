@@ -44,6 +44,23 @@ const SFInventory = (() => {
         }
     };
 
+    const _state = {
+        init    : false,
+        running : null,
+        isRunning() {
+            return this.running === 'idle';
+        },
+        isLoading() {
+            return this.running === 'loading';
+        },
+        isReady() {
+            return this.init === true;
+        },
+        setState(state) {
+            this.running = state;
+        }
+    };
+
     // 导入配置数据的方法，从外部模块获取配置
     function _import() {
         const { maxsize, boostsize, disableStack } = iMod.getCf('SimpleInventory');
@@ -55,6 +72,12 @@ const SFInventory = (() => {
     // 导出当前配置到外部模块的方法
     function _export() {
         iMod.setCf('SimpleInventory', _config);
+    }
+
+    function _init() {
+        iMod.setCf('SimpleInventory', _config);
+        _state.init = true;
+        _state.setState('idle');
     }
 
     // 获取指定大小的最大容量，如果 size 是已知类型则返回对应容量
@@ -80,22 +103,22 @@ const SFInventory = (() => {
             this.size = size;    // 插槽容量
         }
 
-        // 初始化方法，设置 V.SFInv 中对应的槽位
+        // 初始化方法，设置 V.Invs 中对应的槽位
         init() {
-            if (!V.SFInv[this.type]) {
-                V.SFInv[this.type] = {};  // 如果 V.SFInv 中没有该类型，初始化为空对象
+            if (!V.Invs[this.type]) {
+                V.Invs[this.type] = {};  // 如果 V.Invs 中没有该类型，初始化为空对象
             }
 
-            if (!V.SFInv[this.type][this.slot]) {
+            if (!V.Invs[this.type][this.slot]) {
                 if (this.size === 'infinity') {
                     this.size = 0;  // 如果容量是无限的，将其设为 0
                 }
 
-                V.SFInv[this.type][this.slot] = new Inventory(this.type, this.slot, this.size);
+                V.Invs[this.type][this.slot] = new Inventory(this.type, this.slot, this.size);
 
                 if (this.size === 0) {
-                    V.SFInv[this.type][this.slot].limitsize = 'infinity';
-                    V.SFInv[this.type][this.slot] = {};  // 设置为无限大小的槽
+                    V.Invs[this.type][this.slot].limitsize = 'infinity';
+                    V.Invs[this.type][this.slot] = {};  // 设置为无限大小的槽
                 }
             }
         }
@@ -103,7 +126,7 @@ const SFInventory = (() => {
         // 获取当前库存规则关联的插槽
         get() {
             this.init();
-            return V.SFInv[this.type][this.slot];
+            return V.Invs[this.type][this.slot];
         }
     }
 
@@ -116,13 +139,27 @@ const SFInventory = (() => {
 
     // 冻结并返回 SFInventory 对象，防止进一步修改
     return Object.freeze({
-        config   : _config,      // 导出配置信息
-        options  : _options,     // 导出选项信息
-        sizeData : _sizeData,    // 导出尺寸数据
-        import   : _import,      // 导出 import 方法
-        export   : _export,      // 导出 export 方法
-        maxsize  : _getMaxSize,  // 导出获取最大容量的方法
-        getTypes : () => _options.types,  // 获取物品类型的方法
-        getRules : () => _options.rules   // 获取规则的方法
+        get state() {
+            return _state;
+        },
+        get config() {      // 导出配置信息
+            return _config;
+        },
+        get options() {     // 导出选项信息
+            return _options;
+        },
+        get sizeData() {    // 导出尺寸数据
+            return _sizeData;
+        },
+        get types() {
+            return _options.types; // 获取物品类型的方法
+        },
+        get rules() {
+            return _options.rules; // 获取规则的方法
+        },
+        init    : _init,        // 导出初始化方法
+        import  : _import,      // 导出 import 方法
+        export  : _export,      // 导出 export 方法
+        maxsize : _getMaxSize  // 导出获取最大容量的方法
     });
 })();

@@ -1,6 +1,6 @@
 {
-  "name": "Simple Inventory",
-  "version": "0.1.0",
+  "name": "SimpleInventory",
+  "version": "1.0.0",
   "modPacker": {
     "modScriptFolder": {
       "scriptFileList_inject_early": [
@@ -42,8 +42,8 @@
     },
     {
       "modName": "Simple Frameworks",
-      "version": "^1.15.4"
+      "version": "^2.0.0"
     }
   ],
-  "build": "4"
+  "build": "5"
 }

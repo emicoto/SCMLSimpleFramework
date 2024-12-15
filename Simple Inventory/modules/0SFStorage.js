@@ -89,11 +89,11 @@ class iStack {
 class Inventory {
     static get(keyPath) {
         const [type, slot] = keyPath.split('_');
-        if (!V.SFInv[type] && !V.SFInv[type][slot]) {
+        if (!V.Invs[type] && !V.Invs[type][slot]) {
             throw new Error(`Inventory with id ${keyPath} not found`);
         }
 
-        return V.SFInv[type][slot] ?? V.SFInv[type];
+        return V.Invs[type][slot] ?? V.Invs[type];
     }
     /**
      *

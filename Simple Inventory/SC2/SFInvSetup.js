@@ -1,45 +1,44 @@
 
 // eslint-disable-next-line no-var
-setup.SFInv_State = true;
 Save.onLoad.add(() => {
-    setup.SFInv_onLoad = true;
+    SFInventory.state.set('loading');
 });
 
-postdisplay.SInvInit = function () {
+postrender.SInvInit = function () {
     const passage = this;
     if (!passage || passage.tags.has('widget') || !V.passage) {
         return;
     }
 
-    if (setup.SFInv_State !== true && setup.SFInv_onLoad === false) {
+    // already initialized
+    if (SFInventory.state.isRunning() === true) {
         return;
     }
 
-    if (!V.SFInv) {
-        V.SFInv = {
+    if (!V.Invs) {
+        V.Invs = {
             global : {}
         };
 
-        const types = SFInventory.getTypes();
+        const types = SFInventory.types;
         for (const type of types) {
-            V.SFInv[type] = {};
+            V.Invs[type] = {};
         }
 
-        const rules = SFInventory.getRules();
+        const rules = SFInventory.rules;
         for (const rule of rules) {
             rule.init();
         }
     }
 
-    if (!iMod.getCf('SimpleInventory')) {
-        SFInventory.export();
+    if (!SFInventory.state.isReady() === false) {
+        SFInventory.init();
     }
-    else {
-        SFInventory.import();
+    else if (SFInventory.state.isLoading() === true) {
+        if (iMod.getCf('SimpleInventory')) {
+            SFInventory.import();
+        }
+        SFInventory.state.set('idle');
     }
-
-    setup.SFInv_State = 'init';
-    setup.SFInv_onLoad = false;
-
     $(document).trigger(':inventoryInitDone');
 };

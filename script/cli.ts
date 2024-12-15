@@ -26,7 +26,7 @@ function buildZip() {
 	const buildDir = path.join(__dirname, "build");
 	if (!fs.existsSync(buildDir)) { fs.mkdirSync(buildDir) } else {
 		fs.readdirSync(buildDir).forEach((file) => {
-			if (file.includes(".zip") && !file.includes("SimpleFramework")) {
+			if (file.includes(".zip") && !file.includes("Simple Framework")) {
 			fs.rmSync(path.join(buildDir, file), { recursive: true, force: true });
 			}
 		});

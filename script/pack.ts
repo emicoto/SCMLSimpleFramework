@@ -262,7 +262,7 @@ class ProjectPackager {
         console.log("moduleFolders", moduleFolders);
 
         // Define output zip file path
-        const zipFilename = path.join(this.outputDir, `SimpleFramework ver${versions.version} build_${versions.buildnumber}.zip`);
+        const zipFilename = path.join(this.outputDir, `Simple Framework ver${versions.version} build_${versions.buildnumber}.zip`);
 
         // Create zip file
         const output = fs.createWriteStream(zipFilename);
@@ -317,7 +317,7 @@ function getJson(directory: string, filename: string) {
     }
     else {
         fs.readdirSync(outputDir).forEach((file) => {
-            if (file.includes("SimpleFramework")) {
+            if (file.includes("Simple Framework")) {
 			    fs.rmSync(path.join(outputDir, file), { recursive: true, force: true });
             }
 		});

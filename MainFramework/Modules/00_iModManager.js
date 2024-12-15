@@ -207,12 +207,40 @@ const iMod = (() => {
         return rest;
     }
 
+    const _modData = {
+        defaultConfigs   : {},
+        defaultVariables : {}
+    };
+
+    function _modRegist(modId, defaultConfig = null, defaultVariables = null) {
+        if (_modData.defaultConfigs[modId] === undefined) {
+            _modData.defaultConfigs[modId] = {};
+        }
+        if (_modData.defaultVariables[modId] === undefined) {
+            _modData.defaultVariables[modId] = {};
+        }
+
+        if (defaultConfig !== null) {
+            _modData.defaultConfigs[modId] = defaultConfig;
+        }
+
+        if (defaultVariables !== null) {
+            _modData.defaultVariables[modId] = defaultVariables;
+        }
+
+        return {
+            modId,
+            config    : defaultConfig,
+            variables : defaultVariables
+        };
+    }
+
     function _autoRegister() {
         const modList = _getModList();
         if (modList.length == 0) return;
 
         for (const modId of modList) {
-            _register(modId);
+            _register(modId, _modData.defaultConfigs[modId], _modData.defaultVariables[modId]);
         }
     }
 
@@ -229,7 +257,8 @@ const iMod = (() => {
         setCf : _setConfig,
         getCf : _getConfig,
         
-        register : _register,
+        regist   : _modRegist,  // regist mod to iMod manager and will auto init when variables is ready;
+        registV  : _register,   // regist mod to V.iModVar and V.iModConfigs directly
         remove   : _remove,
         initMods : _autoRegister,
         

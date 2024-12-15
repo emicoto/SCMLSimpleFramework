@@ -30,6 +30,7 @@ prehistory.iModInit = function () {
     console.log('[SFDebug] onPreInit:', this, this.title);
     if (iMod.state.isReady() === false || iMod.state.isLoading() === true) {
         iMod.init();
+        iMod.initMods();
     }
 
     if (iMod.state.isLoading() === true) {
