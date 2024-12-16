@@ -1,0 +1,146 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NPC 管理与调用方法</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 0;
+            color: #2c3e50;
+        }
+        h1, h2, h3 {
+            color: #34495e;
+        }
+        pre {
+            background: #ecf0f1;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            background: #ecf0f1;
+            padding: 2px 4px;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <h1>NPC 管理与调用方法</h1>
+
+    <h2>核心概念</h2>
+    <p>当 NPC 新增到数据库后，可以通过两种主要方式访问和管理 NPC 数据：</p>
+    <ol>
+        <li><strong>通过全局对象 <code>C.npc</code></strong>：适用于操作当前游戏中的动态 NPC 数据。</li>
+        <li><strong>通过 <code>NamedNPC</code> 提供的方法</strong>：适用于访问 NPC 的原始档案或管理 NPC 是否存在。</li>
+    </ol>
+
+    <h2>1. 通过 <code>C.npc</code> 管理 NPC 数据</h2>
+    <p><code>C.npc</code> 是一个全局对象，存储了所有游戏中动态加载的 NPC 数据。可以通过 <code>C.npc.npcId</code> 来访问特定 NPC。</p>
+    <pre><code>// 检测 NPC 的好感度
+if (C.npc["Alex"].trust > 50) {
+    console.log("Alex 对玩家非常信任。");
+}
+
+// 设置 NPC 的特定 FLAG
+C.npc["Alex"].flags.missionComplete = true;</code></pre>
+
+    <h2>2. 使用 <code>NamedNPC</code> 的方法</h2>
+    <h3>NamedNPC.get(npcId)</h3>
+    <p>获取指定 NPC 的原始档案。</p>
+    <ul>
+        <li><strong>参数：</strong> <code>npcId</code> (<code>string</code>) - NPC 的唯一标识符。</li>
+        <li><strong>返回值：</strong> 匹配的 <code>NamedNPC</code> 对象。</li>
+    </ul>
+    <pre><code>const alexArchive = NamedNPC.get("Alex");
+console.log(alexArchive.description);</code></pre>
+
+    <h3>NamedNPC.has(npcId)</h3>
+    <p>检查指定 ID 的 NPC 是否存在于数据库中。</p>
+    <ul>
+        <li><strong>参数：</strong> <code>npcId</code> (<code>string</code>) - NPC 的唯一标识符。</li>
+        <li><strong>返回值：</strong> 布尔值，表示 NPC 是否存在。</li>
+    </ul>
+    <pre><code>if (NamedNPC.has("Alex")) {
+    console.log("Alex 已存在于数据库中。");
+}</code></pre>
+
+    <h2>NPC 数据变量概览</h2>
+    <p>以下是 NPC 数据赋值的两种方式：</p>
+    <h3>通过 <code>C.npc.npcId</code> 进行新变量赋值</h3>
+    <pre><code>C.npc["Alex"].newVariable = "exampleValue";
+console.log(C.npc["Alex"].newVariable); // 输出: exampleValue</code></pre>
+
+    <h3>通过 <code>NamedNPC</code> 的 <code>set</code> 方法在注册时提前赋值</h3>
+    <pre><code>const npc = new NamedNPC("Alex", "Warrior", "A brave warrior.", "human");
+npc.set("trust", 80).set("love", 50);
+console.log(npc);</code></pre>
+
+    <h3>常用数据变量一览</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>变量名</th>
+                <th>类型</th>
+                <th>描述</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>type</td><td>string</td><td>NPC 类型（如 "human" 或 "animal"）。</td></tr>
+            <tr><td>love</td><td>number</td><td>NPC 对玩家的爱慕值。</td></tr>
+            <tr><td>trust</td><td>number</td><td>NPC 对玩家的信任值。</td></tr>
+            <tr><td>dom</td><td>number</td><td>NPC 的支配性格属性。</td></tr>
+            <tr><td>lust</td><td>number</td><td>NPC 的欲望值。</td></tr>
+            <tr><td>rage</td><td>number</td><td>NPC 的愤怒值。</td></tr>
+            <tr><td>trauma</td><td>number</td><td>NPC 的创伤程度。</td></tr>
+            <tr><td>purity</td><td>number</td><td>NPC 的纯洁程度。</td></tr>
+            <tr><td>corruption</td><td>number</td><td>NPC 的堕落值。</td></tr>
+            <tr><td>pregnancyAvoidance</td><td>number</td><td>NPC 的怀孕规避值（概率）。</td></tr>
+            <tr><td>pregnancy</td><td>object</td><td>怀孕状态，包含以下字段：<ul><li>enabled: 是否能够怀孕。</li><li>cycleDay: 当前周期天数。</li><li>pcAwareOf: 玩家是否意识到 NPC 的怀孕状态。</li><li>npcAwareOf: NPC 是否意识到自己的怀孕状态。</li></ul></td></tr>
+            <tr><td>state</td><td>string</td><td>NPC 当前状态（如 "healthy" 或 "sick"）。</td></tr>
+            <tr><td>flags</td><td>object</td><td>自定义标志，用于存储与模组相关的特殊状态。</td></tr>
+        </tbody>
+    </table>
+
+    <h2>NPC 管理的典型应用场景</h2>
+    <h3>动态检查好感度变化</h3>
+    <pre><code>if (C.npc["Evelyn"].trust < 20) {
+    console.log("Evelyn 对玩家的信任度较低。");
+}</code></pre>
+
+    <h3>对特定 FLAG 的管理</h3>
+    <pre><code>C.npc["Evelyn"].flags.isQuestGiver = true;
+console.log(C.npc["Evelyn"].flags.isQuestGiver ? "Evelyn 是任务发布者。" : "Evelyn 不是任务发布者。");</code></pre>
+
+    <h3>在数据库中检查 NPC 的存在性</h3>
+    <pre><code>if (NamedNPC.has("Evelyn")) {
+    const evelynData = NamedNPC.get("Evelyn");
+    console.log(`找到 NPC: ${evelynData.title}`);
+} else {
+    console.log("Evelyn 不存在于数据库中。");
+}</code></pre>
+</body>
+</html>

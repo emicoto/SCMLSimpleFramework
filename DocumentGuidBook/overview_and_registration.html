@@ -1,0 +1,94 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>框架概览与模组注册</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 0;
+            color: #2c3e50;
+        }
+        h1, h2, h3 {
+            color: #34495e;
+        }
+        pre {
+            background: #ecf0f1;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            background: #ecf0f1;
+            padding: 2px 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>框架概览与模组注册</h1>
+
+    <h2>框架功能总览</h2>
+    <p>本文档旨在全面介绍 "简易框架"（Simple Frameworks）的核心功能模块及其相关 API，帮助开发者快速掌握框架特性并高效实现项目目标。</p>
+
+    <h2>模组注册与新增内容的注册</h2>
+    <h3>功能概述</h3>
+    <p>模组注册是框架的基础功能，允许开发者动态加载、管理自定义内容。通过注册机制，您可以扩展框架功能，为游戏增加新的模块、行为和配置。</p>
+
+    <h3>核心功能</h3>
+    <ul>
+        <li><strong>模组注册</strong>：通过 <code>iMod</code> 接口注册模组的配置和变量。</li>
+        <li><strong>内容新增</strong>：动态注册特定类型的内容，例如角色特征、动作、场景等。</li>
+        <li><strong>生命周期管理</strong>：提供模组的初始化、加载、更新与移除。</li>
+        <li><strong>存档兼容</strong>：自动更新存档中的旧变量，添加未定义的新变量，并处理变量类型的更新。</li>
+    </ul>
+
+    <h3>API 文档</h3>
+    <h4>1. 注册模组</h4>
+    <pre><code>/**
+ * 注册一个新模组。
+ * @param {string} modId - 模组的唯一标识符。
+ * @param {object} defaultConfig - 默认配置对象。
+ * @param {object} defaultVariables - 默认变量对象。
+ */
+iMod.regist(modId, defaultConfig = {}, defaultVariables = {});
+</code></pre>
+    <p>特性说明：</p>
+    <ul>
+        <li><strong>统一注册</strong>: 在这里注册的变量，将会在游戏初始化时统一注册进游戏中，确保模组变量都能顺利完成初始化并保存。</li>
+        <li><strong>变量自动更新</strong>：当注册的模组中存在未定义的新变量时，框架会自动添加到存档中。</li>
+        <li><strong>类型变更支持</strong>：如果变量类型与之前的存档数据不同，系统会尝试更新为新类型。</li>
+        <li><strong>旧变量继承</strong>：已存在的变量会根据新模组的默认配置进行合并，不覆盖已存在的自定义值。</li>
+    </ul>
+
+    <h4>2. 动态添加内容</h4>
+    <pre><code>/**
+ * 添加内容到指定区域。
+ * @param {string} zone - 目标区域名称。
+ * @param {...(string|object)} widgets - 内容或小组件。
+ */
+simpleFrameworks.addto(zone, ...widgets);
+</code></pre>
+
+    <h4>3. 模组初始化</h4>
+    <pre><code>/**
+ * 注册模组初始化函数。
+ * @param {...(string|function)} widgets - 初始化方法或小组件名称。
+ */
+simpleFrameworks.onInit(...widgets);
+</code></pre>
+
+    <h3>使用场景</h3>
+    <ul>
+        <li><strong>注册新模组</strong>：在游戏加载时初始化自定义功能模块。</li>
+        <li><strong>扩展内容区域</strong>：动态增加技能、小组件或自定义行为。</li>
+        <li><strong>生命周期管理</strong>：根据需求加载或卸载特定模组，确保游戏运行的灵活性。</li>
+        <li><strong>存档兼容与自动更新</strong>：<br>
+            - 在新增变量时，确保玩家的存档不会因缺少数据而报错。<br>
+            - 自动修正存档中的旧数据类型，使其与最新的模组定义保持一致。</li>
+    </ul>
+</body>
+</html>

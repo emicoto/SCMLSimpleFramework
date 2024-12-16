@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>功能实现概览</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+## 内容新增功能 - SimpleWidget与动态内容
+
+### 整体概览:
+
+`SimpleWidget.js` 是一个强大的工具库，旨在简化动态内容的创建和管理。通过它，开发者可以轻松实现以下功能：
+
+1. **内容提前注册**：将自定义内容模块化并加入到系统数据库中。
+2. **动态内容展示**：结合 Twee 编写的 Macro，实现灵活的事件触发与页面更新。
+
+另一方面，`htmlTool.js` 提供了一个接口，用于动态修改和管理页面内容。其核心功能包括：
+
+1. **页面内容调整**：在运行时动态插入、修改或替换 HTML 元素。
+2. **用户交互优化**：通过工具函数增强页面交互效果，支持复杂内容的动态加载。
+
+
+
+### Twee和Macro的编写:
+
+#### Twee 基本语法
+
+Twee 是用于编写互动叙事的轻量级脚本语言，其基本结构包括以下元素：
+
+- **Passage 标题与标签：**
+
+  ```
+  :: PassageTitle [tag]
+  <p>
+    any html or text contet
+  </p>
+  ```
+
+  - `PassageTitle`：每个 Passage 的唯一标识符。
+  - `[tag]`：可选标签，用于标记特定功能或分类。
+
+- **Widget Passage的定义格式：**
+
+  ```
+  :: YourModId_Widgets [widget]
+
+  <<widget "customWidgetName">>
+     some content
+  <</widget>>
+  ```
+
+  - `CustomWidgetName`：你的widget passage的名称。建议使用 `modIdWidgetname` 的驼峰格式（例如 `domRobinNewEvent`）。
+  - `[widget]`：表明该Passage为 Widget 注册用的passage。
+  - `<<widget "widgetname">><</widget>>`: 用于注册自定义Macro
+
+#### 命名规范与建议
+
+1. **唯一性要求：**
+
+   - `PassageTitle` 和 `Widget` 的名称必须全局唯一。
+   - 避免冲突：推荐使用 `ModId_` 前缀标识模块来源。
+
+2. **格式规范：**
+
+   - Widget 名称必须为驼峰格式。
+   - Passage 标题可以自由一些，但建议保持统一的命名规则（如 `ModId_Title`）。
+
+通过上述规范，能够最大限度地避免内容重复或冲突问题。
+
+**具体范例：**
+
+以下是几个常见的 Macro 使用示例：
+
+1. **新增地点条目：**
+
+   ```
+   <<widget "aNewLocationEntry">>
+       <h2>前往新地点</h2>
+       <<link "进入神秘森林" "MysticForest">>
+           <<run console.log('进入神秘森林')>>
+       <</link>>
+   <</widget>>
+   ```
+
+   用于添加新地点相关的描述或内容。
+
+2. **新增剧情内容：**
+
+   ```
+   <<widget "aNewStoryLineContent">>
+       <p>一段激动人心的冒险剧情。</p>
+       <<link "探索更多" "AdventurePage">>
+           <<run console.log('选择探索')>>
+       <</link>>
+       <<link "返回营地" "CampPage">>
+           <<run console.log('返回营地')>>
+       <</link>>
+   <</widget>>
+   ```
+
+   用于扩展新的剧情章节或细节。
+
+3. **扩展商店物品：**
+
+   ```
+   <<widget "someExtraShopItems">>
+      <ul>
+           <li>神秘药水 - 50金币 <<link "购买" "PurchasePotion">>
+               <<run console.log('购买药水')>>
+           <</link>></li>
+           <li>稀有武器 - 500金币 <<link "购买" "PurchaseWeapon">>
+               <<run console.log('购买武器')>>
+           <</link>></li>
+       </ul>
+   <</widget>>
+   ```
+
+   用于动态添加额外的商店物品。
+
+4. **快速道具栏：**
+
+   ```
+   <<widget "quickItemBar">>
+      <div class="item-bar">
+           <<button "使用治疗药水">><<useItem 'healthPotion'>><</button>>
+           <<button "使用魔法药水">><<seItem 'manaPotion'>><</button>>
+           <<button "装备长剑">><<equipItem 'sword'>><</button>>
+      </div>
+   <</widget>>
+   ```
+
+   为玩家提供快速使用道具的 UI 范例。
+
+**SugarCube2的事件进程:**
+
+SugarCube2 提供了丰富的事件挂钩，便于开发者在游戏运行的不同阶段插入自定义逻辑。以下是几个常用的事件挂钩：
+
+1. **prerender**
+
+   - **说明**：在 Passage 渲染之前执行代码。
+   - **用法示例**：
+     ```javascript
+     prerender.ModId_funcName = function () {
+         console.log('这是 prerender 钩子函数');
+     };
+     ```
+
+2. **postrender**
+
+   - **说明**：在 Passage 渲染完成后执行代码。
+   - **用法示例**：
+     ```javascript
+     postrender.ModId_funcName = function () {
+         console.log('这是 postrender 钩子函数');
+     };
+     ```
+
+3. **predisplay**
+
+   - **说明**：在显示 Passage 内容之前执行。
+   - **用法示例**：
+     ```javascript
+     predisplay.ModId_funcName = function () {
+         console.log('这是 predisplay 钩子函数');
+     };
+     ```
+
+4. **postdisplay**
+
+   - **说明**：在 Passage 内容显示完成后执行。
+   - **用法示例**：
+     ```javascript
+     postdisplay.ModId_funcName = function () {
+         console.log('这是 postdisplay 钩子函数');
+     };
+     ```
+
+**获取当前 Passage 信息**
+
+在挂钩函数中，可以通过 `const passage = this` 获取当前正在处理的 Passage 对象。例如：
+
+```javascript
+postdisplay.ModId_funcName = function () {
+    const passage = this;
+    console.log('当前的 Passage 标题是：', passage.title);
+};
+```
+
+**动态内容插入示例**
+
+当需要对多个 Passage 批量动态插入内容时，可以利用 `postdisplay` 钩子并通过过滤规则实现。例如：
+
+```javascript
+postdisplay.ModId_funcName = function () {
+    const passage = this;
+    if (passage.title.startsWith('Eden')) {
+        htmlTools.wiki('beforeLink', '<<edenCG>>');
+        console.log('已在', passage.title, '中添加 <<edenCG>> macro');
+    }
+};
+```
+
+
+
+## SimpleWidget窗口一览与范例
+
+SimpleWidget 提供了一系列用于自定义内容的窗口区域，以下是所有支持的窗口位置及其用途描述：
+
+### 左侧栏相关窗口
+
+1. **ModDegreesBox**：角色面板中显示主属性的区域。
+2. **ModSkillsBox**：角色面板中显示主技能的区域。
+3. **ModCharaDescription**：角色面板中的文字描述区域。
+4. **ModCaptionDescription**：左侧栏的主要描述区域。
+5. **ModCaptionAfterDescription**：左侧栏下半部分的描述区域。
+6. **ModStatusBar**：左侧栏的主要状态栏区域。
+7. **ModMenuBig**：左侧栏的大按钮区域。
+8. **ModMenuSmall**：左侧栏的小按钮区域。
+
+### 正文相关窗口
+
+1. **BeforeLinkZone**：位于正文中所有链接的前面。
+2. **ExtraLinkZone**：位于正文中离开链接的前面。
+3. **ModShopZone**：特定商店页面中的额外内容区域。
+
+### 图层与其他自定义
+
+1. **CustomImgLayer**：左侧栏图片区的额外 CSS 图层。
+
+### 系统进程相关窗口
+
+1. **iModInit**：游戏初始化进程中加载的窗口。
+2. **iModHeader**：页面顶部 Header 的自定义区域。
+3. **iModFooter**：页面底部 Footer 的自定义区域。
+4. **iModReady**：在渲染准备阶段但尚未开始 Header 渲染时。
+5. **iModDone**：页面完全渲染完成后。
+
+### 设置与状态窗口
+
+1. **iModOptions**：左侧栏 Option 选项的扩展位置。
+2. **iModSettings**：系统设置页面的扩展区域。
+3. **iModCheats**：作弊菜单的扩展区域。
+4. **iModStatus**：玩家社交状态显示区域。
+5. **iModFame**：玩家名气显示区域。
+6. **iModStatist**：游戏统计显示区域。
+7. **iModExtraStatist**：游戏额外统计的显示区域。
+
+---
+
+### 注册窗口的范例
+
+以下是如何将自定义内容注册到 SimpleWidget 的具体示例：
+
+#### 示例 1：在 ModCaptionDescription 中添加一个新的描述
+
+```javascript
+// js 文件中:
+simpleFrameworks.addto('ModCaptionDescription', {
+    passage: ['MainGame'],
+    widget: 'CustomGameDescription'
+});
+
+// twee 文件中:
+<<widget "CustomGameDescription">>
+   <p>这是一个自定义的游戏描述区域。</p>
+<</widget>>
+```
+
+#### 示例 2：在多个 Passage 的 ExtraLinkZone 中添加 Widget
+
+```javascript
+// js 文件中:
+simpleFrameworks.addto('ExtraLinkZone', {
+    passage: ['LocationA', 'LocationB', 'LocationC'],
+    widget: 'customLocationEntry'
+});
+
+// twee 文件中:
+<<widget "customLocationEntry">>
+   <div>这是一个自定义的地点入口。</div>
+   <<link "传送至桃源乡" "TaoyuanEntry">><</link>>
+<</widget>>
+```
+
+#### 示例 3：在所有除 Start Passage 外的 Header 中添加 QuickItemBar
+
+```javascript
+// js 文件中:
+simpleFrameworks.addto('iModHeader', {
+    widget: 'quickItemBar',
+    exclude: ['Start']
+});
+
+// twee 文件中:
+<<widget "quickItemBar">>
+   <div class="item-bar">
+       <button onclick="useItem('healthPotion')">使用治疗药水</button>
+       <button onclick="useItem('manaPotion')">使用魔法药水</button>
+   </div>
+<</widget>>
+```
+
+#### 示例 4：一次性将多个内容添加到指定模块 (例如 ExtraLinkZone)
+
+```javascript
+// js 文件中:
+simpleFrameworks.addto('ExtraLinkZone',
+    'widgetA',
+    {
+        widget: 'widgetB',
+        passage: ['Passage1', 'Passage2']
+    },
+    {
+        widget: 'widgetC'
+    }
+);
+
+// twee 文件中:
+<<widget "widgetA">>
+   <p>Widget A 的内容。</p>
+<</widget>>
+
+<<widget "widgetB">>
+   <p>Widget B 的内容。</p>
+<</widget>>
+
+<<widget "widgetC">>
+   <p>Widget C 的内容。</p>
+<</widget>>
+```
+
+通过上述示例，开发者可以快速将内容注册到所需的窗口位置中并动态显示。
+
+</body>
+</html>

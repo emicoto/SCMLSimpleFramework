@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DomTool.js API文档</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 0;
+            color: #2c3e50;
+        }
+        h1, h2, h3 {
+            color: #34495e;
+        }
+        pre {
+            background: #ecf0f1;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            background: #ecf0f1;
+            padding: 2px 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>DOMTool.js API 详细文档与教程</h1>
+
+    <h2>概览</h2>
+    <p><code>domTool.js</code> 是一个实用工具库，用于在基于网页的游戏或应用中操作和管理 DOM 元素。它提供了一系列方便的方法，可以动态插入、替换和追加内容，非常适合用于互动式叙事或事件驱动框架。</p>
+    
+    <hr>
+    
+    <h2>核心功能</h2>
+    
+    <h3>1. 内容插入和替换</h3>
+    
+    <ul>
+        <li><code>htmlTools.applyBeforeContent(eId, content)</code></li>
+        <p>在 <code>#passage-content</code> 元素（也就是正文文本）的开头插入内容。</p>
+        <pre><code>htmlTools.applyBeforeContent('customId', 'some html or twee content');</code></pre>
+        <ul>
+            <li><code>eId</code>：<code>string</code> 新容器 div 的 ID。留空则为默认值 patchContent</li>
+            <li><code>content</code>：<code>string</code> 要插入的html或twee文本内容。</li>
+        </ul>
+        
+        <li><code>htmlTools.applyAfterText(eId, content)</code></li>
+        <p>在主要内容的末尾（大约第一个链接之前）追加内容。</p>
+        <pre><code>htmlTools.applyAfterText('customId', 'some html or twee content');</code></pre>
+        
+        <li><code>htmlTools.applyBeforeLinks(eId, content)</code></li>
+        <p>在正文第一个链接元素之前准确地插入内容。</p>
+        <pre><code>htmlTools.applyBeforeLinks('customId', 'some html or twee content');</code></pre>
+        
+        <li><code>htmlTools.applyAfterLinks(eId, content)</code></li>
+        <p>在最后一个链接元素之后追加内容。</p>
+        <pre><code>htmlTools.applyAfterLinks('customId', 'some html or twee content');</code></pre>
+    </ul>
+    
+    <h3>2. 文本操作</h3>
+    
+    <ul>
+        <li><code>htmlTools.applyToText(text, eId, content)</code></li>
+        <p>在指定文本节点之后插入内容。</p>
+        <pre><code>htmlTools.applyToText('一些要匹配的文本', 'customId', '你要插入的具体html内容或twee文本');</code></pre>
+        <ul>
+            <li><code>text</code>：<code>string</code> 要定位的目标文本。支持多语言格式</li>
+            <li><code>eId</code>：<code>string</code> 新容器 div 的 ID。留空则为默认值 patchContent</li>
+            <li><code>content</code>：<code>string</code> 要插入的内容。</li>
+        </ul>
+        
+        <li><code>htmlTools.replaceTxt(oldtext, newtext)</code></li>
+        <p>替换节点中的指定文本内容。</p>
+        <pre><code>htmlTools.replaceTxt({EN: 'some english content for match', CN: '需要匹配的中文文本' }, 'your content');</code></pre>
+        <ul>
+            <li><code>oldtext</code>：要替换的文本。支持多语言格式</li>
+            <li><code>newtext</code>：新的内容。</li>
+        </ul>
+    </ul>
+    
+    <h3>3. 链接操作</h3>
+    
+    <ul>
+        <li><code>htmlTools.replaceLink(oldlink, newlink)</code></li>
+        <p>用新内容替换现有链接。</p>
+        <pre><code>htmlTools.replaceLink('old link text', '&lt;&lt;link linkname&gt;&gt;&lt;&lt;/link&gt;&gt;');</code></pre>
+        <ul>
+            <li><code>oldlink</code>：现有链接的文本。支持多语言格式</li>
+            <li><code>newlink</code>：替换后的内容。应该为twee格式</li>
+        </ul>
+        
+        <li><code>htmlTools.insertToLink({ pos, eId, link, content })</code></li>
+        <p>在指定链接的前后插入内容。</p>
+        <pre><code>htmlTools.insertToLink({ pos: 'before', link: {EN: 'a link name',CN: '一个链接的名称'}, content: 'some html or twee content' });</code></pre>
+        <ul>
+            <li><code>pos</code>：'before' 或 'after'。</li>
+            <li><code>eId</code>：新容器 div 的 ID。留空则为默认值 patchContent</li>
+            <li><code>link</code>：目标链接文本。支持多语言格式</li>
+            <li><code>content</code>：要插入的内容。</li>
+        </ul>
+    </ul>
+    
+    <h3>4. 通用追加和替换操作</h3>
+    
+    <ul>
+        <li><code>htmlTools.append(pos, eId, content)</code></li>
+        <p>在 <code>#passage-content</code> 的特定位置追加内容。</p>
+        <pre><code>htmlTools.append('aftermain', null, 'some extra text');</code></pre>
+        <ul>
+            <li><code>pos</code>：位置（'beforelinks'，'afterlinks'，'beforemain'，'aftermain'）。</li>
+            <li><code>eId</code>：新容器 div 的 ID。留空则为默认值 patchConten</li>
+            <li><code>content</code>：要追加的内容。</li>
+        </ul>
+        
+        <li><code>htmlTools.wiki(eId, content, replace)</code></li>
+        <p>将 <code>SugarCube</code> wiki 格式的内容处理并追加到指定 div。</p>
+        <pre><code>htmlTools.wiki('addAfterMsg', '显示的html或twee文本', true);</code></pre>
+        <ul>
+            <li><code>eId</code>：目标元素的 ID。</li>
+            <li><code>content</code>：需要显示的html或twee文本。</li>
+            <li><code>replace</code>：如果为 <code>true</code>，则替换现有内容。默认则是直接添加到对应元素内部。</li>
+        </ul>
+    </ul>
+    
+    <h3>5. 其他工具函数</h3>
+    
+    <ul>
+        <li><code>createDiv(eId)</code></li>
+        <p>创建并返回一个新的 div 元素。</p>
+        <pre><code>createDiv('myElements');</code></pre>
+        <ul>
+            <li><code>eId</code>：新 div 的 ID。</li>
+        </ul>
+        
+        <li><code>ApplyZone.instance.allElements</code></li>
+        <p>获取正文中的的所有子元素。</p>
+        <pre><code>const elments = ApplyZone.instance.allElements</code></pre>
+        
+        <li><code>ApplyZone.instance.allNodes</code></li>
+        <p>获取正文中的所有子节点（包括文本节点）。</p>
+        <pre><code>const nodes = ApplyZone.instance.allNodes</code></pre>
+
+        <li><code>isIconImg(node)</code></li>
+        <p>检查节点是否为图标元素。</p>
+        <pre><code>
+            const node = document.querySelector('.macro-link').previousElementSibling;
+            if (isIconImg(node)){
+                console.log('This is an icon element!');
+            }
+            else{
+                console.log('This is not an icon element!');
+            }
+        </code></pre>
+
+        <li><code>isMacroLink</code></li>
+        <p>检查节点是否为宏链接元素。</p>
+        <pre><code>
+            if (isMacroLink(node)){
+                console.log('This is a macro link element!');
+            }
+            else{
+                console.log('This is not a macro link element!');
+            }
+        </code></pre>
+
+        <li><code>isText</code></li>
+        <p>检查节点是否为文本节点。</p>
+        <pre><code>
+            if (isText(node)){
+                console.log('This is a text node!');
+            }
+            else{
+                console.log('This is not a text node!');
+            }
+        </code></pre>
+
+        <li><code>isInput</code></li>
+        <p>检查节点是否为输入框元素。</p>
+        <pre><code>
+            if (isInput(node)){
+                console.log('This is an input element!');
+            }
+            else{
+                console.log('This is not an input element!');
+            }
+        </code></pre>
+
+        <li><code>isInteractive</code></li>
+        <p>检查节点是否为可交互元素。</p>
+        <pre><code>
+            if (isInteractive(node)){
+                console.log('This is an interactive element!');
+            }
+            else{
+                console.log('This is not an interactive element!');
+            }
+        </code></pre>
+    </ul>
+    
+    <hr>
+    
+    <h2>常见用例</h2>
+    
+    <h3>动态插入内容</h3>
+    <pre><code>const content = '这是动态添加的内容！';
+htmlTools.append('beforelinks', 'div_extraLinks', content);</code></pre>
+    
+    <h3>替换文本</h3>
+    <pre><code>htmlTools.replaceTxt('旧文本', '新文本');</code></pre>
+    
+    <h3>在链接之前插入内容</h3>
+    <pre><code>htmlTools.insertToLink({ pos: 'before', link: '下一步', content: '&lt;&lt;button "自定义操作"&gt;&gt;&lt;&lt;/button&gt;&gt;' });</code></pre>
+    
+    <hr>
+    
+    <h2>集成技巧</h2>
+    <ol>
+        <li><strong>确保 DOM 已就绪</strong>：在 DOM 完全加载后再进行操作，以避免运行时错误。具体应该在:postApplyZone事件后执行。</li>
+        <pre><code>
+            $(document).on(':postApplyZone', function () {
+                // Your code here
+            });
+        </code></pre>
+        <li><strong>与 SugarCube 兼容</strong>：使用 <code>wiki</code> 方法集成动态的 SugarCube 内容。</li>
+        <li><strong>结合 ApplyZone</strong>：与 <code>ApplyZone</code> 搭配使用可增强内容区域的管理。</li>
+    </ol>
+    
+    <hr>
+    
+    <hr>
+    
+    <h2>调试</h2>
+    <ol>
+        <li>启用 <code>Config.debug</code> 记录内容注入过程中的详细信息。</li>
+        <li>使用浏览器开发工具检查 DOM 结构，验证内容插入点。</li>
+    </ol>
+    
+    <hr>
+    
+    <h2>API 参考</h2>
+    <p>请参阅上述核心方法和用例获取详细操作说明。</p>
+</body>
+    
+    
+</body>
+    
+
+</body>
+</html>

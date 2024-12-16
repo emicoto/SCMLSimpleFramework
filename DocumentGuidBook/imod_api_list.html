@@ -1,0 +1,170 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模组管理器API一览</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 0;
+            color: #2c3e50;
+        }
+        h1, h2, h3 {
+            color: #34495e;
+        }
+        pre {
+            background: #ecf0f1;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            background: #ecf0f1;
+            padding: 2px 4px;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>iModManager API 一览</h1>
+    <hr>
+    <h2>函数</h2>
+
+    <h3>1. iMod.setV(modId, path, value)</h3>
+    <ul>
+        <li><strong>modId</strong>：<code>string</code> 模组的识别 ID，应该与 boot.json 中的识别 ID 一致。</li>
+        <li><strong>path</strong>：<code>string</code> 变量名称或者路径，如: player; player.hp; player.mp 对应 player整个object， 或者 player: { hp, mp }</li>
+        <li><strong>value</strong>：<code>any</code> 默认值。</li>
+    </ul>
+
+    <h3>2. iMod.getV(modId, path)</h3>
+    <ul>
+        <li><strong>modId</strong>：<code>string</code> 模组的识别 ID。</li>
+        <li><strong>path</strong>：<code>string</code> 变量名称或者路径。</li>
+        <li><strong>返回值</strong>：<code>any</code> 对应变量的值。</li>
+    </ul>
+
+    <h3>3. iMod.setCf(path, value)</h3>
+    <ul>
+        <li><strong>path</strong>：<code>string</code> 配置项名称或路径。</li>
+        <li><strong>value</strong>：<code>any</code> 配置值。</li>
+    </ul>
+
+    <h3>4. iMod.getCf(path)</h3>
+    <ul>
+        <li><strong>path</strong>：<code>string</code> 配置项名称或路径。</li>
+        <li><strong>返回值</strong>：<code>any</code> 对应配置的值。</li>
+    </ul>
+
+    <h3>5. iMod.regist(modId, defaultConfig, defaultVariables)</h3>
+    <ul>
+        <li><strong>modId</strong>：<code>string</code> 模组的识别 ID。</li>
+        <li><strong>defaultConfig</strong>：<code>object</code> 默认配置对象。</li>
+        <li><strong>defaultVariables</strong>：<code>object</code> 默认变量对象。</li>
+    </ul>
+
+    <h3>6. iMod.registV(modId, variables)</h3>
+    <ul>
+        <li><strong>modId</strong>：<code>string</code> 模组的识别 ID。</li>
+        <li><strong>variables</strong>：<code>object</code> 变量对象。</li>
+    </ul>
+
+    <h3>7. iMod.gatherModV(modId, ...args)</h3>
+    <ul>
+        <li><strong>modId</strong>：<code>string</code> 模组的识别 ID。</li>
+        <li><strong>args</strong>：<code>string[]</code>变量名称列表。</li>
+        <li><strong>返回值</strong>：<code>object</code> 包含变量名和值的对象。</li>
+    </ul>
+
+    <h3>8. iMod.gatherVariable(...args)</h3>
+    <ul>
+        <li><strong>args</strong>：<code>string[]</code> 全局变量名称列表。</li>
+        <li><strong>返回值</strong>：<code>object</code> 包含变量名和值的对象。</li>
+    </ul>
+
+    <h3>9. iMod.isSafePeriod()</h3>
+    <ul>
+        <li><strong>返回值</strong>：<code>boolean</code> 当前是否为安全时段。</li>
+    </ul>
+
+    <h3>10. window.updateObj(refObj, newObj, overwrite)</h3>
+    <ul>
+        <li><strong>refObj</strong>：<code>object</code> 参考对象。</li>
+        <li><strong>newObj</strong>：<code>object</code> 新值对象。</li>
+        <li><strong>overwrite</strong>：<code>boolean</code> 是否覆盖已有值（默认为 false）。</li>
+        <li><strong>返回值</strong>：<code>object</code> 更新后的对象。</li>
+    </ul>
+
+    <h3>11. iMod.remove(modId)</h3>
+    <ul>
+        <li>modId：string 模组的识别 ID。</li>
+    </ul>
+
+    <h2>其他系统函数</h2>
+    <h3>12. iMod.init()</h3>
+    <ul>
+        <li>初始化模组管理器。</li>
+    </ul>
+    <h3>13. iMod.playZone(zone, passageTitle)</h3>
+    <ul>
+        <li><strong>zone</strong>：<code>string</code> 区块名称。</li>
+        <li><strong>passageTitle</strong>：<code>string</code> passage标题</li>
+    </ul>
+    <h3>14. iMod.state</h3>
+    <ul>
+        <li>模组管理器的状态对象。</li>
+    </ul>
+    <h3>15. iMod.state.isReady()</h3>
+    <ul>
+        <li><strong>返回值</strong>：<code>boolean</code> 模组管理器是否已准备好。</li>
+    </ul>
+    <h3>16. iMod.state.isLoading()</h3>
+    <ul>
+        <li><strong>返回值</strong>：<code>boolean</code> 模组管理器是否正在加载中。</li>
+    </ul>
+    <h3>17. iMod.state.setReady()</h3>
+    <ul>
+        <li>将模组管理器的状态设置为已准备好。</li>
+    </ul>
+    <h3>18. iMod.state.setLoading()</h3>
+    <ul>
+        <li>将模组管理器的状态设置为加载中。</li>
+    </ul>
+    <h3>19. iMod.getModList()</h3>
+    <ul>
+        <li><strong>返回值</strong>：<code>string[]</code> 包含所有已加载模组的识别 ID 的数组。</li>
+    </ul>
+    <h3>20. iMod.modData</h3>
+    <ul>
+        <li>存储所有已加载模组的数据。</li>
+    </ul>
+    <h3>21. iMod.initMods()</h3>
+    <ul>
+        <li>初始化所有已加载模组。</li>
+    </ul>
+
+    <h2>全局变量</h2>
+
+    <h3>V.iModConfigs</h3>
+    <ul>
+        <li>存储模组的全局配置。</li>
+    </ul>
+
+    <h3>V.iModVar</h3>
+    <ul>
+        <li>存储模组的所有变量。</li>
+    </ul>
+
+    <h3>Tvar或V.tvar</h3>
+    <ul>
+        <li>Tvar为shortcut，指向V.tvar。临时变量，用于模组运行时的状态管理。</li>
+    </ul>
+</body>
+</html>

@@ -1,0 +1,268 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NameNPC 类功能概述</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 0;
+            color: #2c3e50;
+        }
+        h1, h2, h3 {
+            color: #34495e;
+        }
+        pre {
+            background: #ecf0f1;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            background: #ecf0f1;
+            padding: 2px 4px;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>NameNPC 类功能概述</h1>
+
+    <h2>概览</h2>
+    <p><code>NameNPC</code> 类是简易框架中的核心模块之一，用于管理和操作 NPC 的基本信息与高级特性。它通过灵活的接口，帮助开发者快速创建具有复杂行为和状态的 NPC。</p>
+
+    <h2>构造函数</h2>
+    <pre><code>new NamedNPC(name, title, des, type)</code></pre>
+    <p><strong>参数说明：</strong></p>
+    <ul>
+        <li><strong>name</strong> (<code>string</code>)：NPC 的绝对ID。</li>
+        <li><strong>title</strong> (<code>string</code>)：NPC 的称号。支持多语言格式。</li>
+        <li><strong>des</strong> (<code>string</code>)：NPC 的描述用名称。支持多语言格式。</li>
+        <li><strong>type</strong> (<code>string</code>)：NPC 的分类（如“人类”或“精灵”）。</li>
+    </ul>
+    <p><strong>示例：</strong></p>
+    <pre><code>
+        // 用多语言对象格式创建 NPC， 适合多个语言环境。
+        const npc = new NamedNPC("Evelyn", {EN:"Businessmen", CN:"商人"}, {EN:"Evelyn",CN:"艾芙琳"}, "human");
+
+        // 用多语言array格式创建 NPC， 适合中英对照环境。
+        const npc1 = new NamedNPC("Evelyn", ["Evelyn", "商人"], ["Evelyn", "艾芙琳"], "human");
+
+        // 用单语言格式创建 NPC
+        const npc2 = new NamedNPC("Evelyn", "商人", "艾芙琳", "human");
+    </code></pre>
+
+    <h2>类属性</h2>
+    <ul>
+        <li><code>nam</code>：NPC 名称。</li>
+        <li><code>title</code>：NPC 的称号（支持多语言）。</li>
+        <li><code>description</code>：NPC 的描述。</li>
+        <li><code>type</code>：NPC 类型。</li>
+        <li><code>trust</code>、<code>love</code>、<code>dom</code> 等：情感和关系属性。</li>
+        <li><code>penis</code>、<code>vagina</code> 等：性别器官属性（用于标记性别和相关描述）。</li>
+        <li><code>clothes</code>、<code>outfits</code>：当前穿戴的衣物和预设的装束。</li>
+        <li><code>pregnancy</code>：怀孕状态的详细数据。</li>
+        <li><code>virginity</code>：纯洁状态（支持多个层面）。</li>
+    </ul>
+    <hr>
+
+    <h2>核心方法</h2>
+    <h3>1. 初始化方法</h3>
+    <ul>
+        <li><strong>Init(gender, age)</strong>：初始化 NPC 的性别和年龄。</li>
+            <ul>
+                <li>gender: (<code>string</code>)应该为 f(female/女), m(male/男) 或者 h(herm/双性)。</li>
+                <li>age: (<code>string</code>)应该为teen 或者 adult。</li>
+            </ul>
+        <li><strong>setValue(key, value)</strong>：动态设置 NPC 属性的键值。</li>
+            <ul>
+                <li>key: (<code>string</code>)属性的键。</li>
+                <li>value: (<code>any</code>)属性的值。</li>
+            </ul>
+    </ul>
+    <p>示例：</p>
+    <pre><code>
+        const npc = new NamedNPC("Evelyn", "商人", "艾芙琳", "human");
+        npc.Init("f", "adult")
+           .setValue("trust", 50)
+           .setValue("love", true);
+    </code></pre>
+
+    <hr>
+
+    <h3>2. 属性设置方法</h3>
+    <ul>
+        <li><strong>setGender(gender)</strong>：设置 NPC 性别。
+            <ul>
+                <li>gender: (<code>string</code>)应该为 "f" (female/女), "m" (male/男), 或者 "h" (herm/双性)。</li>
+            </ul>
+        </li>
+        <li><strong>setAge(age)</strong>：设置 NPC 的年龄段。
+            <ul>
+                <li>age: (<code>string</code>)应该为 "teen" 或者 "adult"。</li>
+            </ul>
+        </li>
+        <li><strong>setColour(skin, eye, hair)</strong>：设置 NPC 的外貌颜色。
+            <ul>
+                <li>skin: (<code>string</code>)NPC 的皮肤颜色。</li>
+                <li>eye: (<code>string</code>)NPC 的眼睛颜色。</li>
+                <li>hair: (<code>string</code>)NPC 的头发颜色。</li>
+            </ul>
+        </li>
+        <li><strong>setVirginity(object)</strong>：设置 NPC 的纯洁状态。
+            <ul>
+                <li>object: (<code>object</code>)包含不同层面的纯洁状态，例如 { vaginal: true, anal: false }。指定哪个key就只会修改哪个key的默认值。</li>
+            </ul>
+        </li>
+        <li><strong>setPregnancy()</strong>：初始化 NPC 的怀孕数据。</li>
+        <li><strong>setCustomPronouns(object)</strong>：设置 NPC 的自定义代词。
+            <ul>
+            <li>object: (<code>object</code>)包含自定义代词的键值对，例如 { he: "she", him: "her", his: "her" }。指定哪个key就只会修改哪个key的默认值。</li>
+            </ul>
+            <p>详细参数一览:</p>
+            <ul>
+            <li>he (string)：主格代词（如 "he" 或 "she"）。</li>
+            <li>his (string)：物主代词（如 "his" 或 "her"）。</li>
+            <li>hers (string)：物主代词所有格（如 "his" 或 "hers"）。</li>
+            <li>him (string)：宾格代词（如 "him" 或 "her"）。</li>
+            <li>himself (string)：反身代词（如 "himself" 或 "herself"）。</li>
+            <li>man (string)：男性相关称谓（如 "man" 或 "woman"）。</li>
+            <li>boy (string)：年轻男性称谓（如 "boy" 或 "girl"）。</li>
+            <li>men (string)：复数男性称谓（如 "men" 或 "women"）。</li>
+            </ul>
+        </li>
+        <li>
+            <strong>setPenis(size, des)</strong>: 设置NPC的阴茎属性。
+            <ul>
+                <li>size: (<code>number</code>)阴茎的尺寸。</li>
+                <li>des: (<code>string</code>)阴茎的描述。</li>
+            </ul>
+        </li>
+        <li>
+            <strong>setBreasts(size, des, desc)</strong>: 设置NPC的乳房属性。
+            <ul>
+                <li>size: (<code>number</code>)乳房的尺寸。</li>
+                <li>des: (<code>string</code>)乳房的描述。</li>
+                <li>desc: (<code>string</code>)乳房的描述（复数）。</li>
+            </ul>
+            <p>如果des/desc为空，会从字典中根据尺寸自动完成设置。</p>
+            <p>示例：</p>
+            <pre><code>
+                npc.setBreasts(3, "moderate breast", "moderate breasts");
+
+                npc.setBreasts(2); // 会自动设置为small breast/ small breasts
+            </code></pre>
+        </li>
+        <li><strong>setOutfits(...outfits)</strong>：设置 NPC 的预设衣服套装列表。
+            <ul>
+                <li>outfits: (<code>string[]</code>)包含预设套装的string列表。</li>
+            </ul>
+            <p>示例：</p>
+            <pre><code>
+                npc.setOutfits("casual", "formal", "swimwear");
+            </code></pre>
+        </li>
+        <li><strong>setClothes(pos, details)</strong>：设置 NPC 指定部位的穿着。
+            <ul>
+                <li>pos: (<code>string</code>)指定部位的名称。如upper, lower</li>
+                <li>details: (<code>object</code>)穿着的具体设置。</li>
+            </ul>
+            <p>示例：</p>
+            <pre><code>
+                npc.setClothes("upper", { name: "shirt", color: "red", integrity: 100 });
+                npc.setClothes("lower", { name: "pants", color: "blue", integrity: 100 });
+            </code></pre>
+        </li>
+    </ul>
+    </ul>
+
+    <h3>3. 状态管理方法</h3>
+    <ul>
+        <li><strong>isImportant()</strong>：标记 NPC 为重要角色，将会出现在NPC面板中。</li>
+        <li><strong>isSpecial()</strong>：标记 NPC 为特殊角色，除了特殊情况将处于隐藏状态（类似幽灵的特殊处理）。目前似乎没有特别的效果……</li>
+    </ul>
+
+    <h3>4. 公共管理方法</h3>
+    <ul>
+        <li><strong>NamedNPC.add(npcObject)</strong>：将新的 NPC 对象添加到全局管理中。</li>
+        <li><strong>NamedNPC.get(npcId)</strong>：根据 ID 获取对应的 NPC 对象。</li>
+        <li><strong>NamedNPC.has(npcId)</strong>：检查指定 ID 的 NPC 是否已存在，不存在则返回-1， 存在则返回对应的index数值。</li>
+    </ul>
+
+    <h2>添加新NPC以及综合示例</h2>
+    <pre><code>
+        NamedNPC.add( new NamedNPC("Evelyn", "商人", "艾芙琳", "human")
+            .Init("f", "adult")
+            .setColour("white", "blue", "black")
+            .setVirginity({ vaginal: true, anal: false })
+            .setPregnancy()
+            .setCustomPronouns({ he: "she", him: "her", his: "her" })
+            .setOutfits("casual", "formal", "swimwear")
+            .setClothes("upper", { name: "shirt", color: "red", integrity: 100 })
+            .setClothes("lower", { name: "pants", color: "blue", integrity: 100 })
+            .isImportant()
+        );
+    </code></pre>
+    <hr>
+    <p><code>NamedNPC.add</code>可以同时添加多个角色。另外各种函数只有希望在游戏初始化前设置时才需要使用。
+        在游戏开始后，游戏进程会自动完成各个初始化设定。所以很多时候你可能只需要最简单的写法。</p>
+    <pre><code></code>
+        NamedNPC.add( 
+            new NamedNPC("Evelyn", "商人", "艾芙琳", "human"),
+            new NamedNPC("Alice", "学生", "爱丽丝", "human"),
+            new NamedNPC("Luna", "魔法师", "露娜", "human")
+        );
+    </code></pre>
+    <hr>
+
+    <h3>5. NPC相关额外设置</h3>
+    <p>如果你需要对NPC某些特殊设置进行更仔细的设定，可以在js脚本中建立对应的对象，添加到setup.ModNpcSetting中。</p>
+    <pre><code>
+        // 总之先建立一个对象
+        let myNPC = {
+            Evelyn: {
+                love: { maxValue: 30 }, // 设置love变量的最大值
+                trust: { name: "Confidence", activeIcon: "img/ui/confidence.png", color: "blue" }, // 设置trust变量的显示名称、图标和颜色,
+                dom: { displayname: {CN: "关心", EN:"Concern"}, requirements : () => C.npc.Evelyn.dom > 50 }, // 设置dom变量的多语言显示名称，以及是否显示在UI中的判断条件
+                important: () => C.npc.Evelyn.trust > 50, // 设置Evelyn是否重要的判断条件，也可以单纯地设置为true,
+                loveInterest: ()=> C.npc.Evelyn.love > 50, // 设置Evelyn是否可以作为恋人出现在选项中的判断条件，也可以单纯地设置为true,
+            }
+        }
+
+        // 基本上是需要设置哪个属性就设置哪个属性，不需要的就不设置。所以有时候你可能只需要一个简单的对象。
+        let myNPC = {
+            Evelyn: {
+                love: { maxValue: 30, displayname: {CN: "好感", EN:"Love"} },
+            }
+        }
+
+        // 大部分设置都可以作为函数来设置，方便游戏里根据情况动态调整。
+        let myNPC = {
+            Evelyn: {
+                trust: { maxValue: ()=> { 
+                     if (V.npc.Evelyn.isBestFriend) { 
+                        return 100; 
+                    }
+                     else { 
+                        return 50; 
+                    }
+                 }}
+            }
+        }
+
+        // 最后记得把设置好的对象添加到setup.ModNpcSetting中
+        Object.assign(setup.ModNpcSetting, myNPC);
+    </code></pre>
+    
+</body>
+</html>

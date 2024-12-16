@@ -10,24 +10,28 @@
 const iMod = (() => {
     'use strict';
 
-    function _setConfig(prop, value) {
-        V.iModConfigs[prop] = value;
+    function _setConfig(path, value) {
+        setPath(V.iModConfigs, path, value);
     }
 
-    function _getConfig(prop) {
-        return V.iModConfigs[prop];
+    function _getConfig(path) {
+        return getPath(V.iModConfigs, path);
     }
 
-    function _setV(modId, prop, value) {
+    function _setV(modId, path, value) {
         if (!V.iModVar[modId]) {
             V.iModVar[modId] = {};
         }
 
-        V.iModVar[modId][prop] = value;
+        setPath(V.iModVar[modId], path, value);
     }
 
-    function _getV(modId, prop) {
-        return V.iModVar[modId] && prop ? V.iModVar[modId][prop] : V.iModVar[modId];
+    function _getV(modId, path) {
+        if (!V.iModVar[modId]) {
+            V.iModVar[modId] = {};
+        }
+
+        return V.iModVar[modId] && path ? getPath(V.iModVar[modId], path) : V.iModVar[modId];
     }
 
     /**
@@ -44,9 +48,10 @@ const iMod = (() => {
             // 如果 newObj[key] 有效并且类型与 refObj[key] 相同
             if (isValid(newObj[key]) && typeof newObj[key] === typeof refObj[key]) {
                 if (Array.isArray(refObj[key])) {
-                    // 如果是数组并且长度不同而且不覆盖
+                    // 如果是数组并且长度不同而且不覆盖，则会合并数组并去重
                     if (newObj[key].length !== refObj[key].length && overwrite === false) {
-                        data[key] = clone(refObj[key]);
+                        const arr = clone(refObj[key].concat(newObj[key]));
+                        data[key] = [...new Set(arr)];
                     }
                     else {
                         data[key] = clone(newObj[key]);
@@ -97,7 +102,7 @@ const iMod = (() => {
     function _gatherVariable(...args) {
         const obj = {};
         for (const arg of args) {
-            obj[arg] = V[arg];
+            setPath(obj, arg, getPath(V, arg));
         }
         return obj;
     }
@@ -138,17 +143,27 @@ const iMod = (() => {
         }
     }
 
-    function _playZone(zone, passageTItle) {
+    function _playZone(zone, passageTitle) {
         const data = simpleFrameworks.data[zone];
         console.log('[SFDebug] checkzone:', zone, data);
 
         if (!data) return '';
         if (data.length == 0) return '';
 
-        const title = passageTItle ?? V.passage;
+        const title = passageTitle ?? V.passage;
         const html = data.reduce((result, widgets) => {
             if (String(widgets) == '[object Object]') {
                 if (
+                    typeof widgets.exclude == 'string' && widgets.exclude !== title ||
+                    Array.isArray(widgets.exclude) && !widgets.exclude.includes(title)
+                ) {
+                    result += `<<${widgets.widget}>>`;
+                }
+                // if has match and is regex
+                else if (widgets.match && widgets.match instanceof RegExp && widgets.match.test(title)) {
+                    result += `<<${widgets.widget}>>`;
+                }
+                else if (
                     typeof widgets.passage == 'string' && widgets.passage == title ||
                     Array.isArray(widgets.passage) && widgets.passage.includes(title) ||
                     typeof widgets.passage == 'undefined' ||
@@ -156,7 +171,7 @@ const iMod = (() => {
                 ) {
                     result += `<<${widgets.widget}>>`;
                 }
-                else if (typeof widgets == 'string') {
+                else if (typeof widgets.widget == 'string') {
                     result += `<<${widgets.widget}>>`;
                 }
 
@@ -249,6 +264,9 @@ const iMod = (() => {
     return Object.freeze({
         get state() {
             return _state;
+        },
+        get modData() {
+            return _modData;
         },
 
         init  : _init,

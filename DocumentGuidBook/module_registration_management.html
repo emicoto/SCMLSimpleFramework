@@ -1,0 +1,221 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模组注册与管理接口</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 0;
+            color: #2c3e50;
+        }
+        h1, h2, h3 {
+            color: #34495e;
+        }
+        pre {
+            background: #ecf0f1;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            background: #ecf0f1;
+            padding: 2px 4px;
+        }
+        ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>模组注册与管理接口</h1>
+
+    <h2>功能概述</h2>
+    <p>模组注册与管理功能是框架的核心部分，支持开发者动态注册模组、管理配置和变量，并通过各种接口简化模组生命周期中的操作。</p>
+
+    <h2>核心接口与说明</h2>
+
+    <h3>1. setV 和 getV</h3>
+    <p>用于设置和获取模组的变量。与直接操作<code>V.iModVar</code>的方式相比，这种方法提供了更好的集成管理，确保了变量的自动初始化、版本兼容性和一致性管理。它还能在模组版本更新时轻松引入新变量或修改现有变量。</p>
+
+    <pre><code>/**
+    * 设置模组变量。
+    * @param {string} modId - 模组的唯一标识符。
+    * @param {string} path - 变量路径。
+    * @param {*} value - 变量值。
+    */
+    iMod.setV(modId, path, value);
+
+    /**
+    * 获取模组变量。
+    * @param {string} modId - 模组的唯一标识符。
+    * @param {string} prop - 变量路径。
+    * @returns {*} 返回变量的值。
+    */
+    iMod.getV(modId, path);
+    </code></pre>
+
+    <p><strong>示例：</strong></p>
+    <pre><code>
+    iMod.setV("customMod", "level", 5);
+    console.log(iMod.getV("customMod", "level")); // 输出: 5
+
+    // 也可以直接设置对象路径
+    iMod.setV("customMod", "player.hp", 100);
+    // 当获取customMod时的实际对象为 { level: 5, player: { hp: 100 } }
+
+    console.log(iMod.getV("customMod", "player.hp")); // 输出: 100
+    </code></pre>
+<hr>
+
+    <h3>2. setCf 和 getCf</h3>
+    <p>用于设置和获取模组的配置项。同样，这种方法比直接进行变量操作更安全，且有效确保变量的初始化、版本兼容性和一致管理。</p>
+
+    <pre><code>/**
+    * 设置模组配置。
+    * @param {string} path - 配置项路径，应该包含模组的唯一标识符。
+    * @param {*} value - 配置值。
+    */
+    iMod.setCf(path, value);
+
+    /**
+    * 获取模组配置。
+    * @param {string} path - 配置项路径，应该包含模组的唯一标识符。
+    * @returns {*} 返回配置项的值。
+    */
+    iMod.getCf(prop);
+    </code></pre>
+
+    <p><strong>示例：</strong></p>
+    <pre><code>
+    iMod.setCf("language", "EN");
+    console.log(iMod.getCf("language")); // 输出: EN
+
+    // 也可以直接设置对象路径
+    iMod.setCf("customMod.disableEncount", true);
+    // 当获取customMod时的实际对象为 { disableEncount: true }
+    console.log(iMod.getCf("customMod.disableEncount")); // 输出: true
+    </code></pre>
+
+<hr>
+
+    <h3>3. regist 和 registV</h3>
+    <p>注册模组的核心接口，用于初始化模组的配置和变量。</p>
+    <p><strong>区别</strong>：</p>
+    <ul>
+        <li>regist：适用于模组的初始化和完整注册，提供默认配置和变量的初始化。代码可以直接在js脚本中释放。在这里注册的变量会在游戏完成初始化时被模组系统统一初始化并添加进游戏中，确保模组能安全完成初始化，并不受游戏原版干扰。</li>
+        <li>registV：适用于游戏进程运行时动态补充变量。代码需要被函数包裹后，在游戏特定进程中释放。</li>
+    </ul>
+
+    <pre><code>/**
+    * 注册模组。
+    * @param {string} modId - 模组的唯一标识符。
+    * @param {object} defaultConfig - 默认配置对象。
+    * @param {object} defaultVariables - 默认变量对象。
+    */
+    iMod.regist(modId, defaultConfig = {}, defaultVariables = {});
+
+    /**
+    * 直接向存储中注册变量。
+    * @param {string} modId - 模组的唯一标识符。
+    * @param {object} variables - 变量对象。
+    */
+    iMod.registV(modId, variables);
+    </code></pre>
+<hr>
+
+    <h3>4. gatherModV 和 gatherVariable</h3>
+    <p>批量获取模组变量或全局变量，这些方法非常适合模组内部逻辑管理或在不同模组之间共享数据时使用。例如：</p>
+    <ul>
+        <li>模组更新：一次性检查和同步多个关键变量。</li>
+        
+        <li>模组交互：在不同模组之间传递和共享数据。</li>
+        
+        <li>路径指针: gatherVariable甚至可以直接输入全局变量的具体路径，直接获得路径内的值</li>
+    </ul>
+    <pre><code>/**
+    * 批量获取模组变量。
+    * @param {string} modId - 模组的唯一标识符。
+    * @param {...string} args - 要获取的变量名列表。
+    * @returns {object} 包含变量名和值的对象。
+    */
+    iMod.gatherModV(modId, ...args);
+
+    /**
+    * 批量获取全局变量。
+    * @param {...string} args - 要获取的全局变量名列表。
+    * @returns {object} 包含变量名和值的对象。
+    */
+    iMod.gatherVariable(...args);
+    </code></pre>
+
+    <p><strong>示例：</strong></p>
+    <pre><code>
+    iMod.regist("customMod", {}, { hp: 100, mp: 50 });
+    console.log(iMod.gatherModV("customMod", "hp", "mp")); // 输出: { hp: 100, mp: 50 }
+
+    // 根据路径获取值
+    V.someObj = { subObj: { ap: 51, bp: 66 } a: 1, b: 'test' };
+    console.log(iMod.gatherVariable("someObj.subObj.ap", "someObj.b"));
+    // 输出: { someObj: { subObj: { ap: 51 }, b: 'test' } }
+    </code></pre>
+
+    <h3>5. isSafePeriod</h3>
+    <p>判断当前是否处于安全时段（非战斗和原版事件状态）。</p>
+    <pre><code>
+    /**
+    * 检查当前是否为安全时段。
+    * @returns {boolean} 如果当前为安全时段，则返回 true。
+    */
+    iMod.isSafePeriod();
+
+    // 示例
+    if (iMod.isSafePeriod()) {
+        console.log("当前为安全时段，可以执行操作。");
+    }
+    </code></pre>
+
+    <h3>6. updateObj</h3>
+    <p>深度合并两个对象，支持递归更新。</p>
+    <pre><code>/**
+    * 更新两个对象的值。
+    * @param {object} refObj - 参考对象。
+    * @param {object} newObj - 新值对象。
+    * @param {boolean} overwrite - 是否覆盖已有值。
+    * @returns {object} 更新后的对象。
+    */
+    window.updateObj(refObj, newObj, overwrite = false);
+    </code></pre>
+
+    <p><strong>示例：</strong></p>
+    <pre><code>
+    const baseConfig = { hp: 100, skills: ["attack"] };
+    const newConfig = { mp: 50, skills: ["defend"] };
+    const updated = window.updateObj(baseConfig, newConfig, true);
+    console.log(updated); // 输出: { hp: 100, mp: 50, skills: ["defend"] }
+
+    // 如果覆盖设置为false，数组的情况会合并且去重
+    const updated2 = window.updateObj(baseConfig, newConfig, false);
+    console.log(updated2); // 输出: { hp: 100, mp: 50, skills: ["attack", "defend"] }
+    </code></pre>
+
+    <p>使用场景</p>
+
+    <li>模组初始化：动态合并默认配置与用户自定义配置。</li>
+
+    <li>模组更新：在游戏版本更新时，安全地引入新特性并保持旧数据。</li>
+
+    <li>复杂对象管理：如场景、事件或多层配置的动态更新。</li>
+
+    <hr>
+    <p><strong>小结</strong></p>
+
+    <p>通过以上接口，开发者可以轻松管理模组变量和配置，实现动态内容扩展和高效的模块化开发。这些接口的设计简洁而强大，支持灵活的定制需求。</p>
+
+</body>
+</html>

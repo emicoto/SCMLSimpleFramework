@@ -104,3 +104,12 @@ simpleFrameworks.addto('iModHeader', {
 - [Simple Frameworks Manual](https://github.com/emicoto/DOLMods/blob/main/Simple%20Frameworks/README.md)
 
 SCMLSimpleFramework enhances the efficiency of game expansion mod development, enriching the game's content and diversity.
+
+## Install Mods
+需要ModLoader 2.10版++ 中文版需要汉化MOD。
+
+Install to game need Modloader version 2.10+
+
+ModLoader ：https://github.com/Lyoko-Jeremie/DoLModLoaderBuild/releases
+
+汉化 指路：https://github.com/Eltirosto/Degrees-of-Lewdity-Chinese-Localization

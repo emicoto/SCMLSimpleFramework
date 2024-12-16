@@ -138,6 +138,7 @@ const NamedNPC = (() => {
             this.strapons = '';
             this.sextoys = {};
             this.state = 'active';
+            this.flags = {};
         }
 
         /**
@@ -442,6 +443,11 @@ const NamedNPC = (() => {
             }
             else {
                 npc.displayname = lanSwitch(npc.displayname_lan);
+            }
+
+            // if flags object not defined, set to empty object
+            if (npc.flags == undefined) {
+                npc.flags = {};
             }
         });
     }

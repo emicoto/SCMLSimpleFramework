@@ -318,7 +318,7 @@ const htmlTools = (() => {
                 element = links[i];
                 break;
             }
-        }
+        }g
         if (!element) return;
 
         const eID = options.eId ?? 'patchContent';
@@ -354,8 +354,8 @@ const htmlTools = (() => {
         applyToTxt   : _applyToText,
         replaceTxt   : _replaceText,
 
-        applyAfterText     : _applyAfterText,
         applyBeforeContent : _applyBeforeContent,
+        applyAfterText     : _applyAfterText,
         applyBeforeLinks   : _applyBeforeLinks,
         applyAfterLinks    : _applyAfterLinks,
         applyBeforeElment  : _applyBeforeElment,

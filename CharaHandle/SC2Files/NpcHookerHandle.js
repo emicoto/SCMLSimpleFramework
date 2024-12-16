@@ -1,4 +1,3 @@
-setup.addNPCList = [];
 setup.ModNpcSetting = {};
 setup.ModNpcImportant = [];
 setup.ModNpcSpecial = [];
