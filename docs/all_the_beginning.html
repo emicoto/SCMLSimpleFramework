@@ -4,16 +4,37 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MOD 新手指南</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
 </head>
 <body>
     <h1>从零开始制作你的 MOD 项目</h1>
 
-    <section id="setup-tools">
+    <div id="setup-tools">
         <h2>1. 下载必要的工具</h2>
         <p>首先，下载并安装一个代码编辑器。我们推荐使用<a href="https://code.visualstudio.com/">Visual Studio Code</a>，它功能强大且适合初学者。</p>
-    </section>
+    </div>
 
-    <section id="create-project">
+    <div id="create-project">
         <h2>2. 创建项目文件夹</h2>
         <p>通过创建一个专用项目文件夹来组织你的 MOD 文件：</p>
         <ol>
@@ -25,16 +46,16 @@
                 </ul>
             </li>
         </ol>
-    </section>
+    </div>
 
-    <section id="open-folder">
+    <div id="open-folder">
         <h2>3. 在 Visual Studio Code 中打开项目文件夹</h2>
         <p>
             打开 Visual Studio Code，使用<strong>文件 > 打开文件夹</strong>选项，选择你的项目文件夹。这样可以方便地管理文件夹中的所有文件。
         </p>
-    </section>
+    </div>
 
-    <section id="create-files">
+    <div id="create-files">
         <h2>4. 创建核心 MOD 文件</h2>
         <p>
             在 <code>script</code> 文件夹内，新建一个名为 <code>modscript.js</code> 的文件。该文件将包含你的 MOD 的 JavaScript 代码。
@@ -42,9 +63,9 @@
         <p>
             在 <code>twee</code> 文件夹内，新建一个名为 <code>modcontent.twee</code> 的文件。该文件将包含你的 MOD 的 SugarCube 内容和结构。
         </p>
-    </section>
+    </div>
 
-    <section id="basic-js">
+    <div id="basic-js">
         <h2>5. 学习基础 JavaScript 语法</h2>
         <p>以下是一些你将会用到的基础 JavaScript 语法示例：</p>
         <pre><code>// 这是一个注释
@@ -59,9 +80,9 @@
         // 调用该函数
         greetPlayer(playerName);
         </code></pre>
-    </section>
+    </div>
 
-    <section id="sugarcube-intro">
+    <div id="sugarcube-intro">
         <h2>6. 了解 SugarCube Twee 语法</h2>
         <p>
             SugarCube Twee 语法用于创建交互式故事的段落和结构。以下是一些基本语法示例：
@@ -78,9 +99,9 @@
         <p>
             保存更改后，可以使用 Twee 编译器或类似 <a href="https://twinery.org/">Twine</a> 的工具运行故事。
         </p>
-    </section>
+    </div>
 
-    <section id="next-steps">
+    <div id="next-steps">
         <h2>7. 下一步</h2>
         <p>
             - 探索更多高级 JavaScript 功能。<br>
@@ -88,6 +109,6 @@
             - 参考 Simple Framework 文档，添加事件和自定义 UI 元素。
             - 使用MOD工具 <a href="https://github.com/Muromi-Rikka/DoLModRspackExampleTS">ModPacker</a>，自动打包与构建boot.json
         </p>
-    </section>
+    </div>
 </body>
 </html>
