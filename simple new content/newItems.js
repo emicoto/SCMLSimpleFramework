@@ -92,7 +92,7 @@ Items.addRecipes(recipe);
 
 // define an array to setup your tattoos.
 // almost same as vanilla, but you can skip some keys. skipped key will set to default var
-const newTatoos = [
+let myTattoos = [
     {
         key     : 'two_hundred_pound_whore',
         name    : '£200',

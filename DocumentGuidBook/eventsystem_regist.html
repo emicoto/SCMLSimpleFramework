@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>事件系统 - 注册流程与解说</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 0;
+            color: #2c3e50;
+        }
+        h1, h2, h3 {
+            color: #34495e;
+        }
+        pre {
+            background: #ecf0f1;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            background: #ecf0f1;
+            padding: 2px 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>简易框架事件系统 - 事件注册</h1>
+
+    <p>事件系统是框架的核心功能之一，它允许MOD开发者根据自定义条件和场景实现动态事件。</p>
+    
+    <h2>什么是事件注册？</h2>
+    
+    <p>事件注册是将事件信息存储到框架的事件数据系统中，以便在需要时触发。</p>
+    
+    <p>通过注册，开发者可以定义事件的触发条件、优先级、动作、以及相关的其他元信息。</p>
+    
+    <h3>为什么要注册事件？</h3>
+    
+    <p>事件注册让MOD开发者能够：</p>
+    
+    <ul>
+        <li>为游戏添加动态行为。</li>
+        <li>根据特定条件触发事件，提高可交互性。</li>
+        <li>将复杂的逻辑分离为可独立管理的模块。</li>
+    </ul>
+    
+    <h2>基本概念</h2>
+    
+    <p>事件注册通常分为以下几个步骤：</p>
+    
+    <ol>
+        <li><strong>定义事件类型</strong>：例如场景事件（scene）、条件事件（condition）。</li>
+        <li><strong>指定事件ID</strong>：每个事件需有唯一的标识符（ID）。</li>
+        <li><strong>设置触发条件</strong>：定义触发该事件的规则。</li>
+        <li><strong>定义动作（Action）</strong>：事件触发后执行的操作。</li>
+        <li><strong>配置其他属性</strong>：如优先级、退出逻辑等。</li>
+    </ol>
+    
+    <p>要注意的事，场景系列的系列Id应该跟你再twee中编写的舞台Id一致。</p>
+    
+    <p>例如：</p>
+    
+    <pre><code>
+    :: Stage CustomLocationId [scene]
+    &lt;&lt;effects&gt;&gt;
+    &lt;div id="locationDescription"&gt;
+    &lt;&lt;if $phase is 0 and iEvent.state.isRunning() is false&gt;&gt;
+            这是未触发事件时的地点通用描述。
+        &lt;&lt;else&gt;&gt;
+            事件运行时显示的内容。
+        &lt;&lt;/if&gt;&gt;
+    &lt;/div&gt;
+    &lt;div id="eventcontent"&gt;
+        &lt;!-- 如果你的地点需要一个通用街头事件，比如晕倒在街头、在街头露出的事件 --&gt;
+        &lt;&lt;if iEvent.generalStreetEvent().length > 1&gt;&gt;
+            &lt;&lt;=iEvent.generalStreetEvent()&gt;&gt;
+        &lt;&lt;elseif $tvar.eventTitle&gt;&gt;
+            &lt;!-- 如果事件系统中注册了地点事件，触发时会显示这里 --&gt;
+            &lt;&lt;include $tvar.eventTitle&gt;&gt;
+        &lt;&lt;else&gt;&gt;
+            &lt;!-- 一个默认的场景 --&gt;
+            &lt;&lt;include "defaultScenePassageTitleByYourOwn"&gt;&gt;
+        &lt;&lt;/if&gt;&gt;
+    &lt;/div&gt;
+    </code></pre>
+    
+    <p>这样在twee文件定义了一个 id为CustomLocationId的Stage（舞台)。</p>
+    
+    <p>CustomLocationId 可以替换为任意你需要的名称，如 ChinaTown。</p>
+    
+    <p>注意不能有多余空格，必须将地点名称合并为一个词条。</p>
+    
+    <p>之后，在事件系统中注册好的场景Scene就会根据条件显示在eventcontent的位置。</p>
+    
+    <h2>EventSeries 和 ConditionSeries 的不同之处</h2>
+    
+    <p>虽然 EventSeries 和 ConditionSeries 都是从相同的类扩展出来的，但它们的设计意图和使用方式有一定的差异。</p>
+    
+    <ol>
+        <li><strong>EventSeries</strong>：</li>
+    
+           <ul>
+               <li><strong>主要用于具体场景事件</strong>：EventSeries 的设计目标是与游戏中的具体场景绑定。每个 EventSeries 通常与一个特定的舞台（Passage）相关联，必须在 twee 文件中定义。</li>
+               <li><strong>运行模式</strong>：
+                 <ul>
+                     <li>如果 SceneData 的类型为 <code>event</code>，且未指定舞台，则事件会在 <code>SFEventLoop</code>（通用事件舞台）中运行。</li>
+                     <li>如果类型为 <code>scene</code>，则：
+                       <ul>
+                           <li>未指定舞台时，事件会在系列对应的舞台直接显示。</li>
+                           <li>指定舞台时，事件会跳转到该舞台运行。</li>
+                       </ul>
+                     </li>
+                 </ul>
+               </li>
+               <li><strong>交互影响</strong>：
+                 <ul>
+                     <li><code>scene</code> 模式不会影响当前地点的其他交互。</li>
+                     <li><code>event</code> 模式则会限制交互，仅保留与事件相关的选项。</li>
+                 </ul>
+               </li>
+           </ul>
+    
+        <li><strong>ConditionSeries</strong>：</li>
+    
+           <ul>
+               <li><strong>更倾向于传统事件系统</strong>：ConditionSeries 通常用于在任意时间点触发的事件，而不绑定到特定的场景。</li>
+               <li><strong>触发机制</strong>：当玩家进行任意有时间经过的操作时，会根据触发条件判断是否跳转到：
+                 <ul>
+                     <li>指定的舞台（Passage）。</li>
+                     <li>指定的页面。</li>
+                     <li>如果没有指定，则会运行在 <code>SFEventLoop</code> 中。</li>
+                 </ul>
+               </li>
+               <li><strong>默认类型</strong>：ConditionSeries 的事件类型默认为 <code>event</code>。</li>
+           </ul>
+    
+    </ol>
+    
+    <h2>PlayOptions 和 Trigger 的详解</h2>
+    
+    <h3>PlayOptions</h3>
+    <p>PlayOptions 用于定义事件的执行模式以及如何选择舞台或页面：</p>
+    
+    <ol>
+        <li><strong>跳转与否</strong>：
+           <ul>
+               <li>如果设置了playoptions,就可以指定 <code>stage</code> 或者 <code>passage</code>，事件触发时将会跳转到对应的舞台或页面。</li>
+               <li>如果没有设置playoption，默认会根据SceneData的类型走，如scene为镶嵌型，event是跳转型。</li>
+           </ul>
+        </li>
+   
+        <li><strong>设置舞台</strong>：
+           <ul>
+               <li>当 <code>type</code> 为 <code>scene</code> 时，未指定的情况下会优先使用系列默认的舞台。</li>
+               <li>当 <code>type</code> 为 <code>event</code> 时，默认会运行在通用舞台 <code>SFEventLoop</code>。</li>
+           </ul>
+        </li>
+    </ol>
+    
+    <p>示例：</p>
+    <pre><code>
+    sceneData.PlayOptions({
+        type: 'event', // 指定类型为场景
+        stage: 'Stage CustomLocation', // 跳转到自定义地点执行事件
+    });
+    </code></pre>
+    
+    <h3>Trigger</h3>
+    <p>Trigger 定义了事件的触发条件。支持以下几种触发类型和参数：</p>
+    
+    <ol>
+        <li><strong>passage 类型</strong>：
+           <ul>
+               <li>参数：<code>{ passage: 'passage Title' }</code>。</li>
+               <li>说明：当玩家进入指定的 Passage 时触发。</li>
+           </ul>
+        </li>
+    
+        <li><strong>passageIsnot 类型</strong>：
+           <ul>
+               <li>参数：<code>{ passageIsnot: 'passage Title' }</code>。</li>
+               <li>说明：当玩家进入的页面不是指定的 Passage 时触发。</li>
+           </ul>
+        </li>
+    
+        <li><strong>prevPassage 类型</strong>：
+           <ul>
+               <li>参数：<code>{ prevPassageIs: 'previous passage title' }</code>。</li>
+               <li>说明：当上一个页面是指定 Passage 时触发。</li>
+           </ul>
+        </li>
+    
+        <li><strong>prevPassageIsnot 类型</strong>：
+           <ul>
+               <li>参数：<code>{ prevPassageIsnot: 'previous passage title' }</code>。</li>
+               <li>说明：当上一个页面不是指定 Passage 时触发。</li>
+           </ul>
+        </li>
+    
+        <li><strong>location 类型</strong>：
+           <ul>
+               <li>参数：<code>{ location: ['chinatown', 'market'] }</code>。</li>
+               <li>说明：当玩家所在位置匹配列表中的任意一个时触发。</li>
+           </ul>
+        </li>
+    
+        <li><strong>match 类型</strong>：
+           <ul>
+               <li>参数：<code>{ match: /[a-zA-Z]+ Street$/ }</code>。</li>
+               <li>说明：使用正则表达式匹配页面标题。</li>
+           </ul>
+        </li>
+    
+        <li><strong>回调函数</strong>：
+           <ul>
+               <li>参数：一个返回布尔值的函数，例如：
+                 <pre><code>flags => flags.hasCompletedMission &amp;&amp; random(100) &gt; 50</code></pre>
+               </li>
+               <li>说明：可以根据动态条件决定是否触发。</li>
+           </ul>
+        </li>
+    </ol>
+    
+    <p>示例：</p>
+    <pre><code>new SceneData('RandomEvent', 'event')
+    .Trigger('location', { location: ['market'] }, flags => flags.debug)
+    .Action('end', '&lt;&lt;set $eventComplete to true&gt;&gt;');
+</code></pre>
+    
+    <h2>示例代码</h2>
+    
+    <p>以下是一个简单的事件注册示例代码，包含了两个场景事件和一个条件事件。</p>
+    
+    <pre><code>// 注册场景事件
+const sceneSeries = new EventSeries('ChinaTown').Flag('chinatown');
+sceneSeries.add(
+    // 第一个事件
+    new SceneData('Intro', 'event')
+        .set({
+            maxPhase: 2, // 最大阶段
+            exit: 'Stage Chinatown', // 退出点
+            priority: 1000 // 优先级
+        })
+        .Trigger('scene', { prevPassageIsnot: 'Stage Chinatown' }, flags =&gt; !flags.intro)
+        .Action('end', '&lt;&lt;run iEvent.setFlag("chinatown", "intro", 1)&gt;&gt;'),
+
+    // 第二个事件
+    new SceneData('Random_Vendor', 'event')
+        .Trigger('location', { location: ['chinatown'], prevPassageIs: 'Stage Chinatown' }, flags =&gt; flags.debug == 'vendor' &amp;&amp; between(Time.hour, 6, 21))
+        .Action('init', '&lt;&lt;set $tvar.onselect to true>>&lt;&lt;generateRole 0 0 "vendor">>&lt;&lt;person1>>')
+        .Action('end', '&lt;&lt;set $eventskip to 1>>')
+);
+
+// 获取默认类别然后注册条件事件
+const conditionSeries = iEvent.data.get('condition', 'common');
+conditionSeries.add(
+    new SceneData('Chinatown RandomRumors', 'event')
+        .Flags('chinatown')
+        .Trigger('match', { match: /[a-zA-Z]+ Street$|Park$/ }, flags =&gt; flags.intro === undefined &amp;&amp; V.location == 'town' &amp;&amp; random(100) &lt; 30 &amp;&amp; Time.days &gt; 2 &amp;&amp; flags.rumorstoday &lt; 2)
+);
+</code></pre>
+    
+    <h3>代码详解</h3>
+    
+    <ol>
+        <li><strong>定义事件系列</strong>：
+    
+           <pre><code>const sceneSeries = new EventSeries('ChinaTown').Flag('chinatown');
+</code></pre>
+    
+           <p>创建一个名为<code>ChinaTown</code>的事件系列，设置了一个标志<code>chinatown</code>。</p>
+    
+        </li>
+    
+        <li><strong>注册场景事件</strong>：
+    
+           <pre><code>sceneSeries.add(
+   new SceneData('Intro', 'event')
+       .set({ maxPhase: 2, exit: 'Stage Chinatown', priority: 1000 })
+       .Trigger('scene', { prevPassageIsnot: 'Stage Chinatown' }, flags =&gt; !flags.intro)
+       .Action('end', '<<run iEvent.setFlag("chinatown", "intro", 1)>>')
+);
+</code></pre>
+    
+           <ul>
+               <li><code>Intro</code>是事件ID，事件类型为<code>event</code>。</li>
+               <li><code>Trigger</code>定义了触发条件：<code>prevPassageIsnot</code>表示前一个页面不是<code>Stage Chinatown</code>。</li>
+               <li><code>Action</code>表示当事件结束时，设置<code>chinatown</code>的<code>intro</code>标志为1。</li>
+           </ul>
+    
+        </li>
+    
+        <li><strong>注册条件事件</strong>：
+    
+           <pre><code>conditionSeries.add(
+   new SceneData('Chinatown RandomRumors', 'event')
+       .Flags('chinatown')
+       .Trigger('match', { match: /[a-zA-Z]+ Street$|Park$/ }, flags =&gt; flags.intro === undefined &amp;&amp; V.location == 'town' &amp;&amp; random(100) &lt; 30 &amp;&amp; Time.days &gt; 2 &amp;&amp; flags.rumorstoday &lt; 2)
+);
+</code></pre>
+    
+           <ul>
+               <li>使用正则表达式匹配页面名称，如<code>Street</code>或<code>Park</code>。</li>
+               <li>添加复杂的触发条件，例如随机触发概率、时间限制等。</li>
+           </ul>
+    
+        </li>
+    </ol>
+    <h2>事件注册的参数详解</h2>
+    <ol>
+        <li><strong>SceneData</strong>:
+            <ul>
+                <li><strong>Id</strong>: 事件的唯一标识符。</li>
+                <li><strong>type</strong>: 事件的类型（如<code>event</code>或<code>scene</code>）。</li>
+                <li><strong>priority</strong>: 优先级，值越高越先被触发。</li>
+                <li><strong>Trigger</strong>: 定义触发器，支持的类型包括：<code>scene</code>、<code>location</code>、<code>match</code>等。</li>
+            </ul>
+        </li>
+        <li><strong>EventSeries</strong>:
+            <ul>
+                <li><strong>Id</strong>: 系列的唯一标识符，应该与twee文件中、对应的舞台的Id一致。</li>
+                <li><strong>Flag</strong>: 设置默认的flag字段，系统将自动获取对应的flag对象，扔到trigger等判定函数中。不设置的话，则默认为SeriesId的全小写。例如SeriesId为ChinaTown的话，默认的flag字段则为chinatown。</li>
+                <li><strong>add</strong>: 添加事件数据到系列中。</li>
+            </ul>
+        </li>
+        <li><strong>Trigger</strong>:
+            <ul>
+                <li><strong>type</strong>: 触发器类型，如<code>location</code>、<code>scene</code>、<code>passage</code>、<code>match</code>等。</li>
+                <li><strong>obj</strong>: 参数对象，应该与type对应。如passage设置触发的passage title, prevPassage设置触发的上一个passage的title, location设置具体的地点变量名称等。</li>
+                <li><strong>callback</strong>: 回调函数，返回布尔值判断是否触发。</li>
+            </ul>
+        </li>
+    </ol>
+
+    <h2>使用场景</h2>
+    <ul>
+        <li><strong>对话系统</strong>：基于玩家选择动态触发不同对话。</li>
+        <li><strong>探索机制</strong>：在特定地点和时间触发独占事件。</li>
+        <li><strong>任务系统</strong>：根据任务状态触发后续内容。</li>
+    </ul>
+
+    <p>通过本教程，您已经掌握了如何在简易框架中完成事件注册的基础操作。在下一章，我们将探讨事件的触发与判定机制。</p>
+</body>
+</html>

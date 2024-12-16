@@ -61,12 +61,12 @@ Object.assign(setup.ModNpcSetting, myNpcSetting);
 
 
 // write you traits setting
-const myTraits = [
+let myTraits = [
 
     {
         addto  : 'General Traits', // which genre of traits to add. must write the vanilla name(english)
         name   : ['Custom Trait1', '自定义特征1'], // the trait name,
-        cond   : () => V.player.virginity.anal == true, // the condition for get the trait
+        cond   : () => V.flags.customValue == true, // the condition for get the trait
         text   : ['A simple trait add by mod.', '一个简单的自定义特征'], // the display text
         colour : 'green' // not necessary, optional for display color
 
@@ -75,7 +75,7 @@ const myTraits = [
     {
         addto : 'Custom Traits',
         name  : ['Custom Trait2', '自定义特征2'],
-        cond  : () => V.player.virginity.vaginal == true,
+        cond  : () => V.flags.customValue == true,
         
         text : () => {   // text, name, colour can be function for change display with condition.
             if (V.purity > 800) {

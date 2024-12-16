@@ -17,8 +17,12 @@ class Trigger {
         return this;
     }
     onCheck(flags = {}, passage, prevPassage) {
-        if (this.prevPassage) {
+        if (this.prevPassageIs) {
             if (this.prevPassage !== prevPassage.title) return false;
+        }
+
+        if (this.prevPassageIsnot) {
+            if (this.prevPassageIs === prevPassage.title) return false;
         }
 
         if (this.type === 'scene') {
@@ -55,10 +59,8 @@ class Trigger {
      * @returns {boolean}
      */
     checkPasssage(passage) {
-        if (!this.passage) {
-            return false;
-        }
-        return this.passage === passage;
+        if (this.passage) return this.passage === passage;
+        if (this.passageIsnot) return this.passage !== passage;
     }
     /**
      *

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DomTool.js API文档</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 0;
+            color: #2c3e50;
+        }
+        h1, h2, h3 {
+            color: #34495e;
+        }
+        pre {
+            background: #ecf0f1;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            background: #ecf0f1;
+            padding: 2px 4px;
+        }
+    </style>
+</head>
+<body>
+    <h3>自定义内容添加指南</h3>
+
+    <p>此文档旨在详细介绍如何使用简易框架 (`Simple Framework`) 中的功能模块，方便开发者扩展自定义内容，增强游戏的互动性和可玩性。</p>
+    
+    <hr>
+    
+    <h4>1. 新增特征</h4>
+    
+    <h5>特征结构</h5>
+    
+    <pre><code>
+    {
+        // addto: 指定特征所属类别，例如“General Traits”。需匹配已定义类别或新增的特征类别。
+        addto  : 'General Traits', 
+    
+        // name: 特征的名称，以数组形式提供多语言支持。例如 ['Fearless', '无畏']。
+        name   : ['特征名 (EN)', '特征名 (CN)'], 
+    
+        // cond: 用于控制特征显示的条件，通常为一个返回布尔值的函数。例如 () => V.someVariable > 10。
+        cond   : () => V.someVariable > 10, 
+    
+        // text: 特征的描述信息，同样支持多语言，例如 ['Description in EN', '描述信息']。
+        text   : ['描述信息 (EN)', '描述信息 (CN)'], 
+    
+        // colour: （可选）特征显示的颜色，支持标准颜色名称或十六进制代码，如 'green' 或 '#00FF00'。
+        colour : 'green' 
+    };
+    </code></pre>
+    
+    <h5>新增特征类别</h5>
+    
+    <pre><code>
+    setup.ModTraitTitle.push({
+        title   : '自定义特征', // 类别唯一标识
+        display : ['Custom Traits (EN)', '自定义特征 (CN)'], // 显示名称
+        traits  : [
+            {
+                name : ['示例特征', 'Example Trait'],
+                cond : () => V.someFlag,
+                text : ['这是一个示例特征。', 'This is an example trait.']
+            }
+        ]
+    });
+    </code></pre>
+    
+    <p>调用 <code>setup.addModTrait()</code> 自动加载所有新特征和类别。</p>
+    
+    <hr>
+    
+    <h4>2. 新增刺青</h4>
+    
+    <p>刺青功能用于定制角色外观，支持多语言和可视化效果。</p>
+    
+    <h5>刺青结构</h5>
+    
+    <pre><code>
+    {
+        // key: 唯一标识符，用于程序内部区分不同刺青。
+        key     : 'unique_tattoo_key', 
+    
+        // name: 刺青的显示名称，支持多语言格式，如 ['Tattoo Name', '刺青名称']。
+        name    : '刺青名称 (EN)', 
+    
+        // cn: 中文显示名称，作为补充（可选）。
+        cn      : '刺青名称 (CN)', 
+    
+        // type: 显示类型，默认为 'text'，可选值包括：'object'（物品型）、'pattern'（图案型）。
+        type    : 'text', 
+    
+        // arrow: 表示是否显示箭头指向特定部位，0 为没有箭头，1 为有箭头。
+        arrow   : 0, 
+    
+        // special: 类别，用于分组或触发特定逻辑，支持值示例：'slave', 'sex', 'prostitution', 'pregnant', 'animal', 'violence', 'drug'。
+        special : '类别', 
+    
+        // gender: 刺青的性别倾向，默认为 'n'（无倾向），可选值包括 'f'（女性倾向）和 'm'（男性倾向）。
+        gender  : 'n', 
+    
+        // lewd: 表示刺青是否吸引额外关注，数值越高关注度越高。
+        lewd    : 1, 
+    
+        // degree: 描述刺青的强度或影响范围，仅在 prostitution 类别的刺青中有效，用于计算互动成功时的奖励。
+        degree  : 10, 
+    
+        // sprites: （可选）关联的视觉资源路径数组，例如 ['path/to/sprite1.png', 'path/to/sprite2.png']。
+        sprites : ['sprite_path.png'] 
+    };
+    </code></pre>
+    
+    <p>通过 <code>setup.addBodyWriting()</code> 加载所有新增刺青。</p>
+    
+    <hr>
+    
+    <h4>3. 扩展战斗动作</h4>
+    
+    <p>使用 <code>setup.modCombatActions</code> 自定义战斗动作。</p>
+    
+    <h5>战斗动作结构</h5>
+    
+    <pre><code>
+    setup.modCombatActions.push({
+        displayname : ['动作名 (EN)', '动作名 (CN)'], // 动作名称
+        value       : 'action_value', // 内部标识符
+        type        : 'rightaction', // 所属动作类型，可用为leftaction, rightaction, legaction, mouthaction等
+        condition   : () => V.playerStrength > 50, // 启用条件
+        color       : 'brat', // （可选）显示颜色, brat 还是 submissive
+        widget      : 'CustomWidgetName' // （可选）关联的难度检测显示用的widget
+    });
+    </code></pre>
+    
+    <h5>动态调整难度</h5>
+    
+    <pre><code>
+    modCombatDifficul('action_value', 'difficulty');
+    </code></pre>
+    
+    <hr>
+    
+    <h4>4. 动态加载与多语言支持</h4>
+    
+    <h5>动态加载</h5>
+    <p>使用 <code>setup.addModTrait()</code> 和 <code>setup.addBodyWriting()</code> 确保所有自定义内容正确加载。</p>
+    
+    <h5>多语言支持</h5>
+    <p>特征、刺青和动作的名称与描述应采用多语言数组（例如 [EN, CN]）。可以通过 <code>lanSwitch()</code> 根据玩家的语言设置自动切换。</p>
+    
+    <hr>
+    
+    <h4>5. 示例代码</h4>
+    
+    <pre><code>
+    // 新增自定义特征
+    let myTrait = {
+        addto  : 'General Traits',
+        name   : ['无畏', 'Fearless'],
+        cond   : () => V.courage > 80,
+        text   : ['这个角色无所畏惧。', 'This character fears nothing.'],
+        colour : 'blue'
+    };
+    setup.ModTraits.push(myTrait);
+
+    let myTraits = [
+        {
+            addto : 'General Traits',
+            name : ['天真', 'Innocent'],
+            cond : () => V.charm > 50,
+            text : ['这个角色天真无邪。', 'This character is innocent.']
+        },
+        {
+            addto : 'General Traits',
+            name : ['残忍', 'Cruel'],
+            cond : () => V.cruelty > 50,
+            text : ['这个角色残忍无比。', 'This character is cruel.'],
+            colour : 'red'
+        }
+    ]
+    setup.ModTraits.push(...myTraits);
+    
+    // 新增自定义刺青
+    let myTattoo = {
+        key     : 'fearless_mark',
+        name    : '无畏标记',
+        cn      : 'Fearless Mark',
+        special : 'combat',
+        degree  : 50
+    };
+    setup.modTattoos.push(myTattoo);
+
+    let myTattoos = [
+        {
+            key     : 'two_hundred_pound_whore',
+            name    : '£200',
+            special : 'prostitution',
+            degree  : 20000
+        },
+        {
+            key     : 'ultimate_bitch',
+            name    : 'Ultimate Bitch',
+            cn      : '终极婊子',
+            special : 'sex'
+        }
+    ];
+    setup.modTattoos.push(...myTattoos)
+    
+    // 新增战斗动作
+    setup.modCombatActions.push({
+        displayname : ['强力一击', 'Power Strike'],
+        value       : 'power_strike',
+        type        : 'leftaction',
+        widget      : 'powerstrikeDifficulShow'
+        condition   : () => V.playerEnergy > 20,
+        color       : 'brat'
+    });
+    </code></pre>
+</body>
+
+</body>
+</html>
