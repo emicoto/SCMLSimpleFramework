@@ -13,9 +13,13 @@ const iEventHandler = (() => {
             return false;
         }
 
-        // if already set by time handle, return jumpPassage
-        if (Tvar.jumpPassage) {
-            return Tvar.jumpPassage;
+        // if already set by time handle or action, return jumpPassag
+        if (Tvar && typeof Tvar.jumpPassage == 'string') {
+            const target = Tvar.jumpPassage;
+            // clear jumpPassage
+            delete Tvar.jumpPassage;
+            // return target
+            return target;
         }
 
         const eventResult = {};
@@ -195,9 +199,6 @@ const iEventHandler = (() => {
             _setEvent(eventResult);
             Tvar.jumpPassage = eventResult.passageTitle;
         }
-        else {
-            Tvar.jumpPassage = false;
-        }
     }
 
     /**
@@ -207,7 +208,7 @@ const iEventHandler = (() => {
      */
     function _onFixEvent(passage) {
         // if not running, but still in event loop, restore;
-        if (iEvent.state.isRunning() === false && passage.title === 'SFEventLoop') {
+        if (iEvent.state.isIdle() === true && passage.title === 'SFEventLoop') {
             iEvent.unset();
             return `restore:${Tvar.backupPassage}`;
         }
@@ -217,10 +218,11 @@ const iEventHandler = (() => {
             return `restore:${Tvar.backupPassage}`;
         }
         // if not running, return;
-        if (iEvent.state.isRunning() === false) return 'ok';
+        if (iEvent.state.isIdle() === true) return 'ok';
 
         // if already in event loop, return;
         if (iEvent.state.isPlaying() === true && iEventUtils.isValidStage(passage)) return 'ok';
+        if (!iEvent.current) return 'ok';
 
         const event = iEvent.current;
         // if the time not passing, means still starting up, then return;

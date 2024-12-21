@@ -43,7 +43,7 @@ const iMod = (() => {
      */
     function _updateObj(refObj, newObj, overwrite = false) {
         const data = {};
-
+        // 先更新原有的键值对
         for (const key in refObj) {
             // 如果 newObj[key] 有效并且类型与 refObj[key] 相同
             if (isValid(newObj[key]) && typeof newObj[key] === typeof refObj[key]) {
@@ -62,11 +62,19 @@ const iMod = (() => {
                     data[key] = updateObj(refObj[key], newObj[key], overwrite);
                 }
                 else {
-                    data[key] = newObj[key];
+                    data[key] = clone(newObj[key]);
                 }
             }
             else {
                 data[key] = clone(refObj[key]);
+            }
+        }
+
+        
+        // 接着添加新的键值对
+        for (const key in newObj) {
+            if (!refObj[key]) {
+                data[key] = clone(newObj[key]);
             }
         }
 
@@ -80,13 +88,15 @@ const iMod = (() => {
         if (!V.iModConfigs[modId]) {
             V.iModConfigs[modId] = {};
         }
+
+        console.log('[SF] register mod:', modId, defaultConfig, defaultVariables);
         
         if (defaultConfig !== null) {
-            _updateObj(V.iModConfigs[modId], defaultConfig);
+            V.iModConfigs[modId] = _updateObj(V.iModConfigs[modId], defaultConfig);
         }
 
         if (defaultVariables !== null) {
-            _updateObj(V.iModVar[modId], defaultVariables);
+            V.iModVar[modId] = _updateObj(V.iModVar[modId], defaultVariables);
         }
     }
 
@@ -223,6 +233,7 @@ const iMod = (() => {
     }
 
     const _modData = {
+        modList          : [],
         defaultConfigs   : {},
         defaultVariables : {}
     };
@@ -243,6 +254,9 @@ const iMod = (() => {
             _modData.defaultVariables[modId] = defaultVariables;
         }
 
+        _modData.modList.push(modId);
+        console.log('[SF] regist mod:', modId, defaultConfig, defaultVariables);
+
         return {
             modId,
             config    : defaultConfig,
@@ -254,9 +268,21 @@ const iMod = (() => {
         const modList = _getModList();
         if (modList.length == 0) return;
 
+        console.log('[SF] autoRegister:', modList);
+
         for (const modId of modList) {
             _register(modId, _modData.defaultConfigs[modId], _modData.defaultVariables[modId]);
         }
+        
+        // 以防万一，直接从数据库里检查Mod列表
+        for (const modId of _modData.modList) {
+            if (modList.includes(modId) === true) continue;
+            _register(modId, _modData.defaultConfigs[modId], _modData.defaultVariables[modId]);
+        }
+    }
+
+    function _hasMod(modId) {
+        return _modData.modList.includes(modId);
     }
 
     Object.defineProperty(window, 'updateObj', { value : _updateObj });
@@ -274,6 +300,7 @@ const iMod = (() => {
         getV  : _getV,
         setCf : _setConfig,
         getCf : _getConfig,
+        has   : _hasMod,
         
         regist   : _modRegist,  // regist mod to iMod manager and will auto init when variables is ready;
         registV  : _register,   // regist mod to V.iModVar and V.iModConfigs directly
@@ -282,6 +309,7 @@ const iMod = (() => {
         
         gatherModV     : _gatherModV,
         gatherVariable : _gatherVariable,
+        getModList     : _getModList,
 
         play : _playZone,
 

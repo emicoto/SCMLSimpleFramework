@@ -63,6 +63,46 @@ iMod.regist(modId, defaultConfig = {}, defaultVariables = {});
         <li><strong>类型变更支持</strong>：如果变量类型与之前的存档数据不同，系统会尝试更新为新类型。</li>
         <li><strong>旧变量继承</strong>：已存在的变量会根据新模组的默认配置进行合并，不覆盖已存在的自定义值。</li>
     </ul>
+    <br>
+    <p>具体示例:</p>
+    <pre><code>
+    // 注册一个新模组。
+    let myConfig = {
+        enabled: true,
+        autoMessage: false,
+        fastMode: false
+    }
+    let myVariables = {
+        myVar1: 0,
+        myVar2: "Hello World",
+        myVar3: {
+            num: 1,
+            str: "Hello World",
+            arr: [1, 2, 3]
+        }
+    }
+
+    iMod.regist("myFirstMod", myConfig, myVariables);
+
+    // 当然也可以直接这样写
+    iMod.regist(
+        "myModName",
+        {
+            enabled: true,
+            autoMessage: false,
+            fastMode: false
+        },
+        {
+            myVar1: 0,
+            myVar2: "Hello World",
+            myVar3: {
+                num: 1,
+                str: "Hello World",
+                arr: [1, 2, 3]
+            }
+        }
+    )
+    </code></pre>
 
     <h4>2. 动态添加内容</h4>
     <pre><code>/**
