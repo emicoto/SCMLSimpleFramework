@@ -51,8 +51,8 @@
     <pre><code>/**
  * 注册一个新模组。
  * @param {string} modId - 模组的唯一标识符。
- * @param {object} defaultConfig - 默认配置对象。
- * @param {object} defaultVariables - 默认变量对象。
+ * @param {object} defaultConfig - 默认配置对象。将在游戏开始时自动初始化，或者在加载存档时自动更新旧有配置。
+ * @param {object} defaultVariables - 默认变量对象。将在游戏开始时自动初始化，或者在加载存档时自动更新旧有变量。
  */
 iMod.regist(modId, defaultConfig = {}, defaultVariables = {});
 </code></pre>
@@ -103,6 +103,7 @@ iMod.regist(modId, defaultConfig = {}, defaultVariables = {});
         }
     )
     </code></pre>
+    <p>备注：由于游戏原版多次修改Sugarcube源码和变量初始化相关，现在推荐活用模组注册功能一键初始化/更新存档Mod需要的所有变量哟！</p>
 
     <h4>2. 动态添加内容</h4>
     <pre><code>/**
@@ -113,12 +114,12 @@ iMod.regist(modId, defaultConfig = {}, defaultVariables = {});
 simpleFrameworks.addto(zone, ...widgets);
 </code></pre>
 
-    <h4>3. 模组初始化</h4>
+    <h4>3. 模组初始化函数</h4>
     <pre><code>/**
  * 注册模组初始化函数。
- * @param {...(string|function)} widgets - 初始化方法或小组件名称。
+ * @param {...function} function - 初始化方法名称。
  */
-simpleFrameworks.onInit(...widgets);
+simpleFrameworks.onInit(...function);
 </code></pre>
 
     <h3>使用场景</h3>

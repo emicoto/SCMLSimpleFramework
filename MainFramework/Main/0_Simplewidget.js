@@ -1,5 +1,5 @@
 const frameworkversion = '2.0.0'
-const builds = 36;
+const builds = 37;
 const lastUpdate = '2024.12.21';
 
 const simpleFrameworks = {
@@ -14,7 +14,7 @@ const simpleFrameworks = {
                 this.initFunction.push(widget.name);
             }
             if (typeof widget === 'string') {
-                this.iModInit.push(widget);
+                this.data.iModInit.push(widget);
             }
         });
     },
