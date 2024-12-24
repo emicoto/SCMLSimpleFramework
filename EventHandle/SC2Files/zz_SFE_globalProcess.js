@@ -71,10 +71,6 @@ postrender.SFE_onPostevent = function () {
         return;
     }
 
-    if (iEvent.state.isRunning() === false) {
-        return;
-    }
-
     iEventHandler.onPost(passage);
 };
 
@@ -88,11 +84,7 @@ postdisplay.SFE_onPostshown = function () {
         return;
     }
 
-    if (iEvent.state.isRunning() === false) {
-        return;
-    }
-
-    iEventHandler.onShown(passage);
+    // iEventHandler.onDone(passage);
 };
 
 

@@ -76,8 +76,8 @@
     &lt;/div&gt;
     &lt;div id="eventcontent"&gt;
         &lt;!-- 如果你的地点需要一个通用街头事件，比如晕倒在街头、在街头露出的事件 --&gt;
-        &lt;&lt;if iEvent.generalStreetEvent().length > 1&gt;&gt;
-            &lt;&lt;=iEvent.generalStreetEvent()&gt;&gt;
+        &lt;&lt;if iEventUtils.generalStreetEvent().length > 1&gt;&gt;
+            &lt;&lt;=iEventUtils.generalStreetEvent()&gt;&gt;
         &lt;&lt;elseif $tvar.eventTitle&gt;&gt;
             &lt;!-- 如果事件系统中注册了地点事件，触发时会显示这里 --&gt;
             &lt;&lt;include $tvar.eventTitle&gt;&gt;

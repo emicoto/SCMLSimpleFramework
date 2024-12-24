@@ -17,12 +17,6 @@ var iEvent = (() => {
                     new ConditionSeries('common', 'condition').Cond(() => true)
                 )
         },
-
-        actions : {
-            onLocation  : {},
-            onCharacter : {}
-        },
-
         postFunc : {},
 
         patches : {},
@@ -104,34 +98,6 @@ var iEvent = (() => {
          */
         newPassoutCondition(condition) {
             this.passoutconditions.push(condition);
-        },
-
-        addActions(type, seriesId, ...actions) {
-            let entry;
-            if (type === 'stage') {
-                entry = 'onLocation';
-            }
-            else if (type === 'chara') {
-                entry = 'onCharacter';
-            }
-            else {
-                entry = type;
-                if (!this.actions[entry]) {
-                    this.actions[entry] = {};
-                }
-            }
-
-            if (!this.actions[entry][seriesId]) {
-                this.actions[entry][seriesId] = [];
-            }
-
-            actions.forEach(action => {
-                const data = new Actions(type, action);
-                data.set('sId', seriesId);
-                this.actions[entry][seriesId].push(data);
-            });
-
-            return this.actions[entry][seriesId];
         },
 
         get(type, id) {
@@ -266,105 +232,17 @@ var iEvent = (() => {
             return;
         }
         for (const [key, value] of Object.entries(_data.postFunc)) {
-            if (value.passage && value.passage.includes(passage)) {
-                value.func();
+            if (value.passage && value.passage.includes(passage.title)) {
+                value.func(passage);
             }
-            else if (value.prevPassage && value.prevPassage.includes(prevPassage)) {
-                value.func();
+            else if (value.prevPassage && value.prevPassage.includes(prevPassage.title)) {
+                value.func(passage, prevPassage);
             }
             else if (value.passage === undefined && value.prevPassage === undefined) {
-                value.func();
+                value.func(passage);
             }
         }
     }
-
-    function _getActions(stageId) {
-        return _getActionList('stage', stageId);
-    }
-
-    function _getActionList(type, id) {
-        if (type === 'stage') {
-            type = 'onLocation';
-        }
-        else if (type === 'chara') {
-            type = 'onCharacter';
-        }
-        else {
-            console.error(`[SF/EventSystem] Invalid action type: ${type}`);
-            return '';
-        }
-
-        const actions = _data.actions[type][id];
-        if (actions && actions.length > 0) {
-            return _generateActionLinks(actions);
-        }
-        return '';
-    }
-
-    function _generateTimeStr(time) {
-        const hour = Math.floor(time / 60);
-        const minute = time % 60;
-        return `(${hour}:${minute < 10 ? `0${minute}` : minute})`;
-    }
-
-    function _generateActionLinks(actions) {
-        const getString = data => {
-            if (typeof data === 'string') {
-                return data;
-            }
-            if (typeof data === 'function') {
-                return data();
-            }
-            return '';
-        };
-
-        const html = [];
-        for (let i = 0; i < actions.length; i++) {
-            const data = actions[i];
-
-            if (!data.onCheck()) continue;
-
-            const displayTxt = lanSwtich(data.text);
-            let target = '';
-            if (data.target) {
-                target = ` "${getString(data.target)}"`;
-            }
-
-            let img = '';
-            if (data.img) {
-                img = `<<icon "${getString(data.img)}">>`;
-            }
-
-            const timeStr = data.time ? _generateTimeStr(data.time) : '(0:01)';
-
-            const pass = `<<pass ${data.time ?? 1}>>`;
-
-            let _html = `${img} <<link "${displayTxt} ${timeStr}"${target}>>`;
-            if (!data.nopass) {
-                _html += pass;
-            }
-            _html += `${data.code ?? ''}<</link>><br>`;
-
-            html.push(_html);
-        }
-        return html.join('');
-    }
-
-    function _generalStreetEvent() {
-        let result = '';
-
-        if (V.exposed >= 1) {
-            result += '<<exhibitionism "street">>';
-        }
-        if (V.arousal >= V.arousalmax) {
-            result += '<<orgasmstreet>>';
-        }
-        if (V.stress >= V.stressmax && !V.possessed) {
-            result += '<<passoutstreet>>';
-        }
-        return result;
-    }
-
 
     function _onPassoutCheck() {
         const conditions = _data.passoutconditions;
@@ -521,6 +399,11 @@ var iEvent = (() => {
     // fast play event by given id on Current Stage
     // only work if V.stage is valid
     function _play(eventId, phase = 0) {
+        if (!V.stage) {
+            console.error('[SF/EventSystem] No stage is set');
+            return;
+        }
+
         _state.event = new Scene('scene', eventId);
         if (phase > 0) {
             _state.event.maxPhase = phase;
@@ -570,11 +453,6 @@ var iEvent = (() => {
         wikifier('endcombat');
     }
 
-    Object.defineProperties(window, {
-        generateTimeStr     : { value : _generateTimeStr },
-        generateActionLinks : { value : _generateActionLinks }
-    });
-
     return Object.seal({
         get data() {
             return _data;
@@ -602,13 +480,10 @@ var iEvent = (() => {
             add  : _addFlag
         },
         
-        doPatch       : _doPatch,
-        doPostFunc    : _doPostFunc,
-        getFlags      : _getFlagField,
-        passoutCheck  : _onPassoutCheck,
-        getAcition    : _getActions,
-        getActionList : _getActionList,
-
-        generalStreetEvent : _generalStreetEvent
+        doPatch      : _doPatch,
+        doPostFunc   : _doPostFunc,
+        getFlags     : _getFlagField,
+        passoutCheck : _onPassoutCheck
+        
     });
 })();

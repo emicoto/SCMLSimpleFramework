@@ -111,8 +111,8 @@ const iEventUtils = (() => {
     function setStage(stage) {
         V.stage = stage;
 
-        // do nothing if not a string;
-        if (typeof V.prevStage === 'string' && V.prevStage !== stage) {
+        // if in different stage, save the previous stage
+        if (V.prevStage !== stage) {
             V.prevStage = stage;
         }
     }
@@ -124,6 +124,21 @@ const iEventUtils = (() => {
             V.prevStage = null;
             V.stage = null;
         }
+    }
+
+    function _generalStreetEvent() {
+        let result = '';
+
+        if (V.exposed >= 1) {
+            result += '<<exhibitionism "street">>';
+        }
+        if (V.arousal >= V.arousalmax) {
+            result += '<<orgasmstreet>>';
+        }
+        if (V.stress >= V.stressmax && !V.possessed) {
+            result += '<<passoutstreet>>';
+        }
+        return result;
     }
 
     return {
@@ -138,6 +153,8 @@ const iEventUtils = (() => {
         setBranch    : _setBranch,
         endEvent     : _endEvent,
         setEvent     : _setEvent,
+
+        generalStreetEvent : _generalStreetEvent,
 
         setStage,
         unsetStage

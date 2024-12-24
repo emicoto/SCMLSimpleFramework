@@ -86,24 +86,6 @@ const iEventHandler = (() => {
             V.dangerevent = 0;
         }
     }
-
-    function _doActions(key, specialTitle) {
-        const data = iEvent.current.data;
-        const action = data.actions ?? {};
-        if (typeof action[key] == 'function') {
-            action[key]();
-        }
-        else if (typeof action[key] == 'string') {
-            new Wikifier(null, action[key]);
-        }
-
-        const title = `${iEvent.current.getfullTitle()}::${specialTitle}`;
-        if (Story.has(title)) {
-            const content = Story.get(title).text;
-            new Wikifier(null, content);
-        }
-    }
-
     // after passage is shown
     function _onPostPassage() {
         const passage = Story.get(V.passage);
@@ -257,6 +239,23 @@ const iEventHandler = (() => {
         }
 
         return 'ok';
+    }
+
+    function _doActions(key, specialTitle) {
+        const data = iEvent.current.data;
+        const action = data.actions ?? {};
+        if (typeof action[key] == 'function') {
+            action[key]();
+        }
+        else if (typeof action[key] == 'string') {
+            new Wikifier(null, action[key]);
+        }
+
+        const title = `${iEvent.current.getfullTitle()}::${specialTitle}`;
+        if (Story.has(title)) {
+            const content = Story.get(title).text;
+            new Wikifier(null, content);
+        }
     }
 
     /**

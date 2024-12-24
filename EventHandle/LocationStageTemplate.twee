@@ -20,8 +20,8 @@ no more space!
 
 <div id = "eventcontent">
     <!-- if your loacation need a general street event as exhibitionism/orgasmstreet/passoutstreet -->
-    <<if iEvent.generalStreetEvent().length > 1>>
-        <<=iEvent.generalStreetEvent()>>
+    <<if iEventUtils.generalStreetEvent().length > 1>>
+        <<=iEventUtils.generalStreetEvent()>>
     <<elseif $tvar.eventTitle>>
         <!-- will show general location situation by event system if registered any situation events -->
         <<include $tvar.eventTitle>>
