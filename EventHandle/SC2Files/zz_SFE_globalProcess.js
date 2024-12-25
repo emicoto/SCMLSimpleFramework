@@ -70,7 +70,11 @@ postrender.SFE_onPostevent = function () {
     if (iEvent.state.isReady() === false) {
         return;
     }
-
+    // if not ready
+    if (!V.passage || passage.title.has('Start', 'Downgrade Waiting Room')) {
+        return;
+    }
+    
     iEventHandler.onPost(passage);
 };
 
@@ -84,7 +88,7 @@ postdisplay.SFE_onPostshown = function () {
         return;
     }
 
-    // iEventHandler.onDone(passage);
+    // iEventHandler.onPost(passage);
 };
 
 
