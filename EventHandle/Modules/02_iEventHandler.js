@@ -89,7 +89,7 @@ const iEventHandler = (() => {
     // after passage is shown
     function _onPostPassage() {
         const passage = Story.get(V.passage);
-        const prevPassage = Story.get(Tvar.prevPassage);
+        const prevPassage = Story.get(Tvar?.prevPassage ?? '');
         
         // won't rest run if in combat
         if (V.combat !== 0) {
