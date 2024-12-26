@@ -40,28 +40,77 @@
 
     <h3>核心功能</h3>
     <ul>
-        <li><strong>模组注册</strong>：通过 <code>iMod</code> 接口注册模组的配置和变量。</li>
+        <li><strong>模组注册</strong>：通过 <code>boot.json</code>或<code>iMod</code> 接口注册模组的配置和变量。</li>
         <li><strong>内容新增</strong>：动态注册特定类型的内容，例如角色特征、动作、场景等。</li>
         <li><strong>生命周期管理</strong>：提供模组的初始化、加载、更新与移除。</li>
         <li><strong>存档兼容</strong>：自动更新存档中的旧变量，添加未定义的新变量，并处理变量类型的更新。</li>
     </ul>
 
     <h3>API 文档</h3>
-    <h4>1. 注册模组</h4>
-    <pre><code>/**
- * 注册一个新模组。
- * @param {string} modId - 模组的唯一标识符。
- * @param {object} defaultConfig - 默认配置对象。将在游戏开始时自动初始化，或者在加载存档时自动更新旧有配置。
- * @param {object} defaultVariables - 默认变量对象。将在游戏开始时自动初始化，或者在加载存档时自动更新旧有变量。
- */
-iMod.regist(modId, defaultConfig = {}, defaultVariables = {});
+    <h4>1. 通过 boot.json 注册模组</h4>
+    <pre><code>
+        // 在boot.json中添加模组配置
+        // 例如 "longerCombat" 模组，直接在boot.json中添加如下配置：
+
+        "SFPlugin": {
+            // 添加你的widget到对应模块中：
+            "addWidget": {
+                // 添加到iModOptions中
+                "iModOptions": [
+                    {
+                        "widget": "longerCombatConfig"
+                    }
+                ],
+                // 添加到iModFooter中
+                "iModFooter": [
+                    {
+                        "widget": "longerCombat"
+                    }
+                ]
+            },
+
+            // 设置你的模组默认配置
+            "defaultConfigs": {
+                "mult": 2.5,
+                "midEjac": true,
+                "ejacRate": 80,
+                "moreRate": 25,
+                "moreTimes": 3,
+                "time": 1
+            },
+
+            // 设置你的模组默认变量
+            "defaultVariables": {
+                "totalsOnOneMoreTimes": 0,
+            }
+        }
+    </code></pre>
+    <p>特性说明：</p>
+    <ul>
+        <li><strong>简单配置</strong>: 通过简单的配置即可完成模组的注册，无需编写额外的代码。</li>
+        <li><strong>自动初始化</strong>：游戏启动时会自动加载模组配置，确保模组的正常运行。</li>
+        <li><strong>存档兼容</strong>：在存档中自动添加新变量，确保存档的兼容性。</li>
+        <li><strong>类型变更支持</strong>：自动更新存档中的变量类型，确保模组的正常运行。</li>
+    </ul>
+    <p>备注：通过 boot.json 注册模组是最简单的方式，适合于简单的模组配置和变量注册。</p>
+    <br>
+
+    <h4>2. 通过JS注册模组</h4>
+    <pre><code>
+    /**
+    * 注册一个新模组。
+    * @param {string} modId - 模组的唯一标识符。
+    * @param {object} defaultConfig - 默认配置对象。将在游戏开始时自动初始化，或者在加载存档时自动更新旧有配置。
+    * @param {object} defaultVariables - 默认变量对象。将在游戏开始时自动初始化，或者在加载存档时自动更新旧有变量。
+    */
+    iMod.regist(modId, defaultConfig = {}, defaultVariables = {});
 </code></pre>
     <p>特性说明：</p>
     <ul>
-        <li><strong>统一注册</strong>: 在这里注册的变量，将会在游戏初始化时统一注册进游戏中，确保模组变量都能顺利完成初始化并保存。</li>
-        <li><strong>变量自动更新</strong>：当注册的模组中存在未定义的新变量时，框架会自动添加到存档中。</li>
-        <li><strong>类型变更支持</strong>：如果变量类型与之前的存档数据不同，系统会尝试更新为新类型。</li>
-        <li><strong>旧变量继承</strong>：已存在的变量会根据新模组的默认配置进行合并，不覆盖已存在的自定义值。</li>
+        <li><strong>灵活配置</strong>: 可以通过代码动态注册模组，支持更多的自定义配置。</li>
+        <li><strong>自动初始化</strong>：游戏启动时会自动加载模组配置，确保模组的正常运行。</li>
+        <li><strong>存档兼容</strong>：在存档中自动添加新变量，确保存档的兼容性。</li>
+        <li><strong>类型变更支持</strong>：自动更新存档中的变量类型，确保模组的正常运行。</li>
     </ul>
     <br>
     <p>具体示例:</p>
@@ -105,22 +154,22 @@ iMod.regist(modId, defaultConfig = {}, defaultVariables = {});
     </code></pre>
     <p>备注：由于游戏原版多次修改Sugarcube源码和变量初始化相关，现在推荐活用模组注册功能一键初始化/更新存档Mod需要的所有变量哟！</p>
 
-    <h4>2. 动态添加内容</h4>
+    <h4>3. 动态添加内容</h4>
     <pre><code>/**
- * 添加内容到指定区域。
- * @param {string} zone - 目标区域名称。
- * @param {...(string|object)} widgets - 内容或小组件。
- */
-simpleFrameworks.addto(zone, ...widgets);
-</code></pre>
+    * 添加内容到指定区域。
+    * @param {string} zone - 目标区域名称。
+    * @param {...(string|object)} widgets - 内容或小组件。
+    */
+    simpleFrameworks.addto(zone, ...widgets);
+    </code></pre>
 
     <h4>3. 模组初始化函数</h4>
     <pre><code>/**
- * 注册模组初始化函数。
- * @param {...function} function - 初始化方法名称。
- */
-simpleFrameworks.onInit(...function);
-</code></pre>
+    * 注册模组初始化函数。
+    * @param {...function|object} function - 包含初始化方法的object或者函数本身。object 应该包含 name 和 func 两个属性。
+    */
+    simpleFrameworks.onInit(...function);
+    </code></pre>
 
     <h3>使用场景</h3>
     <ul>

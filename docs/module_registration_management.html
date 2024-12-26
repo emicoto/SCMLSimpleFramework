@@ -38,6 +38,39 @@
     <h2>功能概述</h2>
     <p>模组注册与管理功能是框架的核心部分，支持开发者动态注册模组、管理配置和变量，并通过各种接口简化模组生命周期中的操作。</p>
 
+    <h2>通过bootJson注册</h2>
+    <p>
+        通过<code>boot.json</code>文件注册模组是最简单的方式，只需要在<code>boot.json</code>中添加模组的配置即可。这种方式适用于简单的模组，不需要额外的代码支持。
+    </p>
+    <p> 新增参数<code>SFPlugin</code>到你的boot.json中，然后添加addWidget对象来设置需要注册的内容到各个模块，例如iModHeader, iModFooter, BeforeLinkZone等。</p>
+    <pre><code>
+        // 例如在passage Domus Street(宅邸街)的链接区域之前添加一个位置，包含了前往[我的公寓]的链接的widget
+        "SFPlugin": {
+            "addWidget": {
+                "BeforeLinkZone": [
+                    {
+                        "passage": "Domus Street",
+                        "widget": "myNewApartmentEntry"
+                    }
+                ]
+            }
+        }
+    </code></pre>
+    <br>
+    <p>在SFPlugin中，添加defaultConfigs或者defaultVariables来设置模组需要的配置或变量</p>
+    <pre><code>
+        // 例如这个MOD需要一个开启快速模式的配置，以及一个记录战斗回合次数的变量
+        "SFPlugin": {
+            "defaultConfigs": {
+                "fastMode": false
+            },
+            "defaultVariables": {
+                "combatRound": 0
+            }
+        }
+    </code></pre>
+    <p>注册后，就可以在JS中使用<code>iMod.getCf('myModId')</code>来获取配置来进行设置。或者通过<code>iMod.getV('myModId')</code>来获取变量来进行操作。</p>
+    <hr>
     <h2>核心接口与说明</h2>
 
     <h3>1. setV 和 getV</h3>
@@ -70,6 +103,9 @@
     // 当获取customMod时的实际对象为 { level: 5, player: { hp: 100 } }
 
     console.log(iMod.getV("customMod", "player.hp")); // 输出: 100
+
+    // 当路径为空时，返回整个模组变量对象
+    console.log(iMod.getV("customMod")); // 输出: { level: 5, player: { hp: 100 } }
     </code></pre>
 <hr>
 
@@ -105,7 +141,7 @@
 <hr>
 
     <h3>3. regist 和 registV</h3>
-    <p>注册模组的核心接口，用于初始化模组的配置和变量。</p>
+    <p>注册模组的核心接口，用于动态初始化模组的配置和变量。</p>
     <p><strong>区别</strong>：</p>
     <ul>
         <li>regist：适用于模组的初始化和完整注册，提供默认配置和变量的初始化。代码可以直接在js脚本中释放。在这里注册的变量会在游戏完成初始化时被模组系统统一初始化并添加进游戏中，确保模组能安全完成初始化，并不受游戏原版干扰。</li>

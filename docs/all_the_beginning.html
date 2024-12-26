@@ -63,6 +63,9 @@
         <p>
             在 <code>twee</code> 文件夹内，新建一个名为 <code>modcontent.twee</code> 的文件。该文件将包含你的 MOD 的 SugarCube 内容和结构。
         </p>
+        <p>
+            在根目录中创建一个名为 <code>boot.json</code> 的文件，用于配置 MOD 的基本信息。
+        </p>
     </div>
 
     <div id="basic-js">
@@ -79,7 +82,26 @@
 
         // 调用该函数
         greetPlayer(playerName);
+
+
+        // 进行简单的逻辑判断 == 用于比较是否相等, != 用于比较是否不相等, === 用于比较是否严格相等
+        if (playerName == "Hero") {
+            console.log("你是英雄！");
+        } else {
+            console.log("你是谁？");
+        }
+
+        // 进行简单的数学运算
+        let num1 = 10;
+        let num2 = 5;
+        let sum = num1 + num2;
+        console.log("和是：" + sum);
+
         </code></pre>
+
+        <p>
+            更多的 JavaScript 语法和功能可以在 <a href="https://www.runoob.com/js/js-tutorial.html">菜鸟编程</a> 以及 <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript">MDN Web 文档</a> 中找到。
+        </p>
     </div>
 
     <div id="sugarcube-intro">
