@@ -163,29 +163,36 @@ const iMod = (() => {
         const title = passageTitle ?? V.passage;
         const html = data.reduce((result, widgets) => {
             if (String(widgets) == '[object Object]') {
-                // if is exclude
-                if (
-                    typeof widgets.exclude == 'string' && widgets.exclude !== title ||
-                    Array.isArray(widgets.exclude) && !widgets.exclude.includes(title)
-                ) {
-                    result += `<<${widgets.widget}>>`;
-                }
-                // if has match and is regex
-                else if (widgets.match && widgets.match instanceof RegExp && widgets.match.test(title)) {
-                    result += `<<${widgets.widget}>>`;
-                }
-                else if (
-                    typeof widgets.passage == 'string' && widgets.passage == title ||
-                    Array.isArray(widgets.passage) && widgets.passage.includes(title) ||
-                    typeof widgets.passage == 'undefined' ||
-                    widgets.passage.length == 0
-                ) {
-                    result += `<<${widgets.widget}>>`;
-                }
-                else if (typeof widgets.widget == 'string') {
-                    result += `<<${widgets.widget}>>`;
-                }
+                console.log('[SFDebug] widgets:', widgets);
 
+                if (widgets.exclude) {
+                    console.log('[SFDebug] exclude:', widgets.exclude);
+                    if (typeof widgets.exclude == 'string' && widgets.exclude !== title) {
+                        result += `<<${widgets.widget}>>`;
+                    }
+                    else if (Array.isArray(widgets.exclude) && !widgets.exclude.includes(title)) {
+                        result += `<<${widgets.widget}>>`;
+                    }
+                }
+                else if (widgets.match && widgets.match instanceof RegExp && widgets.match.test(title)) {
+                    console.log('[SFDebug] match:', widgets.match);
+                    result += `<<${widgets.widget}>>`;
+                }
+                else if (widgets.passage) {
+                    console.log('[SFDebug] passage:', widgets.passage);
+                    if (typeof widgets.passage === 'string' && widgets.passage === title) {
+                        result += `<<${widgets.widget}>>`;
+                    }
+                    else if (Array.isArray(widgets.passage) && widgets.passage.includes(title)) {
+                        result += `<<${widgets.widget}>>`;
+                    }
+                    else if (widgets.passage.length === 0) {
+                        result += `<<${widgets.widget}>>`;
+                    }
+                }
+                else if (widgets.widget) {
+                    result += `<<${widgets.widget}>>`;
+                }
                 return result;
             }
 
