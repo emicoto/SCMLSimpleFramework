@@ -124,3 +124,76 @@ function modCombatDifficul(diffAction, action) {
     return '';
 }
 DefineMacroS('ModCombatDifficulty', modCombatDifficul);
+
+setup.modversions = [];
+
+function showModVersions() {
+    const versions = setup.modversions.join(' | ');
+    const html = `<div id="modversions">Simple Framework v${simpleFrameworks.version} | ${versions}</div>`;
+    return html;
+}
+
+DefineMacroS('ModVersions', showModVersions);
+
+
+function showSimpleFrameworkInfo() {
+    let html_1 = `<div class="p-2 text-align-center">
+        <h3>${lanSwitch('Simple Framework', 'MOD框架')}</h3>
+
+        <div class="m-2">
+        ${lanSwitch('Version', '当前版本')}: ${simpleFrameworks.version}<br>
+            ${lanSwitch('Author', '作者')}: <span class="gold">${lanSwitch('Lunefox', '狐千月')}</span><br>
+            ${lanSwitch('Download Latest version', '获取最新版本')}: [[github|"https://github.com/emicoto/SCMLSimpleFramework"]]<br>
+            ${lanSwitch('Mod Guidebook', '模组制作指南')}: [[emicoto.github.io/SCMLSimpleFramework|"https://emicoto.github.io/SCMLSimpleFramework/"]]<br>
+        </div>
+    </div>`;
+
+    const modlist = iMod.getModList();
+    const checkDep = function (arr) {
+        if (!Array.isArray(arr)) return false;
+        for (let i = 0; i < arr.length; i++) {
+            const depinfo = arr[i];
+            if (depinfo.modName == 'Simple Frameworks') return true;
+        }
+        return false;
+    };
+    const getModName = function (modinfo) {
+        if (!modinfo.nickName) return modinfo.modName;
+        if (typeof modinfo.nickName === 'string') return modinfo.nickName;
+
+        return lanSwitch(modinfo.nickName.en, modinfo.nickName.cn);
+    };
+
+    const html = [];
+
+    for (let i = 0; i < modlist.length; i++) {
+        const modId = modlist[i];
+        const modinfo = modUtils.getMod(modId);
+        if (!modinfo.bootJson) continue;
+        if (checkDep(modinfo.bootJson.dependenceInfo) === false) continue;
+        
+        const modname = getModName(modinfo);
+        const modversion = modinfo.version;
+        const text = `
+        <div class="modinfo">
+            ・ ${modname} :  version ${modversion}
+        </div>
+        `;
+        html.push(text);
+    }
+
+    if (html.length > 0) {
+        html_1 += `
+            <div class="p-2 text-align-center">
+                <h3>${lanSwitch('Simple Frameworks Mod List', '框架已加载模组')}</h3>
+                <div id="modlist">
+                ${html.join('')}
+                </div>
+            </div>
+        `;
+    }
+
+    return html_1;
+}
+
+DefineMacroS('SimpleFrameworkInfo', showSimpleFrameworkInfo);

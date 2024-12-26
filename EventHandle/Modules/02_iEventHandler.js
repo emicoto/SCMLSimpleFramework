@@ -87,10 +87,7 @@ const iEventHandler = (() => {
         }
     }
     // after passage is shown
-    function _onPostPassage() {
-        const passage = Story.get(V.passage);
-        const prevPassage = Story.get(Tvar.prevPassage ?? '');
-        
+    function _onPostPassage(passage, prevPassage) {
         // won't rest run if in combat
         if (V.combat !== 0) {
             return;
@@ -110,6 +107,8 @@ const iEventHandler = (() => {
 
     function _onRenderDone() {
         const psg = Story.get(V.passage);
+        console.log('Post Passage Event:', psg);
+        
         // save system state ot variable for loading event;
         V.eFlags.systemState = iEvent.state.running;
 

@@ -1,29 +1,46 @@
 const CustomPopup = (() => {
-    function drawPopup(title = '', content = '', style, noBtn) {
-        style ??= 'custom-pupup';
+    function drawPopup(title = '', content = '', options = {}) {
+        createBackground();
+        createPopupWindow(title, content, options);
+    }
 
-        const background = document.createElement('div');
-        background.id = 'customPopupBG';
-        background.classList.add('hidden');
-        document.getElementById('passages').appendChild(background);
+    function createPopupWindow(title, content, options) {
+        const id = options.id ?? 'customPopup';
+        if (document.getElementById(id)) return;
 
         const popup = document.createElement('div');
-        popup.id = 'customPopup';
-        popup.classList.add(style);
-        popup.classList.add('hidden');
+        popup.id = id;
+        popup.classList.add('draggable');
+        popup.classList.add('popup-window');
+        if (options.style) {
+            popup.classList.add(options.style);
+        }
+        else {
+            popup.classList.add('custom-popup');
+        }
         popup.innerHTML = `
             <div id="PopupBanner">
                 <div class="popup-title">${title}</div>
-                ${noBtn ? '<div class="nocloseBtn"></div>' : '<button class="closeBtn" onclick="CustomPopup.close()">X</button>'}
+                ${options.noBtn ? '<div class="nocloseBtn"></div>' : `<button class="closeBtn" onclick="CustomPopup.close('${id}')">X</button>`}
             </div>
-            <div id="PopupContent">${content}</div>
+            <div id="PopupContent" class="popup-content">${content}</div>
         `;
-
         document.getElementById('passages').appendChild(popup);
+        $(popup).hide();
     }
 
-    function setSize(width, height) {
-        const popup = document.getElementById('customPopup');
+    function createBackground() {
+        if (document.getElementById('customPopupBG')) return;
+
+        const background = document.createElement('div');
+        background.id = 'customPopupBG';
+        document.getElementById('passages').appendChild(background);
+        $(background).hide();
+    }
+
+    function setSize(width, height, id) {
+        id ??= 'customPopup';
+        const popup = document.getElementById(id);
         if (!popup) return;
         if (width) {
             popup.style.width = width;
@@ -33,55 +50,78 @@ const CustomPopup = (() => {
         }
     }
 
-    function destroyPopup() {
-        const popup = document.getElementById('customPopup');
+    function findAnyPopup() {
+        const popup = document.querySelector('.popup-window');
+        if (popup) return popup;
+        return null;
+    }
+
+    function destroyPopup(id) {
+        id ??= 'customPopup';
+        const popup = document.getElementById(id);
         const bg = document.getElementById('customPopupBG');
         if (popup) {
             popup.remove();
-            bg.remove();
+        }
+        if (findAnyPopup() === null && bg) {
+            $(bg).hide();
         }
     }
 
-    function setContent(content) {
-        const popup = document.getElementById('PopupContent');
+    function setContent(content, id) {
+        id ??= 'customPopup';
+        const main = document.getElementById(id);
+        const popup = main.getElementById('PopupContent');
         if (popup) {
             popup.innerHTML = content;
         }
     }
 
-    function showPopup() {
-        const popup = document.getElementById('customPopup');
+    function showPopup(id) {
+        id ??= 'customPopup';
+        const popup = document.getElementById(id);
         const bg = document.getElementById('customPopupBG');
 
-        if (popup) {
-            popup.classList.remove('hidden');
-            bg.classList.remove('hidden');
-        }
+        if (!popup) return;
+
+        $(popup).show();
+        $(bg).show();
+
+        $(() => {
+            $('.draggable').draggable({
+                handle : '#PopupBanner',
+                cancel : '.popup-content'
+            });
+        });
     }
 
-    function hidePopup() {
-        const popup = document.getElementById('customPopup');
+    function hidePopup(id) {
+        id ??= 'customPopup';
+        const popup = document.getElementById(id);
         const bg = document.getElementById('customPopupBG');
         if (popup) {
-            popup.classList.add('hidden');
-            bg.classList.add('hidden');
+            $(popup).hide();
+        }
+        
+        if (findAnyPopup() === null && bg) {
+            $(bg).hide();
         }
     }
 
     function createPopup(options) {
-        const { title = '', content = '', noBtn, width, height } = options;
-        drawPopup(title, content, noBtn);
+        const { id = 'customPopup', title = '', content = '', width, height } = options;
+        drawPopup(title, content, options);
 
         if (width || height) {
-            setSize(width, height);
+            setSize(width, height, id);
         }
 
-        showPopup();
+        showPopup(id);
     }
 
-    function setPopup(content) {
-        drawPopup('', content);
-        showPopup();
+    function setPopup(content, id) {
+        drawPopup('', content, { id });
+        showPopup(id);
     }
 
     return Object.freeze({

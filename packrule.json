@@ -17,6 +17,10 @@
         ],
         "tweeFileList": [
           "Twees/**/*.twee"
+        ],
+        "imgFileList": [
+          "images/**/*.png",
+          "images/**/*.gif"
         ]
       }
 }

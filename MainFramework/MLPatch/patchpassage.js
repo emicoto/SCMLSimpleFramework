@@ -133,6 +133,16 @@
             {
                 src         : '</div>\n\t<<closeButton>>\n<</widget>>\n\n<<widget "titleOptions">>',
                 applybefore : '\t\t<<button lanSwitch(\'Mods\', \'模组\')>>\n\t\t\t<<toggleTab>>\n\t\t\t<<replace #cheatsShown>><<iModCheats>><</replace>>\n\t\t\t<<run $("#customOverlayContent").scrollTop(0);>>\n\t\t<</button>>\n'
+            },
+            {
+                srcmatch : /<<button "Notes">>|<<button "笔记">>/,
+                to       : '<<button lanSwitch(\'ModMemos\', \'模组备忘录\')>><<toggleTab>><<replace #customOverlayContent>><<iModMemo>><</replace>><<run $("#customOverlayContent").scrollTop(0);>><</button>>\t\t<<button lanSwitch("Notes", "笔记")>>'
+            }
+        ],
+        'Options Overlay' : [
+            {
+                src         : '<</widget>>\n\n<<widget "setFont">>',
+                applybefore : '<<iModInformation>>'
             }
         ],
         npcNamed : [

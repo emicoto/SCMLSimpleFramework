@@ -63,6 +63,8 @@ postrender.SFEInit = function () {
 
 postrender.SFE_onPostevent = function () {
     const passage = this;
+    const prevPassage = Story.get(Tvar.prevPassage ?? '');
+
     if (!passage || passage.tags.has('widget', 'system') || !V.passage) {
         return;
     }
@@ -75,7 +77,7 @@ postrender.SFE_onPostevent = function () {
         return;
     }
     
-    iEventHandler.onPost(passage);
+    iEventHandler.onPost(passage, prevPassage);
 };
 
 postdisplay.SFE_onPostshown = function () {
@@ -85,7 +87,7 @@ postdisplay.SFE_onPostshown = function () {
     }
 
     if (iEvent.state.isReady() === false) {
-        return;
+        
     }
 
     // iEventHandler.onPost(passage);

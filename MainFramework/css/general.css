@@ -42,7 +42,7 @@
     backdrop-filter: blur(2px);
 }
 
-#customPopup {
+.popup-window {
     display :flex;
     flex-direction: column;
 
@@ -108,4 +108,14 @@
     position: absolute;
     bottom: 0px;
     left: 0px;
+}
+
+#modversions {
+	position: fixed;
+	right: 3px;
+	bottom: 1px;
+	font-size: 0.6em;
+	color: var(--600);
+	z-index: 1000;
+	background-color: transparent;
 }

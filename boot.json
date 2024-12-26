@@ -2,6 +2,7 @@
     "name": "Simple Frameworks",
     "version": "2.0.1",
     "scriptFileList_inject_early": [
+        "Main/0_lib/jquery-ui.min.js",
         "Main/0_lib/selectcase.js",
         "Main/0_lib/util.js",
         "Main/0_Simplewidget.js",
@@ -24,7 +25,8 @@
     ],
     "scriptFileList_preload": [],
     "styleFileList": [
-        "css/general.css"
+        "css/general.css",
+        "css/jquery-ui.css"
     ],
     "scriptFileList": [
         "SC2Files/0_loadconfig.js",
@@ -41,7 +43,20 @@
     "tweeFileList": [
         "Twees/EventLoop.twee"
     ],
-    "imgFileList": [],
+    "imgFileList": [
+        "images/ui-bg_glass_20_555555_1x400.png",
+        "images/ui-bg_glass_40_0078a3_1x400.png",
+        "images/ui-bg_glass_40_ffc73d_1x400.png",
+        "images/ui-bg_gloss-wave_25_333333_500x100.png",
+        "images/ui-bg_highlight-soft_80_eeeeee_1x100.png",
+        "images/ui-bg_inset-soft_25_000000_1x100.png",
+        "images/ui-bg_inset-soft_30_f58400_1x100.png",
+        "images/ui-icons_222222_256x240.png",
+        "images/ui-icons_4b8e0b_256x240.png",
+        "images/ui-icons_a83300_256x240.png",
+        "images/ui-icons_cccccc_256x240.png",
+        "images/ui-icons_ffffff_256x240.png"
+    ],
     "additionFile": [],
     "addonPlugin": [
         {
@@ -61,6 +76,6 @@
             "version": "^1.0.0"
         }
     ],
-    "build": 2,
-    "lastUpdate": "2024.12.25"
+    "build": 19,
+    "lastUpdate": "2024.12.26"
 }

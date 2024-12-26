@@ -1,6 +1,6 @@
 const frameworkversion = '2.0.1'
-const builds = 2;
-const lastUpdate = '2024.12.25';
+const builds = 19;
+const lastUpdate = '2024.12.26';
 
 const simpleFrameworks = {
     version : frameworkversion,
@@ -58,7 +58,9 @@ const simpleFrameworks = {
         iModStatus       : [],
         iModFame         : [],
         iModStatist      : [],
-        iModExtraStatist : []
+        iModExtraStatist : [],
+        iModMemo         : [],
+        iModInformation  : []
 
     },
 
@@ -73,6 +75,7 @@ const simpleFrameworks = {
         iModInit   : '<<iModInitFunction>><<run setup.addBodyWriting()>>\n\n',
         iModReady  : '\n',
         iModHeader : '<<iEventHeader>>\n',
+        iModFooter : '<<ModVersions>>\n',
         
         iModOptions : `
 <<setupOptions>>
@@ -116,7 +119,8 @@ const simpleFrameworks = {
 </div>
 <hr>
 `,
-        CustomImgLayer : '\n<<ModLocationIMG>>'
+        CustomImgLayer : '\n<<ModLocationIMG>>',
+        iModInformation : '\n<<SimpleFrameworkInfo>>'
     },
 
     specialWidget : {

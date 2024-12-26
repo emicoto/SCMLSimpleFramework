@@ -1,5 +1,9 @@
 {
   "name": "SimpleInventory",
+  "nickName": {
+    "en": "Simple Inventory",
+    "cn": "简易库存"
+  },
   "version": "1.0.0",
   "modPacker": {
     "modScriptFolder": {
@@ -46,5 +50,5 @@
       "version": "^2.0.0"
     }
   ],
-  "build": "8"
+  "build": "11"
 }
