@@ -50,7 +50,7 @@ const CustomPopup = (() => {
             <div id="PopupContent" class="popup-content"></div>
         `;
         document.getElementById('passages').appendChild(popup);
-        $(popup.getElementsByClassName('popup-content')).wiki(content);
+        $(popup.querySelector('.popup-content')).wiki(content);
         $(popup).hide();
     }
 
@@ -113,7 +113,7 @@ const CustomPopup = (() => {
         $(bg).show();
 
         $(() => {
-            $('.draggable').draggable({
+            $('.popup-window').draggable({
                 handle : '#PopupBanner',
                 cancel : '.popup-content'
             });
@@ -158,7 +158,9 @@ const CustomPopup = (() => {
         show : showPopup,
         hide : hidePopup,
         setContent,
-        setSize
+        setSize,
+        findAllPopups,
+        totalPopupsCount
     });
 })();
 
