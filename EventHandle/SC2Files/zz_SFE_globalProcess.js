@@ -110,5 +110,5 @@ new TimeEvent('onThread', 'EventHandle_onTime')
     .Cond(() => iEvent.state.isIdle() === true)
     .Action(timeData => {
         const passage = Story.get(V.passage);
-        iEvent.onTime(timeData, passage);
+        iEventHandler.onTime(timeData, passage);
     });

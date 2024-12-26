@@ -184,12 +184,12 @@ const iEventHandler = (() => {
     }
 
     // on time handle if needed
-    function _onTimeHandle(passed, passage) {
+    function _onTimeHandle(timeData, passage) {
         if (V.combat !== 0) return;
         if (iEvent.state.isPlaying()) return;
 
         const eventResult = {};
-        _checkCondition(iEvent.data.get('onTime'), eventResult, passed, passage);
+        _checkCondition(iEvent.data.get('onTime'), eventResult, timeData, passage);
         if (eventResult.ready) {
             _setEvent(eventResult);
             Tvar.jumpPassage = eventResult.passageTitle;
