@@ -329,22 +329,22 @@ const htmlTools = (() => {
         return _applyAfterElment(element, eID, options.content);
     }
 
-    const state = {
+    const _state = {
         count : 0,
         init() {
-            state.count = 0;
+            _state.count = 0;
         }
     };
 
     return Object.seal({
         get applyCount() {
-            return state.count;
+            return _state.count;
         },
         set applyCount(value) {
-            state.count = value;
+            _state.count = value;
         },
 
-        init : state.init,
+        init : _state.init,
 
         wiki         : _wikifyTo,
         append       : _append,

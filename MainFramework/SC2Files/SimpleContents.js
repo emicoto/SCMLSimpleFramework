@@ -158,7 +158,7 @@ function showSimpleFrameworkInfo() {
         return false;
     };
     const getModName = function (modinfo) {
-        if (!modinfo.nickName) return modinfo.modName;
+        if (!modinfo.nickName) return modinfo.name;
         if (typeof modinfo.nickName === 'string') return modinfo.nickName;
 
         return lanSwitch(modinfo.nickName.en, modinfo.nickName.cn);
