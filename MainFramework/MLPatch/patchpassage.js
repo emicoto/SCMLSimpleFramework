@@ -432,7 +432,6 @@
 	
     async function simpleWidgetInit(passageData) {
         await simpleFrameworks.createWidgets();
-        await simpleFrameworks.createModInitMacro();
         await simpleFrameworks.createSpecialWidgets();
 
         // modUtils.updatePassageData('Simple Widget Frameworks', '', ['widget'], 0)

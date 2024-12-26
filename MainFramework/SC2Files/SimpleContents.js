@@ -148,31 +148,16 @@ function showSimpleFrameworkInfo() {
         </div>
     </div>`;
 
-    const modlist = iMod.getModList();
-    const checkDep = function (arr) {
-        if (!Array.isArray(arr)) return false;
-        for (let i = 0; i < arr.length; i++) {
-            const depinfo = arr[i];
-            if (depinfo.modName == 'Simple Frameworks') return true;
-        }
-        return false;
-    };
-    const getModName = function (modinfo) {
-        if (!modinfo.nickName) return modinfo.name;
-        if (typeof modinfo.nickName === 'string') return modinfo.nickName;
-
-        return lanSwitch(modinfo.nickName.en, modinfo.nickName.cn);
-    };
+    const modlist = iMod.modData.modList;
 
     const html = [];
 
     for (let i = 0; i < modlist.length; i++) {
         const modId = modlist[i];
         const modinfo = modUtils.getMod(modId);
-        if (!modinfo.bootJson) continue;
-        if (checkDep(modinfo.bootJson.dependenceInfo) === false) continue;
-        
-        const modname = getModName(modinfo);
+        if (!modinfo) continue;
+
+        const modname = iMod.getModName(modinfo);
         const modversion = modinfo.version;
         const text = `
         <div class="modinfo">

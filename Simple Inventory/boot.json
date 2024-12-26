@@ -40,6 +40,13 @@
       "params": []
     }
   ],
+  "SFPlugin": {
+    "defaultConfigs": {
+      "maxsize": 100,
+      "boostsize": 1,
+      "disableStack": false
+    }
+  },
   "dependenceInfo": [
     {
       "modName": "TweeReplacer",
@@ -50,5 +57,5 @@
       "version": "^2.0.0"
     }
   ],
-  "build": "11"
+  "build": "13"
 }

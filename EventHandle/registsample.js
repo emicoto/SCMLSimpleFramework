@@ -22,7 +22,7 @@ iEvent.data
                 { location : ['chinatown'] , prevPassageIs : 'Stage Chinatown' },
                 flags => flags.debug == 'vendor' && between(Time.hour, 6, 21)
             )
-            .Action('init', '<<set $tvar.onselect to true>><<generateRole 0 0 "vendor">><<person1>>')
+            .Action('init', '<<generateRole 0 0 "vendor">><<person1>>')
             .Action('end', '<<set $eventskip to 1 >>')
         ,
         new SceneData('StreetShow', 'scene')

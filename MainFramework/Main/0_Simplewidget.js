@@ -1,5 +1,5 @@
 const frameworkversion = '2.0.2'
-const builds = 40;
+const builds = 6;
 const lastUpdate = '2024.12.26';
 
 const simpleFrameworks = {
@@ -10,11 +10,11 @@ const simpleFrameworks = {
     builds,
     onInit(...widgets) {
         widgets.forEach(widget => {
-            if (String(widget) == '[object Object]' && widget.name) {
-                this.initFunction.push(widget.name);
-            }
             if (typeof widget === 'string') {
                 this.data.iModInit.push(widget);
+            }
+            else {
+                this.initFunction.push(widget);
             }
         });
     },
@@ -24,7 +24,7 @@ const simpleFrameworks = {
             if (typeof widget === 'string') {
                 this.data[zone].push(widget);
             }
-            if (String(widget) == '[object Object]' && widget.passage && widget.widget) {
+            if (String(widget) == '[object Object]' && widget.widget) {
                 this.data[zone].push(widget);
             }
         });
@@ -65,14 +65,17 @@ const simpleFrameworks = {
     },
 
     storyInit() {
+        if (this.initFunction.length == 0) return;
+        
         this.initFunction.forEach(initfunc => {
             const init = initfunc;
             if (typeof init == 'function') init();
+            if (typeof init == 'object' && init.func) init.func();
         });
     },
 
     default : {
-        iModInit   : '<<iModInitFunction>><<run setup.addBodyWriting()>>\n\n',
+        iModInit   : '<<run simpleFrameworks.storyInit()>><<run setup.addBodyWriting()>>\n\n',
         iModReady  : '\n',
         iModHeader : '<<iEventHeader>>\n',
         iModFooter : '<<ModVersions>>\n',
@@ -328,24 +331,6 @@ const simpleFrameworks = {
         }
 
         this.widgethtml = html;
-
-        return 'ok';
-    },
-
-    // eslint-disable-next-line require-await
-    async createModInitMacro() {
-        let html = '\n\n<<widget \'iModInitFunction\'>>\n';
-        this.initFunction.forEach(func => {
-            if (typeof func === 'function') {
-                html += `<<run ${func.name}()>>\n`;
-            }
-            else if (typeof func === 'string') {
-                html += `<<run ${func}()>>\n`;
-            }
-        });
-        html += '<</widget>>\n';
-
-        this.widgethtml += html;
 
         return 'ok';
     },

@@ -163,6 +163,7 @@ const iMod = (() => {
         const title = passageTitle ?? V.passage;
         const html = data.reduce((result, widgets) => {
             if (String(widgets) == '[object Object]') {
+                // if is exclude
                 if (
                     typeof widgets.exclude == 'string' && widgets.exclude !== title ||
                     Array.isArray(widgets.exclude) && !widgets.exclude.includes(title)
@@ -220,38 +221,77 @@ const iMod = (() => {
         }
     };
 
+    function _checkDep(arr) {
+        if (!Array.isArray(arr)) return false;
+        for (let i = 0; i < arr.length; i++) {
+            const depinfo = arr[i];
+            if (depinfo.modName == 'Simple Frameworks') return true;
+        }
+        return false;
+    }
+
+    function _getModJson(modId) {
+        const mod = modUtils.getMod(modId);
+        if (!mod) return null;
+
+        const modJson = mod.bootJson;
+        if (!modJson) return null;
+
+        return modJson;
+    }
+
+    function _getModName(modinfo) {
+        if (!modinfo.nickName) return modinfo.name;
+        if (typeof modinfo.nickName === 'string') return modinfo.nickName;
+        if (modinfo.nickName.EN || modinfo.nickName.CN) return lanSwitch(modinfo.nickName);
+        return lanSwitch(modinfo.nickName.en, modinfo.nickName.cn);
+    }
+
+    const _modData = {
+        modList : [],
+        mods    : {}
+    };
+
     function _getModList() {
         const MLlist = modUtils.getModListName();
         // if utils not avaqilable, return empty array
         if (!MLlist) return [];
 
         // find index of Simple Frameworks
-        const index = MLlist.indexOf('Simple Frameworks');
-        // then get rest after Simple Frameworks
-        const rest = MLlist.slice(index + 1);
-        return rest;
+        const modlist = [];
+        // find all mod that depend on Simple Frameworks
+        for (let i = 0; i < MLlist.length; i++) {
+            const modId = MLlist[i];
+            const moddata = modUtils.getMod(modId);
+            if (!moddata) continue;
+
+            const modinfo = _getModJson(modId);
+            if (_checkDep(modinfo.dependenceInfo) === false) continue;
+
+            modlist.push({
+                modId,
+                name : _getModName(moddata),
+                data : modinfo
+            });
+        }
+        return modlist;
     }
 
-    const _modData = {
-        modList          : [],
-        defaultConfigs   : {},
-        defaultVariables : {}
-    };
-
     function _modRegist(modId, defaultConfig = null, defaultVariables = null) {
-        if (_modData.defaultConfigs[modId] === undefined) {
-            _modData.defaultConfigs[modId] = {};
+        if (!_modData.mods[modId]) {
+            _modData.mods[modId] = {
+                modId,
+                config   : defaultConfig || {},
+                variable : defaultVariables || {}
+            };
         }
-        if (_modData.defaultVariables[modId] === undefined) {
-            _modData.defaultVariables[modId] = {};
-        }
-
-        if (defaultConfig !== null) {
-            _modData.defaultConfigs[modId] = defaultConfig;
-        }
-
-        if (defaultVariables !== null) {
-            _modData.defaultVariables[modId] = defaultVariables;
+        else {
+            if (defaultConfig !== null && _modData.mods[modId].config) {
+                _modData.mods[modId].config = _updateObj(_modData.mods[modId].config, defaultConfig);
+            }
+            if (defaultVariables !== null && _modData.mods[modId].variable) {
+                _modData.mods[modId].variable = _updateObj(_modData.mods[modId].variable, defaultVariables);
+            }
         }
 
         _modData.modList.push(modId);
@@ -264,20 +304,61 @@ const iMod = (() => {
         };
     }
 
+    function _resetTvar(...keys) {
+        const ignore = ['passage', 'prevPassage', 'passageHistory'];
+        if (keys.length == 0) {
+            const tvar = {};
+            ignore.forEach(key => {
+                tvar[key] = V.tvar[key];
+            });
+
+            V.tvar = tvar;
+            return;
+        }
+
+        if (keys.length == 1 && array.isArray(keys[0])) {
+            keys = keys[0];
+        }
+
+        for (const key of keys) {
+            delete V.tvar[key];
+        }
+    }
+
+    function _initModsBeforeSC() {
+        const modlist = _getModList();
+        if (modlist.length == 0) return;
+
+        for (const mod of modlist) {
+            const id = mod.modId;
+            const configs = mod.data.SFPlugin?.defaultConfigs || {};
+            const variables = mod.data.SFPlugin?.defaultVariables || {};
+            _modData.mods[id] = {
+                modId    : id,
+                config   : configs,
+                variable : variables,
+                data     : mod.data
+            };
+
+            _modData.modList.push(id);
+
+            if (mod.data.SFPlugin?.addWidget) {
+                console.log('[SF] addWidget:', clone(mod.data.SFPlugin.addWidget));
+                for (const [zone, options] of Object.entries(mod.data.SFPlugin.addWidget)) {
+                    simpleFrameworks.addto(zone, ...options);
+                }
+            }
+        }
+    }
+
     function _autoRegister() {
         const modList = _getModList();
         if (modList.length == 0) return;
 
         console.log('[SF] autoRegister:', modList);
 
-        for (const modId of modList) {
-            _register(modId, _modData.defaultConfigs[modId], _modData.defaultVariables[modId]);
-        }
-        
-        // 以防万一，直接从数据库里检查Mod列表
-        for (const modId of _modData.modList) {
-            if (modList.includes(modId) === true) continue;
-            _register(modId, _modData.defaultConfigs[modId], _modData.defaultVariables[modId]);
+        for (const [modId, mod] of Object.entries(_modData.mods)) {
+            _register(modId, mod.config, mod.variable);
         }
     }
 
@@ -306,14 +387,18 @@ const iMod = (() => {
         registV  : _register,   // regist mod to V.iModVar and V.iModConfigs directly
         remove   : _remove,
         initMods : _autoRegister,
+
+        initModsBefore : _initModsBeforeSC,
         
         gatherModV     : _gatherModV,
         gatherVariable : _gatherVariable,
         getModList     : _getModList,
+        getModName     : _getModName,
 
         play : _playZone,
 
-        isSafePeriod : _isSafePerieod
+        isSafePeriod : _isSafePerieod,
+        resetTvar    : _resetTvar
     });
 })();
 
@@ -322,3 +407,4 @@ Object.defineProperties(window, {
     Macro  : { get : () => SugarCube.Macro },
     Engine : { get : () => SugarCube.Engine }
 });
+
