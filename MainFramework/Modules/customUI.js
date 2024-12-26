@@ -1,7 +1,14 @@
 const CustomPopup = (() => {
     function drawPopup(title = '', content = '', options = {}) {
         createBackground();
-        createPopupWindow(title, content, options);
+        const id = options.id ?? 'customPopup';
+        const el = document.getElementById(id);
+        if (!el) {
+            createPopupWindow(title, content, options);
+        }
+        else {
+            setContent(content, id);
+        }
     }
 
     function findAllPopups() {
@@ -14,8 +21,6 @@ const CustomPopup = (() => {
 
     function createPopupWindow(title, content, options) {
         const id = options.id ?? 'customPopup';
-        if (document.getElementById(id)) return;
-
         const popup = document.createElement('div');
         popup.id = id;
         popup.classList.add('draggable');
@@ -42,9 +47,10 @@ const CustomPopup = (() => {
                 <div class="popup-title">${title}</div>
                 ${options.noBtn ? '<div class="nocloseBtn"></div>' : `<button class="closeBtn" onclick="CustomPopup.close('${id}')">X</button>`}
             </div>
-            <div id="PopupContent" class="popup-content">${content}</div>
+            <div id="PopupContent" class="popup-content"></div>
         `;
         document.getElementById('passages').appendChild(popup);
+        $(popup.getElementsByClassName('popup-content')).wiki(content);
         $(popup).hide();
     }
 
@@ -89,10 +95,10 @@ const CustomPopup = (() => {
 
     function setContent(content, id) {
         id ??= 'customPopup';
-        const main = document.getElementById(id);
-        const popup = main.getElementById('PopupContent');
-        if (popup) {
-            popup.innerHTML = content;
+        const doc = document.getElementById(id);
+        if (doc) {
+            $(`div#${id} .popup-content`).empty();
+            $(`div#${id} .popup-content`).wiki(content);
         }
     }
 

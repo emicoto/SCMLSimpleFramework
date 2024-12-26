@@ -57,8 +57,8 @@
     border : 1px solid rgb(120, 120, 120);
     border-radius: 4px;
 
-    min-width: 250px;
-    min-height: 180px;
+    min-width: 200px;
+    min-height: 150px;
     box-shadow: 6px 10px 8px 3px rgb(0 0 0 / 30%);
     backdrop-filter: blur(6px);
 }

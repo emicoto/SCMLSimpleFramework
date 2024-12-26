@@ -135,8 +135,8 @@
                 applybefore : '\t\t<<button lanSwitch(\'Mods\', \'模组\')>>\n\t\t\t<<toggleTab>>\n\t\t\t<<replace #cheatsShown>><<iModCheats>><</replace>>\n\t\t\t<<run $("#customOverlayContent").scrollTop(0);>>\n\t\t<</button>>\n'
             },
             {
-                srcmatch : /<<button "Notes">>|<<button "笔记">>/,
-                to       : '<<button lanSwitch(\'ModMemos\', \'模组备忘录\')>><<toggleTab>><<replace #customOverlayContent>><<iModMemo>><</replace>><<run $("#customOverlayContent").scrollTop(0);>><</button>>\t\t<<button lanSwitch("Notes", "笔记")>>'
+                srcmatch    : /<<button "Notes">>|<<button "笔记">>/,
+                applybefore : '<<button lanSwitch(\'ModMemos\', \'模组备忘录\')>><<toggleTab>><<replace #customOverlayContent>><<iModMemo>><</replace>><<run $("#customOverlayContent").scrollTop(0);>><</button>>\n\t\t'
             }
         ],
         'Options Overlay' : [
@@ -157,7 +157,7 @@
                 applybefore : '\n\t\t\tsetup.ModSocialSetting();\n\n\t\t\t'
             },
             {
-                srcmatch    : /<br>[\s]+<span class="gold">(Fame|知名度)<\/span>/,
+                srcmatch    : /<br>[\s]+<span class="gold">(Fame|知名度|声誉)<\/span>/,
                 applybefore : '\n\t\t<<iModStatus>>\n\t\t'
             },
             {
@@ -303,30 +303,20 @@
         else if (set.src) {
             console.warn('match failed:', set.src, title);
         }
-        if (set.srcmatch && source.match(set.srcmatch)) {
+        if (set.srcmatch && set.srcmatch.test(source)) {
             source = applymatch(source, set.srcmatch, set);
         }
         else if (set.srcmatch) {
             console.warn('match failed:', set.srcmatch, title);
         }
 
-        if (set.srcmatchgroup && source.match(set.srcmatchgroup)) {
+        if (set.srcmatchgroup && set.srcmatchgroup.test(source)) {
             const txt = source.match(set.srcmatchgroup);
+            // console.log('[SFDebug] match group:', title, txt);
             if (txt.length > 0) {
                 for (let i = 0; i < txt.length; i++) {
                     const text = txt[i];
-                    if (set.find) {
-                        const res = applysrc(text, set.find, set);
-                        source = source.replace(text, res);
-                    }
-                    else if (set.findmatch) {
-                        const [txt1, txt2] = text.match(set.findmatch);
-                        const res = applysrc(txt[i], txt1, set);
-                        source = source.replace(text, res);
-                    }
-                    else {
-                        source = applysrc(source, text, set);
-                    }
+                    source = applygroup(source, text, set);
                 }
             }
         }
@@ -412,46 +402,10 @@
         if (!widgetPassage[title]) return;
 
         // console.log(typeof source, title, passage);
-	
-        widgetPassage[title].forEach(set => {
-            if (set.src && source.includes(set.src)) {
-                source = applysrc(source, set.src, set);
-            }
-            else if (set.src) {
-                console.warn('match failed:', set.src, title);
-            }
-            if (set.srcmatch && source.match(set.srcmatch)) {
-                srouce = applymatch(source, set.srcmatch, set);
-            }
-            else if (set.srcmatch) {
-                console.warn('match failed:', set.srcmatch, title);
-            }
-
-            if (set.srcmatchgroup && source.match(set.srcmatchgroup)) {
-                const txt = source.match(set.srcmatchgroup);
-                if (txt.length > 0) {
-                    for (let i = 0; i < txt.length; i++) {
-                        const text = txt[i];
-                        if (set.find) {
-                            const res = applysrc(text, set.find, set);
-                            source = source.replace(text, res);
-                        }
-                        else {
-                            source = applysrc(source, text, set);
-                        }
-                    }
-                }
-            }
-            else if (set.srcmatchgroup) {
-                console.warn('match failed:', set.srcmatchgroup, title);
-            }
-            if (set.srcgroup && source.includes(set.srcgroup)) {
-                source = applygroup(source, set.srcgroup, set);
-            }
-            else if (set.srcgroup) {
-                console.warn('match failed:', set.srcgroup, title);
-            }
-        });
+        for (let i = 0; i < widgetPassage[title].length; i++) {
+            const set = widgetPassage[title][i];
+            source = matchAndApply(set, source, title);
+        }
 
         if (title == 'Widgets Actions Generation') {
             source = patchCombat(source);
