@@ -62,7 +62,21 @@ const iEventHandler = (() => {
             _initEvent();
         }
 
+        if (typeof Tvar.passageHistory === 'undefined') {
+            Tvar.passageHistory = [];
+        }
+
         // bak passage and prevPassage to Tvar
+        if (Tvar.prevPassage) {
+            const psg = Story.get(Tvar.prevPassage);
+            if (psg.tags.has('system', 'nohistory', 'skip', 'eventloop', 'actionloop') === false) {
+                if (Tvar.passageHistory.length > 24) {
+                    Tvar.passageHistory.shift();
+                }
+                Tvar.passageHistory.push(Tvar.prevPassage);
+            }
+        }
+
         Tvar.passage = passage.title;
         Tvar.prevPassage = prevPassage.title;
     }

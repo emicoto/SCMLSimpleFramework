@@ -63,7 +63,7 @@ postrender.SFEInit = function () {
 
 postrender.SFE_onPostevent = function () {
     const passage = this;
-    const prevPassage = Story.get(Tvar.prevPassage ?? '');
+    const prevPassage = Story.get(V.lastPassage ?? '');
 
     if (!passage || passage.tags.has('widget', 'system') || !V.passage) {
         return;

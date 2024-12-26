@@ -55,10 +55,11 @@
 .custom-popup {
     background-color: rgba(80, 80, 80, 0.9);
     border : 1px solid rgb(120, 120, 120);
+    border-radius: 4px;
 
     min-width: 250px;
     min-height: 180px;
-    box-shadow: 6px 10px 8px 3px rgb(0 0 0 / 60%);
+    box-shadow: 6px 10px 8px 3px rgb(0 0 0 / 30%);
     backdrop-filter: blur(6px);
 }
 
@@ -84,10 +85,11 @@
     background-color : rgb(50, 50, 50);;
     color : cyan;
     border : none;
-    padding: 4px;
+    padding: 0px 0px;
     width: 24px;
     height: 24px;
     font-size:small;
+    border-radius: 5px;
 }
 
 #PopupBanner .nocloseBtn {
