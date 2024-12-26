@@ -189,7 +189,7 @@ const iEventHandler = (() => {
         if (iEvent.state.isPlaying()) return;
 
         const eventResult = {};
-        _checkCondition(iEvent.data.get('onTime'), eventResult, timeData, passage);
+        _checkCondition(iEvent.data.get('onTime').data, eventResult, timeData, passage);
         if (eventResult.ready) {
             _setEvent(eventResult);
             Tvar.jumpPassage = eventResult.passageTitle;

@@ -4,6 +4,14 @@ const CustomPopup = (() => {
         createPopupWindow(title, content, options);
     }
 
+    function findAllPopups() {
+        return document.querySelectorAll('.popup-window');
+    }
+
+    function totalPopupsCount() {
+        return findAllPopups().length;
+    }
+
     function createPopupWindow(title, content, options) {
         const id = options.id ?? 'customPopup';
         if (document.getElementById(id)) return;
@@ -18,6 +26,17 @@ const CustomPopup = (() => {
         else {
             popup.classList.add('custom-popup');
         }
+
+        if (totalPopupsCount() > 0) {
+            let top = $(findAllPopups()).last().position().top - 10;
+            top = Math.clamp(top, 0, window.innerHeight - 100);
+            popup.style.top = `${top}px`;
+
+            let left = $(findAllPopups()).last().position().left + 10;
+            left = Math.clamp(left, 0, window.innerWidth - 100);
+            popup.style.left = `${left}px`;
+        }
+
         popup.innerHTML = `
             <div id="PopupBanner">
                 <div class="popup-title">${title}</div>

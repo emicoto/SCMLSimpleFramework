@@ -13,8 +13,8 @@ var iEvent = (() => {
             onTime      : new SeriesData('time'),
             onCondition : new SeriesData('condition')
                 .add(
-                    new ConditionSeries('passout', 'condition').Cond(() => iEvent.passoutCheck()),
-                    new ConditionSeries('common', 'condition').Cond(() => true)
+                    new ConditionSeries('passout').Cond(() => iEvent.passoutCheck()),
+                    new ConditionSeries('common').Cond(() => true)
                 )
         },
         postFunc : {},
@@ -268,6 +268,10 @@ var iEvent = (() => {
     }
 
     function _sortEvents(data) {
+        if (data instanceof SeriesData || data instanceof EventSeries || data instanceof ConditionSeries) {
+            data.initSeries();
+        }
+
         if (data instanceof EventSeries || data instanceof ConditionSeries) {
             data.sort();
         }

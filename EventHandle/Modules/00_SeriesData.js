@@ -1,6 +1,6 @@
 class SeriesData {
     constructor(type, seriesId = '') {
-        this.seriesType = type;
+        this.dataType = type;
         this.Id = seriesId;
         this.data = new Map();
     }
@@ -13,7 +13,7 @@ class SeriesData {
     initSeries() {
         const _data = this.data.values();
         _data.forEach(item => {
-            item.seriesId = this.Id;
+            item.dataType = this.dataType;
         });
     }
 
