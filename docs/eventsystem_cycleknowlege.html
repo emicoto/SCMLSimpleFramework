@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>事件系统 - 基础概念与流程详解</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+            padding: 0;
+            color: #2c3e50;
+        }
+        h1, h2, h3 {
+            color: #34495e;
+        }
+        pre {
+            background: #ecf0f1;
+            padding: 10px;
+            overflow-x: auto;
+        }
+        code {
+            font-family: Consolas, "Courier New", monospace;
+            background: #ecf0f1;
+            padding: 2px 4px;
+        }
+    </style>
+</head>
+<body>
+    <h2>事件基础概念</h2>
+
+    <p>在事件系统中，一个事件（Event）通常由以下几个核心要素组成：</p>
+
+    <h3>1 事件（Event）</h3>
+
+    <p>事件是游戏中可以被触发的独立行为，它可以是一段对话，一个剧情链，一个独立场景，甚至可以直接进入战斗。</p>
+
+    <p><strong>特点：</strong></p>
+
+    <ul>
+    <li>独立的逻辑单位</li>
+    <li>可包含多个阶段（Phase）</li>
+    <li>受触发器（Trigger）控制</li>
+    </ul>
+
+    <h3>2 触发器（Trigger）</h3>
+
+    <p>触发器是决定事件何时发生的机制。它可以基于所处场景(stage)，段落(passage)，时间，概率，具体条件等等。</p>
+
+    <p><strong>常见类型：</strong></p>
+
+    <ul>
+    <li><strong>场景触发</strong>：进入特定场景时触发</li>
+    <li><strong>条件触发</strong>：满足特定条件时触发</li>
+    <li><strong>随机触发</strong>：按一定概率发生</li>
+    </ul>
+
+    <h3>3 条件（Condition）</h3>
+
+    <p>Trigger中的条件用于进一步限制事件的触发。例如，某个剧情事件必须在夜晚或特定NPC在场时才能触发。在Condition中，默认第一参数为申请调用的flags，第二参数为passage对象（当前运行中的场景），第三参数则是prevPassage对象（上一个场景）。</p>
+
+    <p><strong>示例：</strong></p>
+
+    <pre><code>flags =&gt; flags.hasKey &amp;&amp; Time.hour &gt;= 18
+    (flags, passage, prevPassage) =&gt; flags.num &gt;= 0 &amp;&amp; passage.title !== prevPassage.title
+    </code></pre>
+
+    <h3>4 动作（Action）</h3>
+
+    <p>动作指事件执行到特定位置时，进行的统一操作。例如在init（事件初始化)时统一随机npc的初始化，在特定phase的时候执行对应的数值操作等等。</p>
+
+    <p>所有可用的执行位置:</p>
+
+    <ul>
+    <li><code>init</code> 事件初始化时</li>
+    <li><code>end</code> 事件结束时</li>
+    <li><code>next</code> 执行下一步时</li>
+    <li><code>phase_X</code> 指定的phase执行时。X可替换为对应值。例如phase_1</li>
+    <li><code>branch_X</code> 定的branch（分支）执行时。X可替换为对应值。例如branch_yes</li>
+    </ul>
+
+    <p><strong>示例：</strong></p>
+
+    <pre><code>.Action('init', '&lt;&lt;randomnpc 1&gt;&gt;')
+    .Action('phase_1', '&lt;&lt;set $flag.a to 1&gt;&gt;')
+    </code></pre>
+
+    <h3>5 运行流程</h3>
+
+    <p>事件框架会在游戏每次准备进入一个场景（passage）时进行事件检测。会根据passage的类型分类检测：</p>
+
+    <ul>
+    <li><strong>如果是stage类型的passage</strong>，直接从场景对应的系列事件中执行检测并抽选可执行事件。</li>
+    <li><strong>如果不是stage类型</strong>，则会从通用事件库中执行事件检测，并随机抽取可执行的事件。</li>
+    </ul>
+
+    <p>当确定会有事件执行时，将会根据事件发生状态跳转到对应的事件段落（passage）或者对应的舞台（stage passage）。</p>
+
+    <h4>事件合法性检测与初始化</h4>
+
+    <p>在事件确认执行前，会先确认事件的合法性，例如：</p>
+
+    <ul>
+    <li>是否被玩家作弊干涉，导致舞台不对或条件失效。</li>
+    <li>事件文档<code>PassageTitle</code>是否真实有效，是否存在多语言分支等。</li>
+    </ul>
+
+    <p>如果事件出问题，会清除事件，并返回到事先保存的位置。</p>
+
+    <p>当<strong>事件确认执行</strong>，事件系统会先执行事件档案的初始化（init），将事件档案分别注册到事件系统缓存（<code>iEvent.current</code>），以及游戏系统缓存（<code>tvar.event</code>），并改变事件系统的运行状态为<code>running</code>后，进行跳转然后开始执行事件。</p>
+
+    <h4>事件执行与页面渲染</h4>
+
+    <p>执行事件时，会在渲染页面之前的阶段做预处理。</p>
+
+    <ul>
+    <li><strong>如果是分段（phase）的事件</strong>，会先将标题设置为当前phase后，并执行对应的<code>Action</code>（如果存在）。</li>
+    <li><strong>如果是分支（branch）事件</strong>，则会直接执行对应的<code>Action</code>（如果存在）。</li>
+    </ul>
+
+    <p>此外，还会执行当前事件通用的<code>predisplay</code>处理（如果存在）。</p>
+
+    <h4>事件页面渲染与下一步链接</h4>
+
+    <p>当页面渲染完毕时，会检测当前页面是否存在可用的链接。如果没有，则会自动创建“下一步”的链接。</p>
+
+    <ul>
+    <li><strong>如果事件设置了</strong><code>next</code><strong>的Action</strong>，则相应的执行代码会被添加到链接中。</li>
+    <li><strong>如果当前phase结束</strong>，自动生成的“下一步”链接会指向预先设置的事件出口。</li>
+    <li><strong>如果事件没有明确出口</strong>，则会返回到事件最初触发的位置，即玩家的初始场景。</li>
+    </ul>
+
+    <p>每次处理都会自动增加1秒的游戏时间，确保事件执行与时间流动对应。</p>
+
+    <p>如果是分段的事件，则会在页面渲染完毕后自动+1推进phase。</p>
+
+    <p>另外，在页面渲染完毕时，系统会自动执行当前事件通用的postdisplay处理（如果存在）。</p>
+</body>
+</html>

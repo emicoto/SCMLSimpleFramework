@@ -238,20 +238,59 @@ slog('log', 'simple framework start at util.js')
         return arr.reduce((count, subarr) => count + (subarr.includes(element) ? 1 : 0), 0);
     }
 
-    // get and set object by path
-    function setPath(obj, path, value) {
-        const pathArray = path.split('.');
-        const last = pathArray.pop();
-        for (const p of pathArray) {
-            if (!obj[p]) obj[p] = {};
-            obj = obj[p];
-        }
-        if (value) {
-            obj[last] = value;
-        }
-        return obj[last];
+    function isNumber(n) {
+        const num = Number(n);
+        return Number.isNaN(num) === false && Number.isFinite(num) === true;
     }
 
+    function isInteger(n) {
+        const num = Number(n);
+        return Number.isInteger(num);
+    }
+
+    // get and set object by path
+    function setPath(obj, path, value) {
+        const keys = path.split('.');
+        if (!obj || typeof obj !== 'object') {
+            return undefined;
+        }
+
+        let current = obj;
+        for (let i = 0; i < keys.length; i++) {
+            let key = keys[i];
+            const isLast = i === keys.length - 1;
+            // 判断是否是数组索引
+            const isIndex = isNumber(key);
+      
+            // 将字符串索引转成数字索引
+            if (isIndex) {
+                key = parseInt(key, 10);
+            }
+      
+            if (isLast && value) {
+            // 最后一层直接赋值
+                current[key] = value;
+            }
+            // 最后一层但没有值，返回当前层
+            else if (isLast) {
+                return current;
+            }
+            else {
+            // 如果下一层不存在，检查下一个 key 是否是数字，以决定用数组还是对象初始化
+                if (current[key] === undefined) {
+                    const nextKey = keys[i + 1];
+                    const nextIsIndex = isNumber(nextKey);
+                    current[key] = nextIsIndex ? [] : {};
+                }
+                current = current[key];
+            }
+        }
+    
+        // 返回最后一层
+        return obj[keys[keys.length - 1]];
+    }
+
+    // get value by object path
     function getPath(obj, path) {
         const pathArray = path.split('.');
         let res = obj;
@@ -293,7 +332,9 @@ slog('log', 'simple framework start at util.js')
         getPath       : { value : getPath },
         getKeyByValue : { value : getKeyByValue },
         isValid       : { value : isValid },
-        isObject      : { value : isObject }
+        isObject      : { value : isObject },
+        isNumber      : { value : isNumber },
+        isInteger     : { value : isInteger }
     });
 	
     // fix the number to any decimal places

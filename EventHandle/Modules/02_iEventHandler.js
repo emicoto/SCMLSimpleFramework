@@ -117,6 +117,17 @@ const iEventHandler = (() => {
 
         // check after passage event
         _doActions('after', 'postdisplay');
+
+        // auto +1 phase if possible
+        if (!Tvar.autoNext) {
+            const scene = iEvent.current;
+            if (scene.maxPhase > 0 && V.phase < scene.maxPhase) {
+                V.phase++;
+            }
+        }
+        else {
+            delete Tvar.autoNext;
+        }
     }
 
     function _onRenderDone() {
@@ -157,6 +168,7 @@ const iEventHandler = (() => {
         let code = '';
         if (scene.maxPhase && V.phase < scene.maxPhase) {
             code += '<<set $phase to $phase + 1>>';
+            Tvar.autoNext = true;
         }
         if (scene.maxPhase && V.phase === scene.maxPhase) {
             code += '<<doEventEnd>>';
@@ -282,9 +294,7 @@ const iEventHandler = (() => {
     function _checkCondition(eventList, feedback, passage, prevPassage) {
         if (!eventList || eventList.length === 0) return feedback;
         for (const event of eventList) {
-            const { trigger, cond } = event;
-            if (typeof cond == 'function' && !cond(passage, prevPassage)) continue;
-
+            const { trigger } = event;
             const flags = iEventUtils.getFlags(event.parent, event.flagfield);
             if (trigger.onCheck(flags, passage, prevPassage) === false) continue;
 
@@ -502,13 +512,8 @@ const iEventHandler = (() => {
 
         // if has special passage of current event
         _doActions('', 'predisplay');
-
-        if (scene.maxPhase > 0 && V.phase < scene.maxPhase) {
-            V.phase++;
-        }
-
         // at least pass 10 second for every phase
-        Time.pass(10);
+        Time.pass(1);
         console.log(`Event ${scene.fullTitle} is running`, scene);
         T.link = true;
     }

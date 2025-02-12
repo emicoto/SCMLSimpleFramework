@@ -147,9 +147,8 @@ var iEvent = (() => {
      * @returns {number | string | boolean}
      */
     function _setFlag(series, flag, value) {
-        _initFlag(series, flag);
-        V.eFlags[series][flag] = value;
-        return V.eFlags[series][flag];
+        const path = series + (flag ? `.${flag}` : '');
+        return setPath(V.eFlags, path, value);
     }
 
     /**
@@ -162,7 +161,9 @@ var iEvent = (() => {
         if (V.eFlags[series] === undefined) {
             return undefined;
         }
-        return flag ? V.eFlags[series][flag] : V.eFlags[series];
+        const path = series + (flag ? `.${flag}` : '');
+        const flagdata = getPath(V.eFlags, path);
+        return flagdata;
     }
 
     /**
