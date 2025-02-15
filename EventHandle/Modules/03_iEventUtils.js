@@ -35,6 +35,7 @@ const iEventUtils = (() => {
             _checkVariableChange(Story.get(passage));
         }, 300);
     }
+    
     function _resetPhase(data, phase) {
         let branchData;
         let currentBranch = null;

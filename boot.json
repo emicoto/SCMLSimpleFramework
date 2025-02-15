@@ -1,6 +1,6 @@
 {
     "name": "Simple Frameworks",
-    "version": "2.0.2",
+    "version": "2.0.5",
     "scriptFileList_inject_early": [
         "Main/0_lib/jquery-ui.min.js",
         "Main/0_lib/selectcase.js",
@@ -76,6 +76,6 @@
             "version": "^1.0.0"
         }
     ],
-    "build": 8,
-    "lastUpdate": "2025.02.12"
+    "build": 2,
+    "lastUpdate": "2025.02.15"
 }

@@ -1,9 +1,7 @@
 {
   "name": "SimpleContent",
   "version": "0.0.1",
-  "scriptFileList_inject_early": [
-    "newContent.js"
-  ],
+  "scriptFileList_inject_early": [],
   "scriptFileList_earlyload": [],
   "scriptFileList_preload": [],
   "styleFileList": [],
@@ -12,7 +10,8 @@
     "test.js"
   ],
   "tweeFileList": [
-    "test.twee"
+    "test.twee",
+    "eventTest.twee"
   ],
   "imgFileList": [],
   "additionFile": [],
@@ -24,6 +23,49 @@
       "params": []
     }
   ],
+  "SFPlugin": {
+    "addWidget": {
+      "iModHeader": [
+        {
+          "widget": "aSimpleTest"
+        }
+      ],
+      "ModMenuSmall": [
+        {
+          "widget": "testButton"
+        }
+      ],
+      "iModOptions": [
+        {
+          "widget": "myOptionsA"
+        },
+        {
+          "widget": "myOptionsB"
+        },
+        {
+          "widget": "myOptionsC"
+        }
+      ],
+      "ModCaptionDescription": [
+        {
+          "widget": "TestCaption"
+        }
+      ],
+      "ModCaptionAfterDescription": [
+        {
+          "widget": "TestCaptionAfter"
+        }
+      ],
+      "iModReady": [
+        {
+          "widget": "newMoney"
+        }
+      ]
+    },
+    "defaultVariables": {
+      "test": "just a test"
+    }
+  },
   "dependenceInfo": [
     {
       "modName": "TweeReplacer",

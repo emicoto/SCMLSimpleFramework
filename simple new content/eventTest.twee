@@ -1,0 +1,27 @@
+:: Event aTestEvent [event]
+没别的就是一个测试用事件。
+
+
+:: Event aTestEventB p1 [event]
+没别的就是一个测试用事件B。
+但会分成多个段落。
+
+:: Event aTestEventB p2 [event]
+这是第二段。
+
+:: Event aTestEventB p3 [event]
+这是第三段。然后就结束啦。
+
+:: Event aTestEventC [event]
+这是一个测试用的事件C，但会有多个分支。
+
+<<nextBranch '进入分支A' 'branchA'>>
+<<nextBranch '进入分支B' 'branchB'>>
+
+:: Event aTestEventC branchA [event]
+这是分支A。
+没有然后了。
+
+:: Event aTestEventC branchB [event]
+这是分支B。
+也没有然后了。

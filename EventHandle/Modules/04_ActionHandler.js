@@ -1,4 +1,4 @@
-class Actions {
+class ActionData {
     constructor(type, obj = null) {
         this.type = type;
         this.cond = () => true;
@@ -9,22 +9,32 @@ class Actions {
             }
         }
     }
+
+    DisplayTxt(text) {
+        this.text = text;
+        return this;
+    }
+
     Icon(icon) {
         this.icon = icon;
         return this;
     }
+
     Target(target) {
         this.target = target;
         return this;
     }
-    Condition(cond) {
+
+    Cond(cond) {
         this.cond = cond;
         return this;
     }
+
     set(prop, value) {
         this[prop] = value;
         return this;
     }
+
     onCheck() {
         if (this.type === 'chara') {
             return V.npc.has(this.sId) && this.cond();
@@ -39,6 +49,16 @@ class Actions {
 
 
 const ActionHandler = (() => {
+    function _formatType(type) {
+        if (type === 'stage') {
+            return 'onLocation';
+        }
+        if (type === 'chara') {
+            return 'onCharacter';
+        }
+        return type;
+    }
+
     const _data = {
         actions : {
             onLocation  : {},
@@ -46,44 +66,29 @@ const ActionHandler = (() => {
         },
 
         add(type, seriesId, ...actions) {
-            let entry;
-            if (type === 'stage') {
-                entry = 'onLocation';
-            }
-            else if (type === 'chara') {
-                entry = 'onCharacter';
-            }
-            else {
-                entry = type;
-                if (!this.actions[entry]) {
-                    this.actions[entry] = {};
-                }
+            const typeId = _formatType(type);
+
+            if (!this.actions[typeId]) {
+                throw new Error(`Event type ${typeId} is not defined`);
             }
 
-            if (!this.actions[entry][seriesId]) {
-                this.actions[entry][seriesId] = [];
+            if (!this.actions[typeId][seriesId]) {
+                this.actions[typeId][seriesId] = [];
             }
 
-            actions.forEach(action => {
-                const data = new Actions(type, action);
-                data.set('sId', seriesId);
-                this.actions[entry][seriesId].push(data);
-            });
+            if (actions.length > 0) {
+                actions.forEach(action => {
+                    const data = new ActionData(type, action);
+                    data.set('sId', seriesId);
+                    this.actions[typeId][seriesId].push(data);
+                });
+            }
 
-            return this.actions[entry][seriesId];
+            return this.actions[typeId][seriesId];
         },
+
         get(type, id) {
-            let typeId;
-            if (type === 'stage') {
-                typeId = 'onLocation';
-            }
-            else if (type === 'chara') {
-                typeId = 'onCharacter';
-            }
-            else {
-                console.error(`[SF/EventSystem] Invalid action type: ${type}`);
-                return '';
-            }
+            const typeId = _formatType(type);
 
             const storage = _data.actions[typeId];
             if (!storage) {
@@ -99,15 +104,9 @@ const ActionHandler = (() => {
     }
 
     function _getActionList(type, id) {
-        if (type === 'stage') {
-            type = 'onLocation';
-        }
-        else if (type === 'chara') {
-            type = 'onCharacter';
-        }
-        else {
-            console.error(`[SF/EventSystem] Invalid action type: ${type}`);
-            return '';
+        type = _formatType(type);
+        if (!_data.actions[type]) {
+            throw new Error(`Event type ${type} is not defined`);
         }
 
         const actions = _data.actions[type][id];
@@ -173,6 +172,26 @@ const ActionHandler = (() => {
         }
 
         const html = _getActionList('stage', V.stage);
+        if (!html || html.length === 0) {
+            return;
+        }
+
+        let $el = $('div#actions');
+        if ($el.length === 0) {
+            let target = 'div#actions';
+            if (document.querySelector('div#actions') === null) {
+                target = 'div#extraLink';
+            }
+            if (document.querySelector('div#extraLink') === null) {
+                target = 'div#beforeLink';
+            }
+            if (document.querySelector('div#beforeLink') === null) {
+                target = 'div#passage-content';
+            }
+            $el = $('<div id="actions"></div>').appendTo(target);
+        }
+
+        $el.wiki(html);
     }
 
     return Object.freeze({
@@ -181,8 +200,34 @@ const ActionHandler = (() => {
         },
         add      : _data.add,
         get      : _data.get,
-        onGet    : _getActions,
-        onListUp : _getActionList,
+        listUp   : _getActions,
+        onGet    : _getActionList,
+        onStage  : _onStage,
         generate : _generateActionLinks
     });
 })();
+
+
+class LocalAction {
+    constructor(stageId, type = 'stage') {
+        this.stageId = stageId;
+        this.data = ActionHandler.add(type, stageId);
+    }
+
+    add(...actions) {
+        actions.forEach(action => {
+            const data = new ActionData('stage', action);
+            data.set('sId', this.stageId);
+            this.data.push(data);
+        });
+        return this.data;
+    }
+
+    new() {
+        const data = new ActionData('stage', {});
+        data.set('sId', this.stageId);
+        this.data.push(data);
+
+        return this.data[this.data.length - 1];
+    }
+}

@@ -17,11 +17,15 @@ class Scene {
             this.fullTitle = `${_type} ${V.stage} ${this.episode}`;
             this.baseTitle = this.fullTitle;
         }
+        else {
+            this.seriesId = data.seriesId;
+            this.seriesType = data.seriesType;
+        }
 
         this.startTime = V.timeStamp;
         this.exit = V.passage;
     }
-
+  
     initData() {
         const data = this.data;
         if (!data) return this;
@@ -30,8 +34,7 @@ class Scene {
         this.source = clone(data);
 
         this.seriesId = data.seriesId;
-        this.eventId = data.eventId;
-
+        
         this.startTime = V.timeStamp;
         this.exit = data.exit || V.passage;
         this.maxPhase = data.maxPhase ?? 0;
@@ -68,19 +71,18 @@ class Scene {
 
     getFullTitle() {
         const type = this.type[0].toUpperCase() + this.type.slice(1);
-        const { title } = this.data;
 
         let _title = `${type} ${this.seriesId} ${this.episode}`;
         if (this.seriesType == 'condition') {
             _title = `${type} ${this.episode}`;
         }
-        if (title) {
+        if (this.data.title) {
             _title = title;
         }
 
-        this.baseTitle = title;
+        this.baseTitle = _title;
 
-        if (this.branch.length > 0) {
+        if (this.branch?.length > 0) {
             _title += ` ${this.branch.join(' ')}`;
             this.currentBranch = this.branch[ this.branch.length - 1 ];
         }
@@ -93,23 +95,7 @@ class Scene {
     }
 
     initLanguage() {
-        const fullTitle = this.getFullTitle();
-
-        if (Story.has(`${fullTitle} ${setup.language}`)) {
-            return `${fullTitle} ${setup.language}`;
-        }
-
-        if (Story.has(`${fullTitle} CN`)) {
-            return `${fullTitle} CN`;
-        }
-
-        if (Story.has(`${fullTitle} EN`)) {
-            return `${fullTitle} EN`;
-        }
-
-        if (Story.has(`${fullTitle}`)) {
-            return fullTitle;
-        }
+        const fullTitle = this.getLanguage();
 
         console.warn(`Scene ${fullTitle} is not found, try to use the base title`);
 

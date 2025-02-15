@@ -261,10 +261,8 @@ const NamedNPC = (() => {
          */
         setBreasts(size, des, desc) {
             this.breastsize = size;
-
-            size = Math.clamp(size, 0, setup.breastsize.length);
-            this.breastdesc = des ?? size == 0 ? 'nipple' : `${setup.breastsizes[size]} breast`;
-            this.breastsdesc = desc ?? size == 0 ? 'nipples' : `${setup.breastsizes[size]} breasts`;
+            this.breastdesc = des ?? lanSwitch('breast', '乳房');
+            this.breastsdesc = desc ?? lanSwitch('breasts', '胸部');
             return this;
         }
         /**
@@ -318,18 +316,18 @@ const NamedNPC = (() => {
                 pcAwareOf         : null,
                 type              : null,
                 enabled           : true,
-                cycleDaysTotal    : random(24, 32),
+                cycleDaysTotal    : Random(24, 32),
                 cycleDay          : 0,
                 cycleDangerousDay : 10,
                 sperm             : [],
                 potentialFathers  : [],
                 nonCycleRng       : [
-                    random(0, 3), random(0, 3)
+                    Random(0, 3), Random(0, 3)
                 ],
                 pills : null
             };
 
-            pregnancy.cycleDay = random(1, pregnancy.cycleDaysTotal);
+            pregnancy.cycleDay = Random(1, pregnancy.cycleDaysTotal);
             pregnancy.cycleDangerousDay = 10;
 
             this.pregnancy = pregnancy;

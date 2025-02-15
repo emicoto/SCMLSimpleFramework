@@ -296,7 +296,7 @@ const iEventHandler = (() => {
         for (const event of eventList) {
             const { trigger } = event;
             const flags = iEventUtils.getFlags(event.parent, event.flagfield);
-            if (trigger.onCheck(flags, passage, prevPassage) === false) continue;
+            if (!trigger.onCheck(flags, passage, prevPassage)) continue;
 
             feedback.ready = true;
             feedback.data = event;
@@ -315,7 +315,7 @@ const iEventHandler = (() => {
         if (series.length === 0) return;
         if (typeof series.cond == 'function' && !series.cond(passage, prevPassage)) return;
 
-        _checkCondition(series, feedback, passage, prevPassage);
+        _checkCondition(series.data, feedback, passage, prevPassage);
 
         return feedback;
     }
@@ -327,15 +327,13 @@ const iEventHandler = (() => {
         if (serieslist.size > 2) {
             console.log('Multiple additional condition series detected');
             // check condition series availability
-            const list = serieslist.values();
+            const list = serieslist.data.values();
             for (const item of list) {
                 // skip common and passout series
                 if (item.Id == 'common' || item.Id == 'passout') continue;
-                if (typeof item.cond !== 'function') continue;
+                if (typeof item.cond == 'function' && !item.cond()) continue;
 
-                if (item.cond()) {
-                    series.push(...item.data);
-                }
+                series.push(...item.data);
             }
         }
 
@@ -492,7 +490,7 @@ const iEventHandler = (() => {
 
             Tvar.baseTitle = scene.getfullTitle();
             Tvar.eventId = scene.baseTitle;
-            Tvar.eventTitle = scene.initLanguage();
+            Tvar.eventTitle = scene.getLanguage();
             iEvent.state.set(`running:${scene.baseTitle}`);
         }
         else {

@@ -33,10 +33,10 @@ var iEvent = (() => {
         /**
          * add event to events storage
          * @param {string} eventType
-         * @param {*} eventData
+         * @param {EventSeries} eventData
          * @returns {Map}
          */
-        add(eventType, eventData) {
+        new(eventType = 'scene', eventData) {
             const typeId = `on${eventType[0].toUpperCase()}${eventType.slice(1)}`;
             const eventStorage = this.events[typeId];
             if (!eventStorage) {
@@ -51,6 +51,30 @@ var iEvent = (() => {
 
             eventStorage.set(eventData.Id, eventData);
             return eventStorage.get(eventData.Id);
+        },
+
+        /**
+         * add eventdata to existing event series
+         * @param {string} eventType;
+         * @param {string} seriesId;
+         * @param {SceneData[]} eventData
+         * @returns {EventSeries}
+         */
+        add(eventType, seriesId, ...eventData) {
+            const typeId = `on${eventType[0].toUpperCase()}${eventType.slice(1)}`;
+            const eventStorage = this.events[typeId];
+            if (!eventStorage) {
+                console.error(`Event type ${eventType} is not defined`);
+                return;
+            }
+
+            const series = eventStorage.get(seriesId);
+            if (!series) {
+                console.error(`Event series ${seriesId} is not defined`);
+                return;
+            }
+
+            return series.add(eventData ?? []);
         },
 
         /**
@@ -269,29 +293,12 @@ var iEvent = (() => {
     }
 
     function _sortEvents(data) {
-        if (data instanceof SeriesData || data instanceof EventSeries || data instanceof ConditionSeries) {
+        if (typeof data.initSeries === 'function') {
             data.initSeries();
         }
 
-        if (data instanceof EventSeries || data instanceof ConditionSeries) {
+        if (typeof data.sort === 'function') {
             data.sort();
-        }
-        else if (Array.isArray(data)) {
-            for (const item of data) {
-                if (typeof item.sort === 'function') {
-                    item.sort();
-                }
-            }
-        }
-        else if (data instanceof Map) {
-            for (const item of data.values()) {
-                if (typeof item.sort === 'function') {
-                    item.sort();
-                }
-                else if (typeof item === 'object') {
-                    _sortEvents(item);
-                }
-            }
         }
     }
 
@@ -420,7 +427,7 @@ var iEvent = (() => {
 
     // set event and ready to play a event by given data
     function _setEvent(eventData) {
-        _state.event = new Scene('scene', eventData.Id, eventData);
+        _state.event = new Scene(eventData.type ?? 'scene', eventData.Id, eventData);
         _state.event.getFullTitle();
         _state.set(`starting:${_state.event.baseTitle}`);
 
@@ -492,3 +499,32 @@ var iEvent = (() => {
         
     });
 })();
+
+class SEvent {
+    constructor(type, seriesId = '') {
+        if (type === 'scene') {
+            this.src = iEvent.data.new('scene', new EventSeries(seriesId));
+        }
+        if (type === 'time') {
+            this.src = iEvent.data.new('time', new EventSeries(seriesId));
+        }
+        if (type === 'condition' && seriesId) {
+            this.src = iEvent.data.new('condition', new ConditionSeries(seriesId));
+        }
+
+        this.src = iEvent.data.get('condition', 'common');
+    }
+
+    data(eventId, type) {
+        return this.src.setData(eventId, type);
+    }
+
+    clear() {
+        this.src.clear();
+    }
+
+    get() {
+        return this.src;
+    }
+}
+

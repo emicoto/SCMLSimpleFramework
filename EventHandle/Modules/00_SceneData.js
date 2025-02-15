@@ -124,12 +124,13 @@ class PlayOptions {
 }
 
 class SceneData {
-    constructor(eventId = '', type = '', priority = 0) {
+    constructor(eventId = '', type = 'event', priority = 0) {
         this.type = type;
         this.Id = eventId;
         this.priority = priority;
 
         this.trigger = new Trigger();
+        this.actions = {};
     }
     set(obj) {
         for (const key in obj) {
@@ -163,6 +164,15 @@ class SceneData {
     Branches(...branches) {
         this.branches = branches;
         return this;
+    }
+
+    add(branchId, type = 'event', priority = 0) {
+        const branch = new BranchData(branchId, type, priority).setParent(this.Id);
+        if (!this.branches) {
+            this.branches = [];
+        }
+        this.branches.push(branch);
+        return branch;
     }
 
     /**
@@ -234,7 +244,10 @@ class SceneData {
     }
 
     sort() {
+        if (!this.branches) return this;
+        
         this.branches.sort((a, b) => a.priority - b.priority);
+        return this;
     }
 
     /**
@@ -267,7 +280,7 @@ class SceneData {
 }
 
 class BranchData extends SceneData {
-    constructor(branchId = '', type = '', priority = 0) {
+    constructor(branchId = '', type = 'event', priority = 0) {
         super(branchId, type, priority);
         this.trigger = new Trigger('branch');
     }

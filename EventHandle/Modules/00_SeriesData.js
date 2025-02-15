@@ -9,11 +9,24 @@ class SeriesData {
     get(id) {
         return this.data.get(id);
     }
+
+    set(id, data) {
+        this.data.set(id, data);
+        return this.data.get(id);
+    }
+
+    has(id) {
+        return this.data.has(id);
+    }
     // set SeriesId to all events
     initSeries() {
         const _data = this.data.values();
         _data.forEach(item => {
             item.dataType = this.dataType;
+            if (typeof item.initSeries === 'function') {
+                item.initSeries();
+                item.sort();
+            }
         });
     }
 
@@ -48,7 +61,7 @@ class EventSeries {
     }
 
     sort() {
-        this.data.sort((a, b) => a.priority - b.priority);
+        this.data.sort((a, b) => b.priority - a.priority);
         return this;
     }
     initSeries() {
@@ -62,18 +75,24 @@ class EventSeries {
                 item[key] = data;
             }
             item.parent = this;
+            item.sort();
         });
     }
     // add scene to the list
     add(...scene) {
+        if (scene.length === 0) {
+            return this;
+        }
+        
         for (const item of scene) {
             if (this.get(item.Id)) {
                 console.error(`Scene ${item.Id} is already defined`);
                 return;
             }
-            this.data.set(item.Id, item);
+            this.data.push(item);
         }
         this.sort();
+        return this;
     }
 
     Cond(callback) {
@@ -104,6 +123,17 @@ class EventSeries {
             return {};
         }
     }
+
+    setData(eventId, type = 'event', priority = 0) {
+        const event = new SceneData(eventId, type, priority);
+        this.add(event);
+        return event;
+    }
+
+    clear() {
+        this.data.length = 0;
+        return this;
+    }
 }
 
 class ConditionSeries extends EventSeries {
@@ -112,3 +142,4 @@ class ConditionSeries extends EventSeries {
         this.data = [];
     }
 }
+
