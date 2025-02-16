@@ -48,7 +48,7 @@ SCMLSimpleFramework 提高了游戏扩展模组开发的效率，丰富了游戏
 
 ## [EN]
 
-**SCML ModFramework** is a simple content addition framework designed for Sugarcube2 ModLoader.  
+**SCML ModFramework** is a mod content framework designed for Sugarcube2 ModLoader.  
 It facilitates the development of game expansion mods by allowing easy integration of new content such as NPCs, items, sidebar descriptions, menus, buttons, mod setting panels, new map entries, and interaction points.
 
 ### Key Features:
