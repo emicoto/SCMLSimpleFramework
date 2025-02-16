@@ -38,16 +38,7 @@
 - **讨论与反馈：**  
   如有疑问或反馈，请加入 QQ 群：257791727。
 
-### 示例代码：
-
-```javascript
-simpleFrameworks.addto('iModHeader', {
-  passage: ['Start', 'Home'],
-  widget: 'aSimpleTest',
-});
-```
-
-### 参考资料：
+### 在线说明文档：
 
 - [框架说明文档](https://emicoto.github.io/SCMLSimpleFramework/)
 
@@ -90,16 +81,7 @@ It facilitates the development of game expansion mods by allowing easy integrati
 - **Discussion and Feedback:**  
   For queries or feedback, join the QQ group: 257791727.
 
-### Example Code:
-
-```javascript
-simpleFrameworks.addto('iModHeader', {
-  passage: ['Start', 'Home'],
-  widget: 'aSimpleTest',
-});
-```
-
-### Reference:
+### Online Documents:
 
 - [Simple Frameworks Guidebook](https://emicoto.github.io/SCMLSimpleFramework/)
 
