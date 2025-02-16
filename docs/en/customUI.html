@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CustomPopup Usage and Examples</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>CustomPopup Usage and Examples</h1>
+
+    <h2>Overview</h2>
+
+    <p><code>CustomPopup</code> is a utility class for Mod creators to create custom popups in the game. With this tool, you can easily create and manage popups to display the desired information or UI elements. <code>CustomPopup</code> provides functions to create popups, set popup size, update content, show and close popups, and supports custom CSS styles to adjust the appearance of the popups.</p>
+
+    <p>This document explains the features and specific use cases of <code>CustomPopup</code> in a beginner-friendly manner, including how to use the default CSS and how to customize the style of the popups.</p>
+
+    <h2>Main Functionality</h2>
+
+    <h3>1. Create Popup</h3>
+
+    <pre><code>drawPopup(title, content, style, noBtn)</code></pre>
+
+    <p><strong>Description</strong>: Draws a popup with a title and content.</p>
+
+    <ul>
+    <li><strong>Parameters</strong>:
+    <ul>
+    <li><code>title</code> (string): The title of the popup.</li>
+    <li><code>content</code> (string): The content of the popup, can be an HTML string.</li>
+    <li><code>style</code> (string): Custom style class name, default is <code>'custom-popup'</code>.</li>
+    <li><code>noBtn</code> (boolean): Whether to hide the close button, default is <code>false</code> (show close button).</li>
+    </ul>
+    </li>
+    <li><strong>Example</strong>:</li>
+    </ul>
+
+    <pre><code>CustomPopup.draw('Welcome', 'Welcome to the game world!'); // Create a popup with the title "Welcome"
+    CustomPopup.draw('Tip', 'You have completed the task!', 'custom-style'); // Draw a popup with a custom style class name
+    CustomPopup.draw('Attention', 'Non-closable message', '', true); // Create a popup without a close button
+    </code></pre>
+
+    <h3>2. Set Popup Size</h3>
+
+    <h4><code>setSize(width, height)</code></h4>
+
+    <p><strong>Description</strong>: Sets the width and height of the popup.</p>
+
+    <ul>
+    <li><strong>Parameters</strong>:
+    <ul>
+    <li><code>width</code> (string): The width of the popup, e.g. <code>'400px'</code>.</li>
+    <li><code>height</code> (string): The height of the popup, e.g. <code>'300px'</code>.</li>
+    </ul>
+    </li>
+    <li><strong>Example</strong>:</li>
+    </ul>
+
+    <pre><code>CustomPopup.setSize('400px', '300px'); // Set the size of the popup to 400x300 pixels
+    </code></pre>
+
+    <h3>3. Show and Hide Popup</h3>
+
+    <h4><code>showPopup()</code></h4>
+
+    <p><strong>Description</strong>: Shows the popup.</p>
+
+    <ul>
+    <li><strong>Example</strong>:</li>
+    </ul>
+
+    <pre><code>CustomPopup.show(); // Show the popup
+    </code></pre>
+
+    <h4><code>hidePopup()</code></h4>
+
+    <p><strong>Description</strong>: Hides the popup.</p>
+
+    <ul>
+    <li><strong>Example</strong>:</li>
+    </ul>
+
+    <pre><code>CustomPopup.hide(); // Hide the popup
+    </code></pre>
+
+    <h3>4. Set Popup Content</h3>
+
+    <h4><code>setContent(content)</code></h4>
+
+    <p><strong>Description</strong>: Updates the content of the popup.</p>
+
+    <ul>
+    <li><strong>Parameters</strong>:
+    <ul>
+    <li><code>content</code> (string): The content to update, can be an HTML string.</li>
+    </ul>
+    </li>
+    <li><strong>Example</strong>:</li>
+    </ul>
+
+    <pre><code>CustomPopup.setContent('<p>Task updated: Find the hidden treasure!</p>'); // Update the popup content
+    </code></pre>
+
+    <h3>5. Destroy Popup</h3>
+
+    <h4><code>destroyPopup()</code></h4>
+
+    <p><strong>Description</strong>: Destroys the popup, removing the popup and the background overlay.</p>
+
+    <ul>
+    <li><strong>Example</strong>:</li>
+    </ul>
+
+    <pre><code>CustomPopup.close(); // Destroy the popup
+    </code></pre>
+
+    <h3>6. Create and Show Popup</h3>
+
+    <h4><code>createPopup(options)</code></h4>
+
+    <p><strong>Description</strong>: Creates and shows a popup based on the provided options.</p>
+
+    <ul>
+    <li><strong>Parameters</strong>:
+    <ul>
+    <li><code>options</code> (object): An object containing the following optional properties:
+    <ul>
+    <li><code>title</code> (string): The title of the popup.</li>
+    <li><code>content</code> (string): The content of the popup.</li>
+    <li><code>noBtn</code> (boolean): Whether to hide the close button.</li>
+    <li><code>width</code> (string): The width of the popup.</li>
+    <li><code>height</code> (string): The height of the popup.</li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li><strong>Example</strong>:</li>
+    </ul>
+
+    <pre><code>
+    CustomPopup.create({
+        title: 'Welcome',
+        content: '<p>Welcome to the game world! Enjoy your journey.</p>',
+        width: '400px',
+        height: '300px'
+    }); // Create and show a popup with custom size
+    </code></pre>
+
+    <h2>Default CSS Styles</h2>
+
+    <p>In the <code>general.css</code> file, the default styles for <code>CustomPopup</code> are defined as follows:</p>
+
+    <ul>
+    <li><strong>Background Overlay Style (<code>#customPopupBG</code>)</strong>:</li>
+    </ul>
+
+    <pre><code>
+    #customPopupBG {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        background-color: rgb(41 41 41 / 50%);
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        backdrop-filter: blur(2px);
+    }
+    </code></pre>
+
+    <ul>
+    <li><strong>Popup Container Style (<code>#customPopup</code>)</strong>:</li>
+    </ul>
+
+    <pre><code>
+    #customPopup {
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 30%;
+        z-index: 1001;
+    }
+    </code></pre>
+
+    <ul>
+    <li><strong>Default Popup Style (<code>.custom-popup</code>)</strong>:</li>
+    </ul>
+
+    <pre><code>
+    .custom-popup {
+        background-color: rgba(80, 80, 80, 0.9);
+        border: 1px solid rgb(120, 120, 120);
+        min-width: 250px;
+        min-height: 180px;
+        box-shadow: 6px 10px 8px 3px rgb(0 0 0 / 60%);
+        backdrop-filter: blur(6px);
+    }
+    </code></pre>
+
+    <ul>
+    <li><strong>Title Bar Style (<code>#PopupBanner</code>)</strong>:</li>
+    </ul>
+
+    <pre><code>
+    #PopupBanner {
+            width: 100%;
+            display: flex;
+            height: 24px;
+    }
+    .popup-title {
+            flex: 1;
+            text-align: center;
+            color: #cbffff;
+            background: rgb(89 101 104 / 50%);
+    }
+    #PopupBanner .closeBtn {
+            background-color: rgb(50, 50, 50);
+            color: cyan;
+            border: none;
+            width: 24px;
+            height: 24px;
+    }
+    </code></pre>
+
+    <h2>Customizing Popup CSS</h2>
+
+    <p>If you want to customize the style of the popups, you can follow these steps:</p>
+
+    <ol>
+    <li><strong>Create a Custom Style Class</strong></li>
+    </ol>
+
+    <pre><code>
+    .my-custom-popup {
+         background-color: rgba(0, 0, 128, 0.8);
+         border: 2px solid #ffcc00;
+         box-shadow: 4px 8px 6px 2px rgba(0, 0, 0, 0.5);
+         border-radius: 10px;
+    }
+    </code></pre>
+
+    <ol start="2">
+    <li><strong>Apply the Custom Style when Creating the Popup</strong></li>
+    </ol>
+
+    <pre><code>
+    CustomPopup.create({
+     title: 'Custom Style Popup',
+     content: '<p>This is a popup with a custom style.</p>',
+     width: '350px',
+     height: '250px'
+    });
+    const popup = document.getElementById('customPopup');
+    popup.classList.add('my-custom-popup'); // Apply the custom style
+    </code></pre>
+
+    <h2>Specific Use Cases</h2>
+
+    <ol>
+    <li><strong>Welcome Popup</strong>: Display a welcome message at the start of the game.</li>
+    </ol>
+
+    <pre><code>
+    CustomPopup.create({
+     title: 'Welcome to the Adventure World',
+     content: '<p>Brave adventurer, are you ready to start your journey?</p>',
+     width: '400px',
+     height: '200px'
+    });
+    </code></pre>
+
+    <ol start="2">
+    <li><strong>Task Completion Notification</strong>: Display reward information when a player completes a task.</li>
+    </ol>
+
+    <pre><code>
+    CustomPopup.create({
+     title: 'Task Completed!',
+     content: '<p>Congratulations on completing the task! You have earned 500 coins!</p>',
+     width: '300px',
+     height: '180px'
+    });
+    </code></pre>
+
+    <ol start="3">
+    <li><strong>Warning Message</strong>: In certain important situations, inform the player that a certain action is not allowed.</li>
+    </ol>
+
+    <pre><code>
+    CustomPopup.create({
+     title: 'Warning',
+     content: '<p>You cannot enter this area, danger is approaching!</p>',
+     noBtn: true,
+     width: '350px',
+     height: '150px'
+    });
+    </code></pre>
+
+    <p>With the above features and style customization options, you can create a unique UI experience for your Mod, making the information in the game more rich and eye-catching.</p>
+
+</body>
+</html>

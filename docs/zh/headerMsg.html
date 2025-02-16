@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeaderMsg 功能说明文档</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>HeaderMsg 功能说明文档</h1>
+
+    <h2>概述</h2>
+
+    <p><code>HeaderMsg</code> 模块是一个基于 Sugarcube2 制作的网页游戏的通用 Mod 工具，旨在管理和显示多个 Mod 在网页顶部指定区域的通知消息。该工具的设计目的是确保来自不同 Mod 的通知能够按顺序显示，避免冲突。它特别适合缺乏编程经验的 Mod 爱好者，让他们能够轻松地添加和管理游戏中的消息通知。</p>
+
+    <h2>功能机制</h2>
+
+    <p><code>HeaderMsg</code> 模块提供了简单的方法来添加、管理和显示头部消息，为用户提供有效的上下文信息。它通常用于在网页顶部显示状态更新或通知，确保玩家能够及时看到游戏中的重要信息。</p>
+
+    <h3>主要组件：</h3>
+
+    <ul>
+        <li><strong>_Msglogs</strong>: 内部数组，用于存储添加到头部的所有消息。</li>
+        <li><strong>addLog(log)</strong>: 向日志中添加一条消息。</li>
+        <li><strong>clearLogs()</strong>: 清除日志中的所有当前消息。</li>
+        <li><strong>print()</strong>: 以带换行符的 HTML 字符串形式返回所有存储的消息。</li>
+        <li><strong>append()</strong>: 创建并将头部消息容器 (<code>headerMsg</code>) 插入到文档的头部区域。</li>
+        <li><strong>show()</strong>: 在头部容器中显示存储的消息。</li>
+    </ul>
+
+    <h3>可用方法</h3>
+
+    <ol>
+        <li><strong>addLog(log)</strong>: 向 <code>_Msglogs</code> 添加一条新日志消息.</li>
+        <ul>
+            <li><strong>参数</strong>: <code>log</code> (字符串) - 要添加的消息。</li>
+            <li><strong>示例</strong>: <code>HeaderMsg.add('系统更新完成');</code></li>
+        </ul>
+        <li><strong>clearLogs()</strong>: 清除 <code>_Msglogs</code> 中的所有消息.</li>
+        <ul>
+            <li><strong>示例</strong>: <code>HeaderMsg.clear();</code></li>
+        </ul>
+        <li><strong>show()</strong>: 在头部容器 (<code>headerMsg</code>) 中显示所有存储的消息。如果容器不存在，它还会自动创建该容器.</li>
+        <ul>
+            <li><strong>示例</strong>: <code>HeaderMsg.show();</code></li>
+        </ul>
+        <li><strong>logs (getter)</strong>: 允许访问存储的消息以进行查看或进一步操作.</li>
+        <ul>
+            <li><strong>示例</strong>: <code>console.log(HeaderMsg.logs);</code></li>
+        </ul>
+    </ol>
+
+    <h2>使用示例</h2>
+
+    <p>以下是一些初学者可以参考的使用示例，帮助理解如何在不同情况下使用 <code>HeaderMsg</code>：</p>
+
+    <h3>示例 1: 显示表单提交成功的消息</h3>
+
+    <pre><code>// 添加日志消息
+HeaderMsg.add('表单提交成功');
+
+// 显示日志消息
+HeaderMsg.show();
+</code></pre>
+
+    <p>在此示例中，用户提交表单后，会在头部添加一条成功消息并立即显示。</p>
+
+    <h3>示例 2: 通知玩家任务完成</h3>
+
+    <pre><code>// 添加任务完成的消息
+HeaderMsg.add('恭喜你！你已完成任务“探索森林”');
+
+// 显示头部消息
+HeaderMsg.show();
+</code></pre>
+
+    <p>这个示例展示了如何在玩家完成任务时，向玩家显示任务完成的通知。</p>
+
+    <h3>示例 3: 显示多条消息并清除</h3>
+
+    <pre><code>// 添加多条日志消息
+HeaderMsg.add('系统正在维护中，请稍候');
+HeaderMsg.add('维护完成，游戏功能已恢复');
+
+// 显示所有消息
+HeaderMsg.show();
+
+// 清除所有消息
+HeaderMsg.clear();
+</code></pre>
+
+    <p>在这个例子中，首先显示了系统维护的消息，之后在维护完成后显示了更新信息，最后清除了所有消息，保持头部整洁。</p>
+
+    <h2>实际使用场景</h2>
+
+    <ol>
+        <li><strong>表单提交确认</strong>: 使用 <code>HeaderMsg</code> 通知用户他们的提交是否成功或是否发生错误。</li>
+        <li><strong>任务状态更新</strong>: 在玩家完成任务、解锁成就或其他重要游戏事件时，显示相应的通知。</li>
+        <li><strong>系统状态更新</strong>: 通知玩家游戏的状态，例如维护计划或重要变更。</li>
+        <li><strong>动态用户引导</strong>: 在玩家浏览页面或执行特定操作时，提供持续的反馈，以增强可用性并减少困惑。</li>
+    </ol>
+
+    <h2>集成</h2>
+
+    <p><code>HeaderMsg</code> 对象通过 <code>window.HeaderMsg</code> 全局访问。这允许应用程序的其他部分轻松与头部消息系统交互，从而确保用户通知的一致性和集中管理。</p>
+
+    <p>为了确保在每次页面段落转换结束时正确显示头部消息，脚本中包含了一个事件监听器：</p>
+
+    <pre><code>$(document).on(':passageend', () => {
+    if (HeaderMsg.logs.length > 0) {
+        HeaderMsg.show();
+        HeaderMsg.clear();
+    }
+});
+</code></pre>
+
+    <p>此监听器确保在每次段落转换后显示并清除日志，从而保持头部的清晰和最新状态。它在交互式故事或游戏环境中特别有用，因为这些环境中的段落经常变化。</p>
+
+    <p>以上的功能和使用示例能够帮助 Mod 爱好者无需编程经验，也能在自己的游戏中轻松地实现通知消息的显示和管理。</p>
+</body>
+</html>

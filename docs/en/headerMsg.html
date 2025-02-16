@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HeaderMsg Features</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>HeaderMsg Documentation</h1>
+
+    <h2>Overview</h2>
+
+    <p>The <code>HeaderMsg</code> module is a general-purpose mod tool for web games based on Sugarcube2. It is designed to manage and display notification messages from multiple mods in a specified area at the top of the web page. The tool ensures that notifications from different mods are displayed in order to avoid conflicts. It is particularly suitable for mod enthusiasts with little programming experience, allowing them to easily add and manage message notifications in their games.</p>
+
+    <h2>Function Mechanism</h2>
+
+    <p>The <code>HeaderMsg</code> module provides a simple way to add, manage, and display header messages, providing users with relevant context information. It is typically used to display status updates or notifications at the top of the web page, ensuring that players can see important information in a timely manner.</p>
+
+    <h3>Main Components:</h3>
+
+    <ul>
+        <li><strong>_Msglogs</strong>: An internal array used to store all the messages added to the header.</li>
+        <li><strong>addLog(log)</strong>: Adds a message to the log.</li>
+        <li><strong>clearLogs()</strong>: Clears all current messages in the log.</li>
+        <li><strong>print()</strong>: Returns all stored messages as an HTML string with line breaks.</li>
+        <li><strong>append()</strong>: Creates and inserts the header message container (<code>headerMsg</code>) into the document's header area.</li>
+        <li><strong>show()</strong>: Displays the stored messages in the header container.</li>
+    </ul>
+
+    <h3>Available Methods</h3>
+
+    <ol>
+        <li><strong>addLog(log)</strong>: Adds a new log message to <code>_Msglogs</code>.</li>
+        <ul>
+            <li><strong>Parameter</strong>: <code>log</code> (string) - The message to add.</li>
+            <li><strong>Example</strong>: <code>HeaderMsg.addLog('System update completed');</code></li>
+        </ul>
+        <li><strong>clearLogs()</strong>: Clears all messages in <code>_Msglogs</code>.</li>
+        <ul>
+            <li><strong>Example</strong>: <code>HeaderMsg.clearLogs();</code></li>
+        </ul>
+        <li><strong>show()</strong>: Displays all stored messages in the header container (<code>headerMsg</code>). If the container doesn't exist, it will be automatically created.</li>
+        <ul>
+            <li><strong>Example</strong>: <code>HeaderMsg.show();</code></li>
+        </ul>
+        <li><strong>logs (getter)</strong>: Allows access to the stored messages for viewing or further manipulation.</li>
+        <ul>
+            <li><strong>Example</strong>: <code>console.log(HeaderMsg.logs);</code></li>
+        </ul>
+    </ol>
+
+    <h2>Usage Examples</h2>
+
+    <p>Here are some usage examples that beginners can refer to in order to understand how to use <code>HeaderMsg</code> in different scenarios:</p>
+
+    <h3>Example 1: Display a success message for form submission</h3>
+
+    <pre><code>// Add a log message
+HeaderMsg.addLog('Form submission successful');
+
+// Show the log message
+HeaderMsg.show();
+</code></pre>
+
+    <p>In this example, after the user submits a form, a success message is added to the header and immediately displayed.</p>
+
+    <h3>Example 2: Notify the player of a completed task</h3>
+
+    <pre><code>// Add a message for task completion
+HeaderMsg.addLog('Congratulations! You have completed the "Explore the Forest" task');
+
+// Show the header message
+HeaderMsg.show();
+</code></pre>
+
+    <p>This example demonstrates how to display a notification to the player when they complete a task.</p>
+
+    <h3>Example 3: Display multiple messages and clear them</h3>
+
+    <pre><code>// Add multiple log messages
+HeaderMsg.addLog('System is currently undergoing maintenance. Please wait');
+HeaderMsg.addLog('Maintenance completed. Game functionality has been restored');
+
+// Show all messages
+HeaderMsg.show();
+
+// Clear all messages
+HeaderMsg.clearLogs();
+</code></pre>
+
+    <p>In this example, system maintenance messages are first displayed, followed by an update message after the maintenance is completed. Finally, all messages are cleared to keep the header clean.</p>
+
+    <h2>Real-World Use Cases</h2>
+
+    <ol>
+        <li><strong>Form submission confirmation</strong>: Use <code>HeaderMsg</code> to notify users whether their submission was successful or if an error occurred.</li>
+        <li><strong>Task status updates</strong>: Display relevant notifications when players complete tasks, unlock achievements, or other important game events.</li>
+        <li><strong>System status updates</strong>: Notify players about the status of the game, such as maintenance plans or significant changes.</li>
+        <li><strong>Dynamic user guidance</strong>: Provide continuous feedback to enhance usability and reduce confusion as players navigate pages or perform specific actions.</li>
+    </ol>
+
+    <h2>Integration</h2>
+
+    <p>The <code>HeaderMsg</code> object is accessed globally through <code>window.HeaderMsg</code>. This allows other parts of the application to interact with the header message system easily, ensuring consistency and centralized management of user notifications.</p>
+
+    <p>To ensure that the header messages are displayed correctly at the end of each passage transition, an event listener is included in the script:</p>
+
+    <pre><code>$(document).on(':passageend', () => {
+    if (HeaderMsg.logs.length > 0) {
+        HeaderMsg.show();
+        HeaderMsg.clearLogs();
+    }
+});
+</code></pre>
+
+    <p>This listener ensures that the logs are shown and cleared after each passage transition, keeping the header clear and up to date. It is particularly useful in interactive stories or game environments where passages change frequently.</p>
+
+    <p>The above features and usage examples can help mod enthusiasts easily implement message display and management in their own games without requiring programming experience.</p>
+</body>
+</html>

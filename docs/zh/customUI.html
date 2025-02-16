@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CustomPopup 使用说明与示例</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>CustomPopup 使用说明与示例</h1>
+
+    <h2>概述</h2>
+
+    <p><code>CustomPopup</code> 是一个用于帮助 Mod 制作者在游戏中创建自定义弹窗的工具类。通过使用这个工具，您可以轻松地创建和管理弹窗，使它们显示所需的信息或 UI 元素。<code>CustomPopup</code> 提供了创建弹窗、设置弹窗大小、更新内容、显示和关闭弹窗等功能，并支持自定义 CSS 样式以调整弹窗的外观。</p>
+
+    <p>本文档将按代码初学者也能理解的标准，详细解释 <code>CustomPopup</code> 的功能及其具体运用案例，包括如何使用默认的 CSS 以及如何自定义弹窗的样式。</p>
+
+    <h2>主要功能说明</h2>
+
+    <h3>1. 创建弹窗</h3>
+
+    <pre><code>drawPopup(title, content, style, noBtn)</code></pre>
+
+    <p><strong>说明</strong>：绘制一个带有标题和内容的弹窗。</p>
+
+    <ul>
+    <li><strong>参数</strong>：
+    <ul>
+    <li><code>title</code> (string)：弹窗的标题。</li>
+    <li><code>content</code> (string)：弹窗的内容，可以是 HTML 字符串。</li>
+    <li><code>style</code> (string)：自定义的样式类名称，默认是 <code>'custom-popup'</code>。</li>
+    <li><code>noBtn</code> (boolean)：是否不显示关闭按钮，默认为 <code>false</code>（显示关闭按钮）。</li>
+    </ul>
+    </li>
+    <li><strong>示例</strong>：</li>
+    </ul>
+
+    <pre><code>CustomPopup.draw('欢迎', '欢迎来到游戏世界！'); // 创建一个标题为“欢迎”的弹窗
+    CustomPopup.draw('提示', '你已完成任务！', 'custom-style'); // 使用自定义样式类名绘制弹窗
+    CustomPopup.draw('注意', '不可关闭的消息', '', true); // 创建一个没有关闭按钮的弹窗
+    </code></pre>
+
+    <h3>2. 设置弹窗大小</h3>
+
+    <h4><code>setSize(width, height)</code></h4>
+    
+        <p><strong>说明</strong>：设置弹窗的宽度和高度。</p>
+    
+        <ul>
+        <li><strong>参数</strong>：
+        <ul>
+        <li><code>width</code> (string)：弹窗的宽度，例如 <code>'400px'</code>。</li>
+        <li><code>height</code> (string)：弹窗的高度，例如 <code>'300px'</code>。</li>
+    </ul>
+    </li>
+    <li><strong>示例</strong>：</li>
+    </ul>
+
+    <pre><code>CustomPopup.setSize('400px', '300px'); // 将弹窗的大小设置为 400x300 像素
+    </code></pre>
+
+    <h3>3. 显示和隐藏弹窗</h3>
+
+    <h4><code>showPopup()</code></h4>
+    
+        <p><strong>说明</strong>：显示弹窗。</p>
+    
+        <ul>
+        <li><strong>示例</strong>：</li>
+        </ul>
+    
+        <pre><code>CustomPopup.show(); // 显示弹窗
+        </code></pre>
+    
+        <h4><code>hidePopup()</code></h4>
+    
+        <p><strong>说明</strong>：隐藏弹窗。</p>
+    
+        <ul>
+        <li><strong>示例</strong>：</li>
+        </ul>
+    
+        <pre><code>CustomPopup.hide(); // 隐藏弹窗
+        </code></pre>
+    
+        <h3>4. 设置弹窗内容</h3>
+    
+        <h4><code>setContent(content)</code></h4>
+    
+        <p><strong>说明</strong>：更新弹窗中的内容。</p>
+    
+        <ul>
+        <li><strong>参数</strong>：
+        <ul>
+        <li><code>content</code> (string)：要更新的内容，可以是 HTML 字符串。</li>
+        </ul>
+        </li>
+        <li><strong>示例</strong>：</li>
+        </ul>
+    
+        <pre><code>CustomPopup.setContent('<p>任务更新：找到隐藏的宝藏！</p>'); // 更新弹窗内容
+        </code></pre>
+    
+        <h3>5. 销毁弹窗</h3>
+    
+        <h4><code>destroyPopup()</code></h4>
+    
+        <p><strong>说明</strong>：销毁弹窗，删除弹窗和背景遮罩。</p>
+    
+        <ul>
+        <li><strong>示例</strong>：</li>
+        </ul>
+    
+        <pre><code>CustomPopup.close(); // 销毁弹窗
+        </code></pre>
+    
+        <h3>6. 创建并显示弹窗</h3>
+    
+        <h4><code>createPopup(options)</code></h4>
+    
+        <p><strong>说明</strong>：根据提供的选项创建并显示弹窗。</p>
+    
+        <ul>
+        <li><strong>参数</strong>：
+        <ul>
+        <li><code>options</code> (object)：包含以下可选属性的对象：
+        <ul>
+        <li><code>title</code> (string)：弹窗的标题。</li>
+        <li><code>content</code> (string)：弹窗的内容。</li>
+        <li><code>noBtn</code> (boolean)：是否不显示关闭按钮。</li>
+        <li><code>width</code> (string)：弹窗的宽度。</li>
+        <li><code>height</code> (string)：弹窗的高度。</li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li><strong>示例</strong>：</li>
+    </ul>
+
+    <pre><code>CustomPopup.create({
+      title: '欢迎',
+      content: '<p>欢迎来到游戏世界！请享受旅程。</p>',
+      width: '400px',
+      height: '300px'
+    }); // 创建并显示一个自定义大小的弹窗
+    </code></pre>
+
+    <h2>默认的 CSS 样式说明</h2>
+
+    <p>在 <code>general.css</code> 文件中，<code>CustomPopup</code> 相关的默认样式定义如下：</p>
+
+    <ul>
+        <li><strong>背景遮罩样式 (<code>#customPopupBG</code>)</strong>：</li>
+        </ul>
+    
+        <pre><code>#customPopupBG {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(41 41 41 / 50%);
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            backdrop-filter: blur(2px);
+        }
+        </code></pre>
+    
+        <ul>
+        <li><strong>弹窗容器样式 (<code>#customPopup</code>)</strong>：</li>
+        </ul>
+    
+        <pre><code>#customPopup {
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 30%;
+            z-index: 1001;
+        }
+        </code></pre>
+    
+        <ul>
+        <li><strong>默认弹窗样式 (<code>.custom-popup</code>)</strong>：</li>
+        </ul>
+    
+        <pre><code>.custom-popup {
+            background-color: rgba(80, 80, 80, 0.9);
+            border: 1px solid rgb(120, 120, 120);
+            min-width: 250px;
+            min-height: 180px;
+            box-shadow: 6px 10px 8px 3px rgb(0 0 0 / 60%);
+            backdrop-filter: blur(6px);
+        }
+        </code></pre>
+    
+        <ul>
+        <li><strong>标题栏样式 (<code>#PopupBanner</code>)</strong>：</li>
+        </ul>
+
+    <pre><code>#PopupBanner {
+        width: 100%;
+        display: flex;
+        height: 24px;
+    }
+    .popup-title {
+        flex: 1;
+        text-align: center;
+        color: #cbffff;
+        background: rgb(89 101 104 / 50%);
+    }
+    #PopupBanner .closeBtn {
+        background-color: rgb(50, 50, 50);
+        color: cyan;
+        border: none;
+        width: 24px;
+        height: 24px;
+    }
+    </code></pre>
+
+    <h2>自定义弹窗的 CSS</h2>
+
+    <p>如果您希望自定义弹窗的样式，可以通过以下步骤实现：</p>
+
+    <ol>
+    <li><strong>创建自定义样式类</strong></li>
+    </ol>
+
+    <pre><code>.my-custom-popup {
+       background-color: rgba(0, 0, 128, 0.8);
+       border: 2px solid #ffcc00;
+       box-shadow: 4px 8px 6px 2px rgba(0, 0, 0, 0.5);
+       border-radius: 10px;
+    }
+    </code></pre>
+
+    <ol start="2">
+    <li><strong>在创建弹窗时应用自定义样式</strong></li>
+    </ol>
+
+    <pre><code>CustomPopup.create({
+     title: '自定义样式弹窗',
+     content: '<p>这是一个使用自定义样式的弹窗。</p>',
+     width: '350px',
+     height: '250px'
+    });
+    const popup = document.getElementById('customPopup');
+    popup.classList.add('my-custom-popup'); // 应用自定义样式
+    </code></pre>
+
+    <h2>具体运用案例</h2>
+
+    <ol>
+    <li><strong>欢迎弹窗</strong>：在游戏开始时显示欢迎信息。</li>
+    </ol>
+
+    <pre><code>CustomPopup.create({
+     title: '欢迎来到冒险世界',
+     content: '<p>勇敢的冒险者，准备好开始您的旅程了吗？</p>',
+     width: '400px',
+     height: '200px'
+    });
+    </code></pre>
+
+    <ol start="2">
+    <li><strong>任务完成提示</strong>：玩家完成任务时显示奖励信息。</li>
+    </ol>
+
+    <pre><code>CustomPopup.create({
+     title: '任务完成！',
+     content: '<p>恭喜你完成了任务，获得了 500 金币！</p>',
+     width: '300px',
+     height: '180px'
+    });
+    </code></pre>
+
+    <ol start="3">
+    <li><strong>警告消息</strong>：在某些重要情节中，提示玩家不能执行某个动作。</li>
+    </ol>
+
+    <pre><code>CustomPopup.create({
+     title: '警告',
+     content: '<p>你不能进入这个区域，危险正在逼近！</p>',
+     noBtn: true,
+     width: '350px',
+     height: '150px'
+    });
+    </code></pre>
+
+    <p>通过以上这些功能和样式自定义选项，您可以为您的 Mod 创建独特的 UI 体验，使游戏中的信息更加丰富和引人注目。</p>
+
+</body>
+</html>

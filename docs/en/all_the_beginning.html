@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MOD Beginner's Guide</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 20px;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 4px;
+            border-radius: 4px;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Create Your MOD Project from Scratch</h1>
+
+    <div id="setup-tools">
+        <h2>1. Download the Necessary Tools</h2>
+        <p>First, download and install a code editor. We recommend using <a href="https://code.visualstudio.com/">Visual Studio Code</a>, as it is powerful and beginner-friendly.</p>
+    </div>
+
+    <div id="create-project">
+        <h2>2. Create a Project Folder</h2>
+        <p>Organize your MOD files by creating a dedicated project folder:</p>
+        <ol>
+            <li>Create a new folder on your computer, for example: <code>MyFirstMod</code>.</li>
+            <li>Create two subfolders inside that folder:
+                <ul>
+                    <li><code>script</code>: for storing JavaScript files.</li>
+                    <li><code>twee</code>: for storing Twee files (for SugarCube).</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+
+    <div id="open-folder">
+        <h2>3. Open the Project Folder in Visual Studio Code</h2>
+        <p>
+            Open Visual Studio Code and use the <strong>File > Open Folder</strong> option to select your project folder. This will make it easy to manage all the files in the folder.
+        </p>
+    </div>
+
+    <div id="create-files">
+        <h2>4. Create the Core MOD Files</h2>
+        <p>
+            In the <code>script</code> folder, create a file named <code>modscript.js</code>. This file will contain the JavaScript code for your MOD.
+        </p>
+        <p>
+            In the <code>twee</code> folder, create a file named <code>modcontent.twee</code>. This file will contain the SugarCube content and structure for your MOD.
+        </p>
+        <p>
+            In the root directory, create a file named <code>boot.json</code> to configure the basic information for your MOD.
+        </p>
+    </div>
+
+    <div id="basic-js">
+        <h2>5. Learn Basic JavaScript Syntax</h2>
+        <p>Here are some examples of basic JavaScript syntax that you will use:</p>
+        <pre><code>
+    // This is a comment
+    // Declare a variable
+    let playerName = "Hero";
+
+    // Define a function
+    function greetPlayer(name) {
+        console.log("Welcome, " + name + "!");
+    }
+
+    // Call the function
+    greetPlayer(playerName);
+
+
+    // Perform simple logical comparisons == for equality, != for inequality, === for strict equality
+    if (playerName == "Hero") {
+        console.log("You are a hero!");
+    } else {
+        console.log("Who are you?");
+    }
+
+    // Perform simple mathematical operations
+    let num1 = 10;
+    let num2 = 5;
+    let sum = num1 + num2;
+    console.log("The sum is: " + sum);
+        </code></pre>
+
+        <p>
+            More JavaScript syntax and features can be found in the <a href="https://www.runoob.com/js/js-tutorial.html">JavaScript Tutorial</a> and the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">MDN Web Docs</a>.
+        </p>
+    </div>
+
+    <div id="sugarcube-intro">
+        <h2>6. Understand SugarCube Twee Syntax</h2>
+        <p>
+            SugarCube Twee syntax is used to create paragraphs and structure for interactive stories. Here are some basic syntax examples:
+        </p>
+        <pre><code>
+        :: ModId_YourTitle
+        Welcome to my MOD!
+        &lt;&lt;link "Go to the next passage" "ModId_NextPassage">>&lt;&lt;/link>>
+
+        :: ModId_NextPassage
+        This is the next passage. You can return to
+        &lt;&lt;link "the previous passage" "ModId_YourTitle">>&lt;&lt;/link>>
+        </code></pre>
+        <p>
+            After making the changes, you can use a Twee compiler or a tool like <a href="https://twinery.org/">Twine</a> to run the story.
+        </p>
+    </div>
+
+    <div id="next-steps">
+        <h2>7. Next Steps</h2>
+        <p>
+            - Explore more advanced JavaScript features.<br>
+            - Learn more SugarCube macros to enhance interactivity.<br>
+            - Refer to the Simple Framework documentation to add events and custom UI elements.<br>
+            - Use the MOD tool <a href="https://github.com/Muromi-Rikka/DoLModRspackExampleTS">ModPacker</a> to automatically package and build boot.json.
+        </p>
+    </div>
+</body>
+</html>

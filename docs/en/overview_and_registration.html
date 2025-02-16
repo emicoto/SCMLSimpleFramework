@@ -1,0 +1,168 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Framework Overview and Module Registration</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Framework Overview and Module Registration</h1>
+
+    <h2>Framework Function Overview</h2>
+    <p>This document aims to comprehensively introduce the core functional modules of "Simple Frameworks" and their related APIs, helping developers quickly grasp the framework features and efficiently achieve project goals.</p>
+
+    <h2>Module Registration and Content Addition</h2>
+    <h3>Function Overview</h3>
+    <p>Module registration is the basic functionality of the framework, allowing developers to dynamically load and manage custom content. Through the registration mechanism, you can extend the framework's functionality and add new modules, behaviors, and configurations to the game.</p>
+
+    <h3>Core Features</h3>
+    <ul>
+        <li><strong>Module Registration</strong>: Register module configurations and variables through <code>boot.json</code> or the <code>iMod</code> interface.</li>
+        <li><strong>Content Addition</strong>: Dynamically register specific types of content, such as character traits, actions, scenes, etc.</li>
+        <li><strong>Lifecycle Management</strong>: Provide module initialization, loading, updating, and removal.</li>
+        <li><strong>Save Compatibility</strong>: Automatically update old variables in the save file, add undefined new variables, and handle variable type updates.</li>
+    </ul>
+
+    <h3>API Documentation</h3>
+    <h4>1. Registering Modules through boot.json</h4>
+    <pre><code>
+        // Add module configuration in boot.json
+        // For example, to add the "longerCombat" module, add the following configuration in boot.json:
+
+        "SFPlugin": {
+            // Add your widget to the corresponding module:
+            "addWidget": {
+                // Add to iModOptions
+                "iModOptions": [
+                    {
+                        "widget": "longerCombatConfig"
+                    }
+                ],
+                // Add to iModFooter
+                "iModFooter": [
+                    {
+                        "widget": "longerCombat"
+                    }
+                ]
+            },
+
+            // Set your module's default configuration
+            "defaultConfigs": {
+                "mult": 2.5,
+                "midEjac": true,
+                "ejacRate": 80,
+                "moreRate": 25,
+                "moreTimes": 3,
+                "time": 1
+            },
+
+            // Set your module's default variables
+            "defaultVariables": {
+                "totalsOnOneMoreTimes": 0,
+            }
+        }
+    </code></pre>
+    <p>Features:</p>
+    <ul>
+        <li><strong>Simple Configuration</strong>: Register modules through simple configuration, no need to write additional code.</li>
+        <li><strong>Automatic Initialization</strong>: The module configuration is automatically loaded when the game starts to ensure the normal operation of the module.</li>
+        <li><strong>Save Compatibility</strong>: Automatically add new variables in the save file to ensure compatibility.</li>
+        <li><strong>Type Change Support</strong>: Automatically update variable types in the save file to ensure the normal operation of the module.</li>
+    </ul>
+    <p>Note: Registering modules through boot.json is the simplest way and suitable for simple module configurations and variable registrations.</p>
+    <br>
+
+    <h4>2. Registering Modules through JavaScript</h4>
+    <pre><code>
+    /**
+    * Register a new module.
+    * @param {string} modId - The unique identifier of the module.
+    * @param {object} defaultConfig - The default configuration object that will be automatically initialized at the start of the game or updated when loading a save file.
+    * @param {object} defaultVariables - The default variables object that will be automatically initialized at the start of the game or updated when loading a save file.
+    */
+    iMod.regist(modId, defaultConfig = {}, defaultVariables = {});
+</code></pre>
+    <p>Features:</p>
+    <ul>
+        <li><strong>Flexible Configuration</strong>: Register modules dynamically through code, supporting more custom configurations.</li>
+        <li><strong>Automatic Initialization</strong>: The module configuration is automatically loaded when the game starts to ensure the normal operation of the module.</li>
+        <li><strong>Save Compatibility</strong>: Automatically add new variables in the save file to ensure compatibility.</li>
+        <li><strong>Type Change Support</strong>: Automatically update variable types in the save file to ensure the normal operation of the module.</li>
+    </ul>
+    <br>
+    <p>Specific Example:</p>
+    <pre><code>
+    // Register a new module.
+    let myConfig = {
+        enabled: true,
+        autoMessage: false,
+        fastMode: false
+    }
+    let myVariables = {
+        myVar1: 0,
+        myVar2: "Hello World",
+        myVar3: {
+            num: 1,
+            str: "Hello World",
+            arr: [1, 2, 3]
+        }
+    }
+
+    iMod.regist("myFirstMod", myConfig, myVariables);
+
+    // Alternatively, you can write it like this
+    iMod.regist(
+        "myModName",
+        {
+            enabled: true,
+            autoMessage: false,
+            fastMode: false
+        },
+        {
+            myVar1: 0,
+            myVar2: "Hello World",
+            myVar3: {
+                num: 1,
+                str: "Hello World",
+                arr: [1, 2, 3]
+            }
+        }
+    )
+    </code></pre>
+    <p>Note: Due to multiple modifications to the Sugarcube source code and variable initialization in the original game version, it is now recommended to use the module registration feature to initialize/update all the variables required by the Mod in the save file!</p>
+
+    <h4>3. Dynamically Adding Content</h4>
+    <pre><code>/**
+    * Add content to the specified zone.
+    * @param {string} zone - The target zone name.
+    * @param {...(string|object)} widgets - Content or widgets.
+    */
+    simpleFrameworks.addto(zone, ...widgets);
+    </code></pre>
+
+    <h4>3. Module Initialization Functions</h4>
+    <pre><code>/**
+    * Register module initialization functions.
+    * @param {...function|object} function - An object or function containing the initialization method. The object should have the name and func properties.
+    */
+    simpleFrameworks.onInit(...function);
+    </code></pre>
+
+    <h3>Use Cases</h3>
+    <ul>
+        <li><strong>Registering New Modules</strong>: Initialize custom functional modules when the game is loaded.</li>
+        <li><strong>Extending Content Areas</strong>: Dynamically add skills, widgets, or custom behaviors.</li>
+        <li><strong>Lifecycle Management</strong>: Load or unload specific modules as needed to ensure flexibility in game operation.</li>
+        <li><strong>Save Compatibility and Automatic Updates</strong>:<br>
+            - Ensure that the player's save file does not throw errors due to missing data when adding new variables.<br>
+            - Automatically correct the old data types in the save file to match the latest module definitions.</li>
+    </ul>
+</body>
+</html>

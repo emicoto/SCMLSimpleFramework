@@ -4,26 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DomTool.js API文档</title>
+    <link rel="stylesheet" href=".././style.css"/>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            margin: 20px;
-            padding: 0;
-            color: #2c3e50;
-        }
-        h1, h2, h3 {
-            color: #34495e;
-        }
-        pre {
-            background: #ecf0f1;
-            padding: 10px;
-            overflow-x: auto;
-        }
-        code {
-            font-family: Consolas, "Courier New", monospace;
-            background: #ecf0f1;
-            padding: 2px 4px;
+            margin: 20px !important;
         }
     </style>
 </head>
@@ -65,9 +49,9 @@
         display : ['Custom Traits (EN)', '自定义特征 (CN)'], // 显示名称
         traits  : [
             {
-                name : ['示例特征', 'Example Trait'],
+                name : ['Example Trait', '示例特征'],
                 cond : () => V.someFlag,
-                text : ['这是一个示例特征。', 'This is an example trait.']
+                text : ['This is an example trait.', '这是一个示例特征。']
             }
         ]
     });
@@ -101,7 +85,7 @@
         arrow   : 0, 
     
         // special: 类别，用于分组或触发特定逻辑，支持值示例：'slave', 'sex', 'prostitution', 'pregnant', 'animal', 'violence', 'drug'。
-        special : '类别', 
+        special : 'sex', 
     
         // gender: 刺青的性别倾向，默认为 'n'（无倾向），可选值包括 'f'（女性倾向）和 'm'（男性倾向）。
         gender  : 'n', 
@@ -162,35 +146,35 @@
     // 新增自定义特征
     let myTrait = {
         addto  : 'General Traits',
-        name   : ['无畏', 'Fearless'],
+        name   : ['Fearless', '无畏'],
         cond   : () => V.courage > 80,
-        text   : ['这个角色无所畏惧。', 'This character fears nothing.'],
+        text   : ['This character fears nothing.', '这个角色无所畏惧。'],
         colour : 'blue'
     };
     setup.ModTraits.push(myTrait);
 
     let myTraits = [
-        {
-            addto : 'General Traits',
-            name : ['天真', 'Innocent'],
-            cond : () => V.charm > 50,
-            text : ['这个角色天真无邪。', 'This character is innocent.']
-        },
-        {
-            addto : 'General Traits',
-            name : ['残忍', 'Cruel'],
-            cond : () => V.cruelty > 50,
-            text : ['这个角色残忍无比。', 'This character is cruel.'],
-            colour : 'red'
-        }
+    {
+        addto : 'General Traits',
+        name : ['Innocent', '天真'],
+        cond : () => V.charm > 50,
+        text : ['This character is innocent.', '这个角色天真无邪。']
+    },
+    {
+        addto : 'General Traits',
+        name : ['Cruel', '残忍'],
+        cond : () => V.cruelty > 50,
+        text : ['This character is cruel.', '这个角色残忍无比。'],
+        colour : 'red'
+    }
     ]
     setup.ModTraits.push(...myTraits);
     
     // 新增自定义刺青
     let myTattoo = {
         key     : 'fearless_mark',
-        name    : '无畏标记',
-        cn      : 'Fearless Mark',
+        name    : 'Fearless Mark',
+        cn      : '无畏标记',
         special : 'combat',
         degree  : 50
     };
@@ -214,7 +198,7 @@
     
     // 新增战斗动作
     setup.modCombatActions.push({
-        displayname : ['强力一击', 'Power Strike'],
+        displayname : ['Power Strike', '强力一击'],
         value       : 'power_strike',
         type        : 'leftaction',
         widget      : 'powerstrikeDifficulShow'

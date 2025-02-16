@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Widget Features</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h2>New Content Feature - SimpleWidget and Dynamic Content</h2>
+
+    <h3>Overview:</h3>
+    
+    <p><code>SimpleWidget.js</code> is a powerful utility library designed to simplify the creation and management of dynamic content. With it, developers can easily achieve the following functionalities:</p>
+    
+    <ol>
+        <li>Content Pre-registration: Modularize and add custom content to the system database.</li>
+        <li>Dynamic Content Display: Combine with Macros written in Twee to achieve flexible event triggering and page updates.</li>
+    </ol>
+    
+    <p>On the other hand, <code>htmlTool.js</code> provides an interface for dynamically modifying and managing page content. Its core functionalities include:</p>
+    
+    <ol>
+        <li>Page Content Adjustment: Dynamically insert, modify, or replace HTML elements at runtime.</li>
+        <li>User Interaction Optimization: Enhance page interaction effects through utility functions, supporting dynamic loading of complex content.</li>
+    </ol>
+    
+    <h3>Writing Twee and Macros:</h3>
+    
+    <h4>Twee Basic Syntax</h4>
+    
+    <p>Twee is a lightweight scripting language for interactive storytelling, with the following basic structure:</p>
+    
+    <ul>
+        <li><strong>Passage Title and Tags:</strong></li>
+        <pre><code>
+        :: PassageTitle [tag]
+        &lt;p&gt;
+            any html or text content
+        &lt;/p&gt;
+        </code></pre>
+        <ul>
+            <li><code>PassageTitle</code>: Unique identifier for each Passage.</li>
+            <li><code>[tag]</code>: Optional tag for specific functionality or categorization.</li>
+        </ul>
+        <li><strong>Widget Passage Definition Format:</strong></li>
+        <pre><code>
+        :: YourModId_Widgets [widget]
+
+        &lt;&lt;widget "customWidgetName"&gt;&gt;
+        some content
+        &lt;&lt;/widget&gt;
+        </code></pre>
+        <ul>
+            <li><code>CustomWidgetName</code>: Name of your widget passage. It is recommended to use the camel case format with the prefix <code>modIdWidgetname</code> (e.g., <code>domRobinNewEvent</code>).</li>
+            <li><code>[widget]</code>: Indicates that the Passage is used for widget registration.</li>
+            <li><code>&lt;&lt;widget "widgetname"&gt;&gt;&lt;&lt;/widget&gt;</code>: Used to register custom Macros.</li>
+        </ul>
+    </ul>
+    
+    <h4>Naming Conventions and Recommendations</h4>
+    
+    <ol>
+        <li><strong>Uniqueness Requirement:</strong></li>
+        <ul>
+            <li><code>PassageTitle</code> and <code>Widget</code> names must be globally unique.</li>
+            <li>Avoid conflicts: It is recommended to use the <code>ModId_</code> prefix to identify the module source.</li>
+        </ul>
+        <li><strong>Formatting Guidelines:</strong></li>
+        <ul>
+            <li>Widget names must be in camel case format.</li>
+            <li>Passage titles can be more flexible, but it is recommended to maintain a consistent naming convention (e.g., <code>ModId_Title</code>).</li>
+        </ul>
+    </ol>
+    
+    <p>By following these conventions, content duplication or conflict issues can be minimized.</p>
+    
+    <h4>Specific Examples:</h4>
+    
+    <p>Here are a few common examples of using Macros:</p>
+    
+    <ol>
+        <li><strong>Add New Location Entry:</strong></li>
+        <pre><code>
+        &lt;&lt;widget "aNewLocationEntry"&gt;&gt;
+        &lt;h2&gt;Go to a New Location&lt;/h2&gt;
+        &lt;&lt;link "Enter the Mystic Forest" "MysticForest"&gt;&gt;
+            &lt;&lt;run console.log('Enter the Mystic Forest')&gt;&gt;
+        &lt;&lt;/link&gt;
+        &lt;&lt;/widget&gt;
+        </code></pre>
+        <p>Used to add descriptions or content related to new locations.</p>
+        <li><strong>Add New Storyline Content:</strong></li>
+        <pre><code>
+        &lt;&lt;widget "aNewStoryLineContent"&gt;&gt;
+        &lt;p&gt;An exciting adventure storyline.&lt;/p&gt;
+        &lt;&lt;link "Explore More" "AdventurePage"&gt;&gt;
+            &lt;&lt;run console.log('Choose to explore')&gt;&gt;
+        &lt;&lt;/link&gt;
+        &lt;&lt;link "Return to the Camp" "CampPage"&gt;&gt;
+            &lt;&lt;run console.log('Return to the camp')&gt;&gt;
+        &lt;&lt;/link&gt;
+        &lt;&lt;/widget&gt;
+        </code></pre>
+        <p>Used to expand new story chapters or details.</p>
+        <li><strong>Expand Shop Items:</strong></li>
+        <pre><code>
+        &lt;&lt;widget "someExtraShopItems"&gt;&gt;
+        &lt;ul&gt;
+            &lt;li&gt;Mysterious Potion - 50 gold &lt;&lt;link "Buy" "PurchasePotion"&gt;&gt;
+                &lt;&lt;run console.log('Buy potion')&gt;&gt;
+            &lt;&lt;/link&gt;&lt;/li&gt;
+            &lt;li&gt;Rare Weapon - 500 gold &lt;&lt;link "Buy" "PurchaseWeapon"&gt;&gt;
+                &lt;&lt;run console.log('Buy weapon')&gt;&gt;
+            &lt;&lt;/link&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;&lt;/widget&gt;
+        </code></pre>
+        <p>Used to dynamically add additional shop items.</p>
+        <li><strong>Quick Item Bar:</strong></li>
+        <pre><code>
+        &lt;&lt;widget "quickItemBar"&gt;&gt;
+        &lt;div class="item-bar"&gt;
+            &lt;&lt;button "Use Health Potion"&gt;&gt;&lt;&lt;useItem 'healthPotion'&gt;&gt;&lt;&lt;/button&gt;&gt;
+            &lt;&lt;button "Use Mana Potion"&gt;&gt;&lt;&lt;seItem 'manaPotion'&gt;&gt;&lt;&lt;/button&gt;&gt;
+            &lt;&lt;button "Equip Sword"&gt;&gt;&lt;&lt;equipItem 'sword'&gt;&gt;&lt;&lt;/button&gt;&gt;
+        &lt;/div&gt;
+        &lt;&lt;/widget&gt;
+        </code></pre>
+        <p>Provides a UI example for players to quickly use items.</p>
+    </ol>
+    
+    <h3>SugarCube2 Event Hooks:</h3>
+    
+    <p>SugarCube2 provides a rich set of event hooks that allow developers to insert custom logic at different stages of the game. Here are a few commonly used event hooks:</p>
+    
+    <ol>
+        <li><strong>prerender</strong></li>
+        <ul>
+            <li><strong>Description:</strong> Executes code before rendering the Passage.</li>
+            <li><strong>Usage Example:</strong></li>
+            <pre><code>
+            prerender.ModId_funcName = function () {
+                console.log('This is the prerender hook function');
+            };
+            </code></pre>
+        </ul>
+        <li><strong>postrender</strong></li>
+        <ul>
+            <li><strong>Description:</strong> Executes code after rendering the Passage.</li>
+            <li><strong>Usage Example:</strong></li>
+            <pre><code>
+            postrender.ModId_funcName = function () {
+                console.log('This is the postrender hook function');
+            };
+            </code></pre>
+        </ul>
+        <li><strong>predisplay</strong></li>
+        <ul>
+            <li><strong>Description:</strong> Executes code before displaying the Passage content.</li>
+            <li><strong>Usage Example:</strong></li>
+            <pre><code>
+            predisplay.ModId_funcName = function () {
+                console.log('This is the predisplay hook function');
+            };
+            </code></pre>
+        </ul>
+        <li><strong>postdisplay</strong></li>
+        <ul>
+            <li><strong>Description:</strong> Executes code after displaying the Passage content.</li>
+            <li><strong>Usage Example:</strong></li>
+            <pre><code>
+            postdisplay.ModId_funcName = function () {
+                console.log('This is the postdisplay hook function');
+            };
+            </code></pre>
+        </ul>
+    </ol>
+    
+    <h3>Accessing Current Passage Information</h3>
+    
+    <p>In hook functions, you can access the current Passage object using <code>const passage = this</code>. For example:</p>
+    
+    <pre><code>
+        postdisplay.ModId_funcName = function () {
+            const passage = this;
+            console.log('Current Passage title is:', passage.title);
+        };
+    </code></pre>
+    
+    <h3>Dynamic Content Insertion Example</h3>
+    
+    <p>When you need to dynamically insert content into multiple Passages, you can use the <code>postdisplay</code> hook and filtering rules. For example:</p>
+    
+    <pre><code>
+        postdisplay.ModId_funcName = function () {
+            const passage = this;
+            if (passage.title.startsWith('Eden')) {
+                htmlTools.wiki('beforeLink', '&lt;&lt;edenCG&gt;&gt;');
+                console.log('Added &lt;&lt;edenCG&gt;&gt; macro in', passage.title);
+            }
+        };
+    </code></pre>
+    
+    
+    
+    <h2>SimpleWidget Window Overview and Examples</h2>
+    
+    <p>SimpleWidget provides a range of window areas for custom content. Here are all the supported window positions and their descriptions:</p>
+    
+    <h3>Left Sidebar Related Windows</h3>
+    
+    <ol>
+        <li><strong>ModDegreesBox</strong>: Area in the character panel to display main attributes.</li>
+        <li><strong>ModSkillsBox</strong>: Area in the character panel to display main skills.</li>
+        <li><strong>ModCharaDescription</strong>: Text description area in the character panel.</li>
+        <li><strong>ModCaptionDescription</strong>: Main description area in the left sidebar.</li>
+        <li><strong>ModCaptionAfterDescription</strong>: Description area in the lower part of the left sidebar.</li>
+        <li><strong>ModStatusBar</strong>: Main status bar area in the left sidebar.</li>
+        <li><strong>ModMenuBig</strong>: Large button area in the left sidebar.</li>
+        <li><strong>ModMenuSmall</strong>: Small button area in the left sidebar.</li>
+    </ol>
+    
+    <h3>Main Content Related Windows</h3>
+    
+    <ol>
+        <li><strong>BeforeLinkZone</strong>: Before all links in the main content.</li>
+        <li><strong>ExtraLinkZone</strong>: Before exit links in the main content.</li>
+        <li><strong>ModShopZone</strong>: Additional content area in specific shop pages.</li>
+    </ol>
+    
+    <h3>Layers and Other Customizations</h3>
+    
+    <ol>
+        <li><strong>CustomImgLayer</strong>: Additional CSS layer for the left sidebar image area.</li>
+    </ol>
+    
+    <h3>System Process Related Windows</h3>
+    
+    <ol>
+        <li><strong>iModInit</strong>: Window loaded during game initialization process.</li>
+        <li><strong>iModHeader</strong>: Custom area in the page top header.</li>
+        <li><strong>iModFooter</strong>: Custom area in the page bottom footer.</li>
+        <li><strong>iModReady</strong>: Before header rendering starts during the rendering preparation stage.</li>
+        <li><strong>iModDone</strong>: After the page is fully rendered.</li>
+    </ol>
+    
+    <h3>Settings and Status Windows</h3>
+    
+    <ol>
+        <li><strong>iModOptions</strong>: Extended position for options in the left sidebar.</li>
+        <li><strong>iModSettings</strong>: Extended area for system settings page.</li>
+        <li><strong>iModCheats</strong>: Extended area for cheat menu.</li>
+        <li><strong>iModStatus</strong>: Area for displaying player social status.</li>
+        <li><strong>iModFame</strong>: Area for displaying player fame.</li>
+        <li><strong>iModStatist</strong>: Area for displaying game statistics.</li>
+        <li><strong>iModExtraStatist</strong>: Area for displaying additional game statistics.</li>
+        <li><strong>iModMemo</strong>: Area for module memos in the game log.</li>
+        <li><strong>iModInformation</strong>: Area for displaying module information in the game options - information.</li>
+    </ol>
+    
+    <hr>
+    <h3>Available Parameters for the widgets Object</h3>
+    <li><strong>passage</strong>: ['PassageA', 'PassageB'] // Limit display to specified Passages</li>
+    <li><strong>exclude</strong>: ['PassageA', 'PassageB'] // Display in all Passages except the specified ones</li>
+    <li><strong>match</strong>: /Eden\s[a-zA-z]+/ // Match Passages using regular expression</li>
+    <li><strong>widget</strong>: 'widgetName' // Name of the registered Widget</li>
+    <p>Note: Only one of passage/exclude/match can be used</p>
+    <br>
+    <hr>
+    <h3>Example of Registering Windows</h3>
+    
+    <p>Here are specific examples of how to register custom content to SimpleWidget:</p>
+    
+    <h4>Example 1: Adding a new description to ModCaptionDescription</h4>
+    
+    <pre><code>
+    // In js file:
+    simpleFrameworks.addto('ModCaptionDescription', {
+        passage: ['MainGame'],
+        widget: 'CustomGameDescription'
+    });
+
+    // In twee file:
+    &lt;&lt;widget "CustomGameDescription"&gt;&gt;
+    &lt;p&gt;This is a custom game description area.&lt;/p&gt;
+    &lt;&lt;/widget&gt;
+    </code></pre>
+    
+    <h4>Example 2: Adding a Widget to ExtraLinkZone in multiple Passages</h4>
+    
+    <pre><code>
+    // In js file:
+    simpleFrameworks.addto('ExtraLinkZone', {
+        passage: ['LocationA', 'LocationB', 'LocationC'],
+        widget: 'customLocationEntry'
+    });
+
+    // In twee file:
+    &lt;&lt;widget "customLocationEntry"&gt;&gt;
+    &lt;div&gt;This is a custom location entry.&lt;/div&gt;
+    &lt;&lt;link "Teleport to Taoyuan Village" "TaoyuanEntry"&gt;&gt;&lt;&lt;/link&gt;
+    &lt;&lt;/widget&gt;
+    </code></pre>
+    
+    <h4>Example 3: Adding QuickItemBar to all Header except Start Passage</h4>
+    
+    <pre><code>
+    // In js file:
+    simpleFrameworks.addto('iModHeader', {
+        widget: 'quickItemBar',
+        exclude: ['Start']
+    });
+
+    // In twee file:
+    &lt;&lt;widget "quickItemBar"&gt;&gt;
+    &lt;div class="item-bar"&gt;
+        &lt;button onclick="useItem('healthPotion')"&gt;Use Health Potion&lt;/button&gt;
+        &lt;button onclick="useItem('manaPotion')"&gt;Use Mana Potion&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;&lt;/widget&gt;
+    </code></pre>
+    
+    <h4>Example 4: Adding multiple content to ExtraLinkZone in specified modules (e.g., PassageA and PassageB)</h4>
+    
+    <pre><code>
+    // In js file:
+    simpleFrameworks.addto('ExtraLinkZone',
+        {
+            widget: 'widgetA',
+            passage: ['PassageA', 'PassageB']
+        },
+        {
+            widget: 'widgetB',
+            passage: ['Passage1', 'Passage2']
+        },
+        {
+            widget: 'widgetC'
+        }
+    );
+
+    // In twee file:
+    &lt;&lt;widget "widgetA"&gt;&gt;
+    &lt;p&gt;Content of Widget A.&lt;/p&gt;
+    &lt;&lt;/widget&gt;
+
+    &lt;&lt;widget "widgetB"&gt;&gt;
+    &lt;p&gt;Content of Widget B.&lt;/p&gt;
+    &lt;&lt;/widget&gt;
+
+    &lt;&lt;widget "widgetC"&gt;&gt;
+    &lt;p&gt;Content of Widget C.&lt;/p&gt;
+    &lt;&lt;/widget&gt;
+    </code></pre>
+    
+    <p>With these examples, developers can quickly register content to the desired window positions and display them dynamically.</p>
+</body>
+</html>

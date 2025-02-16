@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DomTool.js API List</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>DOMTool.js API Documentation and Tutorial</h1>
+
+    <h2>Overview</h2>
+    <p><code>domTool.js</code> is a utility library for manipulating and managing DOM elements in web-based games or applications. It provides a set of convenient methods for dynamically inserting, replacing, and appending content, making it ideal for interactive storytelling or event-driven frameworks.</p>
+    
+    <hr>
+    
+    <h2>Core Features</h2>
+    
+    <h3>1. Content Insertion and Replacement</h3>
+    
+    <ul>
+        <li><code>htmlTools.applyBeforeContent(eId, content)</code></li>
+        <p>Inserts content at the beginning of the <code>#passage-content</code> element (the main text).</p>
+        <pre><code>htmlTools.applyBeforeContent('customId', 'some html or twee content');</code></pre>
+        <ul>
+            <li><code>eId</code>: <code>string</code> ID of the new container div. Leave empty for the default value 'patchContent'.</li>
+            <li><code>content</code>: <code>string</code> HTML or twee text content to insert.</li>
+        </ul>
+        
+        <li><code>htmlTools.applyAfterText(eId, content)</code></li>
+        <p>Appends content at the end of the main content (before the first link).</p>
+        <pre><code>htmlTools.applyAfterText('customId', 'some html or twee content');</code></pre>
+        
+        <li><code>htmlTools.applyBeforeLinks(eId, content)</code></li>
+        <p>Inserts content exactly before the first link element in the main text.</p>
+        <pre><code>htmlTools.applyBeforeLinks('customId', 'some html or twee content');</code></pre>
+        
+        <li><code>htmlTools.applyAfterLinks(eId, content)</code></li>
+        <p>Appends content after the last link element.</p>
+        <pre><code>htmlTools.applyAfterLinks('customId', 'some html or twee content');</code></pre>
+    </ul>
+    
+    <h3>2. Text Manipulation</h3>
+    
+    <ul>
+        <li><code>htmlTools.applyToText(text, eId, content)</code></li>
+        <p>Inserts content after the specified text node.</p>
+        <pre><code>htmlTools.applyToText('Some text to match', 'customId', 'Your specific HTML content or twee text to insert');</code></pre>
+        <ul>
+            <li><code>text</code>: <code>string</code> Target text to locate. Supports multiple language formats.</li>
+            <li><code>eId</code>: <code>string</code> ID of the new container div. Leave empty for the default value 'patchContent'.</li>
+            <li><code>content</code>: <code>string</code> Content to insert.</li>
+        </ul>
+        
+        <li><code>htmlTools.replaceTxt(oldtext, newtext)</code></li>
+        <p>Replaces the specified text content in a node.</p>
+        <pre><code>htmlTools.replaceTxt({EN: 'some english content for match', CN: '需要匹配的中文文本' }, 'your content');</code></pre>
+        <ul>
+            <li><code>oldtext</code>: Text to replace. Supports multiple language formats.</li>
+            <li><code>newtext</code>: New content.</li>
+        </ul>
+    </ul>
+    
+    <h3>3. Link Manipulation</h3>
+    
+    <ul>
+        <li><code>htmlTools.replaceLink(oldlink, newlink)</code></li>
+        <p>Replaces an existing link with new content.</p>
+        <pre><code>htmlTools.replaceLink('old link text', '&lt;&lt;link linkname&gt;&gt;&lt;&lt;/link&gt;&gt;');</code></pre>
+        <ul>
+            <li><code>oldlink</code>: Text of the existing link. Supports multiple language formats.</li>
+            <li><code>newlink</code>: Content to replace with. Should be in twee format.</li>
+        </ul>
+        
+        <li><code>htmlTools.insertToLink({ pos, eId, link, content })</code></li>
+        <p>Inserts content before or after a specified link.</p>
+        <pre><code>htmlTools.insertToLink({ pos: 'before', link: {EN: 'a link name',CN: '一个链接的名称'}, content: 'some html or twee content' });</code></pre>
+        <ul>
+            <li><code>pos</code>: 'before' or 'after'.</li>
+            <li><code>eId</code>: ID of the new container div. Leave empty for the default value 'patchContent'.</li>
+            <li><code>link</code>: Target link text. Supports multiple language formats.</li>
+            <li><code>content</code>: Content to insert.</li>
+        </ul>
+    </ul>
+    
+    <h3>4. General Appending and Replacement</h3>
+    
+    <ul>
+        <li><code>htmlTools.append(pos, eId, content)</code></li>
+        <p>Appends content at a specific position in the <code>#passage-content</code>.</p>
+        <pre><code>htmlTools.append('aftermain', null, 'some extra text');</code></pre>
+        <ul>
+            <li><code>pos</code>: Position ('beforelinks', 'afterlinks', 'beforemain', 'aftermain').</li>
+            <li><code>eId</code>: ID of the new container div. Leave empty for the default value 'patchContent'.</li>
+            <li><code>content</code>: Content to append.</li>
+        </ul>
+        
+        <li><code>htmlTools.wiki(eId, content, replace)</code></li>
+        <p>Processes and appends SugarCube wiki-formatted content to the specified div.</p>
+        <pre><code>htmlTools.wiki('addAfterMsg', 'HTML or twee text to display', true);</code></pre>
+        <ul>
+            <li><code>eId</code>: ID of the target element.</li>
+            <li><code>content</code>: HTML or twee text to display.</li>
+            <li><code>replace</code>: If <code>true</code>, replaces existing content. Default is to add directly inside the corresponding element.</li>
+        </ul>
+    </ul>
+    
+    <h3>5. Other Utility Functions</h3>
+    
+    <ul>
+        <li><code>createDiv(eId)</code></li>
+        <p>Creates and returns a new div element.</p>
+        <pre><code>createDiv('myElements');</code></pre>
+        <ul>
+            <li><code>eId</code>: ID of the new div.</li>
+        </ul>
+        
+        <li><code>ApplyZone.instance.allElements</code></li>
+        <p>Gets all child elements in the main text.</p>
+        <pre><code>const elements = ApplyZone.instance.allElements</code></pre>
+        
+        <li><code>ApplyZone.instance.allNodes</code></li>
+        <p>Gets all child nodes in the main text (including text nodes).</p>
+        <pre><code>const nodes = ApplyZone.instance.allNodes</code></pre>
+
+        <li><code>isIconImg(node)</code></li>
+        <p>Checks if a node is an icon element.</p>
+        <pre><code>
+            const node = document.querySelector('.macro-link').previousElementSibling;
+            if (isIconImg(node)){
+                console.log('This is an icon element!');
+            }
+            else{
+                console.log('This is not an icon element!');
+            }
+        </code></pre>
+
+        <li><code>isMacroLink</code></li>
+        <p>Checks if a node is a macro link element.</p>
+        <pre><code>
+            if (isMacroLink(node)){
+                console.log('This is a macro link element!');
+            }
+            else{
+                console.log('This is not a macro link element!');
+            }
+        </code></pre>
+
+        <li><code>isText</code></li>
+        <p>Checks if a node is a text node.</p>
+        <pre><code>
+            if (isText(node)){
+                console.log('This is a text node!');
+            }
+            else{
+                console.log('This is not a text node!');
+            }
+        </code></pre>
+
+        <li><code>isInput</code></li>
+        <p>Checks if a node is an input element.</p>
+        <pre><code>
+            if (isInput(node)){
+                console.log('This is an input element!');
+            }
+            else{
+                console.log('This is not an input element!');
+            }
+        </code></pre>
+
+        <li><code>isInteractive</code></li>
+        <p>Checks if a node is an interactive element.</p>
+        <pre><code>
+            if (isInteractive(node)){
+                console.log('This is an interactive element!');
+            }
+            else{
+                console.log('This is not an interactive element!');
+            }
+        </code></pre>
+    </ul>
+    
+    <hr>
+    
+    <h2>Common Use Cases</h2>
+    
+    <h3>Dynamic Content Insertion</h3>
+    <pre><code>const content = 'This is dynamically added content!';
+htmlTools.append('beforelinks', 'div_extraLinks', content);</code></pre>
+    
+    <h3>Text Replacement</h3>
+    <pre><code>htmlTools.replaceTxt('Old text', 'New text');</code></pre>
+    
+    <h3>Inserting Content Before a Link</h3>
+    <pre><code>htmlTools.insertToLink({ pos: 'before', link: 'Next', content: '&lt;&lt;button "Custom action"&gt;&gt;&lt;&lt;/button&gt;&gt;' });</code></pre>
+    
+    <hr>
+    
+    <h2>Integration Tips</h2>
+    <ol>
+        <li><strong>Ensure DOM is Ready</strong>: Perform operations after the DOM is fully loaded to avoid runtime errors. Specifically, execute after the ':postApplyZone' event.</li>
+        <pre><code>
+            $(document).on(':postApplyZone', function () {
+                // Your code here
+            });
+        </code></pre>
+        <li><strong>Compatibility with SugarCube</strong>: Use the 'wiki' method to integrate dynamic SugarCube content.</li>
+        <li><strong>Combine with ApplyZone</strong>: Enhance content area management by using it in conjunction with 'ApplyZone'.</li>
+    </ol>
+    
+    <hr>
+    
+    <hr>
+    
+    <h2>Debugging</h2>
+    <ol>
+        <li>Enable <code>Config.debug</code> to log detailed information during content injection.</li>
+        <li>Use browser developer tools to inspect the DOM structure and validate content insertion points.</li>
+    </ol>
+    
+    <hr>
+    
+    <h2>API Reference</h2>
+    <p>Refer to the above core methods and use cases for detailed operation instructions.</p>
+</body>
+</html>

@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NPC Management and Invocation Methods</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>NPC Management and Invocation Methods</h1>
+
+    <h2>Core Concepts</h2>
+    <p>After adding an NPC to the database, there are two main ways to access and manage NPC data:</p>
+    <ol>
+        <li><strong>Using the global object <code>C.npc</code></strong>: Suitable for manipulating dynamic NPC data in the current game.</li>
+        <li><strong>Using the methods provided by <code>NamedNPC</code></strong>: Suitable for accessing the original profile of an NPC or managing whether the NPC exists.</li>
+    </ol>
+
+    <h2>1. Managing NPC Data with <code>C.npc</code></h2>
+    <p><code>C.npc</code> is a global object that stores all dynamically loaded NPC data in the game. You can access a specific NPC using <code>C.npc.npcId</code>.</p>
+    <pre><code>// Checking the trust level of an NPC
+if (C.npc["Alex"].trust > 50) {
+    console.log("Alex trusts the player a lot.");
+}
+
+// Setting a specific FLAG for an NPC
+C.npc["Alex"].flags.missionComplete = true;</code></pre>
+
+    <h2>2. Using the Methods of <code>NamedNPC</code></h2>
+    <h3>NamedNPC.get(npcId)</h3>
+    <p>Get the original profile of the specified NPC.</p>
+    <ul>
+        <li><strong>Parameters:</strong> <code>npcId</code> (<code>string</code>) - The unique identifier of the NPC.</li>
+        <li><strong>Returns:</strong> The matching <code>NamedNPC</code> object.</li>
+    </ul>
+    <pre><code>const alexArchive = NamedNPC.get("Alex");
+console.log(alexArchive.description);</code></pre>
+
+    <h3>NamedNPC.has(npcId)</h3>
+    <p>Check if an NPC with the specified ID exists in the database.</p>
+    <ul>
+        <li><strong>Parameters:</strong> <code>npcId</code> (<code>string</code>) - The unique identifier of the NPC.</li>
+        <li><strong>Returns:</strong> A boolean value indicating whether the NPC exists.</li>
+    </ul>
+    <pre><code>if (NamedNPC.has("Alex")) {
+    console.log("Alex exists in the database.");
+}</code></pre>
+
+    <h2>Overview of NPC Data Variables</h2>
+    <p>There are two ways to assign NPC data:</p>
+    <h3>Assigning a New Variable using <code>C.npc.npcId</code></h3>
+    <pre><code>C.npc["Alex"].newVariable = "exampleValue";
+console.log(C.npc["Alex"].newVariable); // Output: exampleValue</code></pre>
+
+    <h3>Assigning Values in Advance during Registration using the <code>set</code> Method of <code>NamedNPC</code></h3>
+    <pre><code>const npc = new NamedNPC("Alex", "Warrior", "A brave warrior.", "human");
+npc.set("trust", 80).set("love", 50);
+console.log(npc);</code></pre>
+
+    <h3>List of Common Data Variables</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Variable Name</th>
+                <th>Type</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr><td>type</td><td>string</td><td>The type of the NPC (e.g., "human" or "animal").</td></tr>
+            <tr><td>love</td><td>number</td><td>The NPC's affection towards the player.</td></tr>
+            <tr><td>trust</td><td>number</td><td>The NPC's trust towards the player.</td></tr>
+            <tr><td>dom</td><td>number</td><td>The dominance attribute of the NPC.</td></tr>
+            <tr><td>lust</td><td>number</td><td>The NPC's level of lust.</td></tr>
+            <tr><td>rage</td><td>number</td><td>The NPC's level of anger.</td></tr>
+            <tr><td>trauma</td><td>number</td><td>The NPC's level of trauma.</td></tr>
+            <tr><td>purity</td><td>number</td><td>The NPC's level of purity.</td></tr>
+            <tr><td>corruption</td><td>number</td><td>The NPC's level of corruption.</td></tr>
+            <tr><td>pregnancyAvoidance</td><td>number</td><td>The NPC's pregnancy avoidance value (probability).</td></tr>
+            <tr><td>pregnancy</td><td>object</td><td>The pregnancy status, containing the following fields: <ul><li>enabled: Whether pregnancy is possible.</li><li>cycleDay: The current day of the pregnancy cycle.</li><li>pcAwareOf: Whether the player is aware of the NPC's pregnancy status.</li><li>npcAwareOf: Whether the NPC is aware of their own pregnancy status.</li></ul></td></tr>
+            <tr><td>state</td><td>string</td><td>The current state of the NPC (e.g., "healthy" or "sick").</td></tr>
+            <tr><td>flags</td><td>object</td><td>Custom flags used to store special module-related states.</td></tr>
+        </tbody>
+    </table>
+
+    <h2>Typical Use Cases for NPC Management</h2>
+    <h3>Dynamically Checking Changes in Trust Level</h3>
+    <pre><code>if (C.npc["Evelyn"].trust < 20) {
+    console.log("Evelyn has low trust towards the player.");
+}</code></pre>
+
+    <h3>Managing Specific Flags</h3>
+    <pre><code>C.npc["Evelyn"].flags.isQuestGiver = true;
+console.log(C.npc["Evelyn"].flags.isQuestGiver ? "Evelyn is a quest giver." : "Evelyn is not a quest giver.");</code></pre>
+
+    <h3>Checking the Existence of an NPC in the Database</h3>
+    <pre><code>if (NamedNPC.has("Evelyn")) {
+    const evelynData = NamedNPC.get("Evelyn");
+    console.log(`Found NPC: ${evelynData.title}`);
+} else {
+    console.log("Evelyn does not exist in the database.");
+}</code></pre>
+</body>
+</html>

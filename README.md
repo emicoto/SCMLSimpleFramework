@@ -49,7 +49,7 @@ simpleFrameworks.addto('iModHeader', {
 
 ### 参考资料：
 
-- [简易框架说明书](https://github.com/emicoto/SCMLSimpleFramework/blob/main/Readme/SimpleFramework_Main.md)
+- [框架说明文档](https://emicoto.github.io/SCMLSimpleFramework/)
 
 SCMLSimpleFramework 提高了游戏扩展模组开发的效率，丰富了游戏的内容和多样性。
 
@@ -101,7 +101,7 @@ simpleFrameworks.addto('iModHeader', {
 
 ### Reference:
 
-- [Simple Frameworks Manual](https://github.com/emicoto/DOLMods/blob/main/Simple%20Frameworks/README.md)
+- [Simple Frameworks Guidebook](https://emicoto.github.io/SCMLSimpleFramework/)
 
 SCMLSimpleFramework enhances the efficiency of game expansion mod development, enriching the game's content and diversity.
 

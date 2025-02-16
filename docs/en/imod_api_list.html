@@ -1,0 +1,151 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iModManager API List</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>iModManager API List</h1>
+    <hr>
+    <h2>Functions</h2>
+
+    <h3>1. iMod.setV(modId, path, value)</h3>
+    <ul>
+        <li><strong>modId</strong>: <code>string</code> The identification ID of the mod, should be consistent with the identification ID in boot.json.</li>
+        <li><strong>path</strong>: <code>string</code> Variable name or path, e.g. player; player.hp; player.mp corresponds to the entire player object, or player: { hp, mp }</li>
+        <li><strong>value</strong>: <code>any</code> Default value.</li>
+    </ul>
+
+    <h3>2. iMod.getV(modId, path)</h3>
+    <ul>
+        <li><strong>modId</strong>: <code>string</code> The identification ID of the mod.</li>
+        <li><strong>path</strong>: <code>string</code> Variable name or path.</li>
+        <li><strong>Returns</strong>: <code>any</code> The value of the corresponding variable.</li>
+    </ul>
+
+    <h3>3. iMod.setCf(path, value)</h3>
+    <ul>
+        <li><strong>path</strong>: <code>string</code> Configuration item name or path.</li>
+        <li><strong>value</strong>: <code>any</code> Configuration value.</li>
+    </ul>
+
+    <h3>4. iMod.getCf(path)</h3>
+    <ul>
+        <li><strong>path</strong>: <code>string</code> Configuration item name or path.</li>
+        <li><strong>Returns</strong>: <code>any</code> The value of the corresponding configuration.</li>
+    </ul>
+
+    <h3>5. iMod.regist(modId, defaultConfig, defaultVariables)</h3>
+    <ul>
+        <li><strong>modId</strong>: <code>string</code> The identification ID of the mod.</li>
+        <li><strong>defaultConfig</strong>: <code>object</code> Default configuration object.</li>
+        <li><strong>defaultVariables</strong>: <code>object</code> Default variable object.</li>
+    </ul>
+
+    <h3>6. iMod.registV(modId, variables)</h3>
+    <ul>
+        <li><strong>modId</strong>: <code>string</code> The identification ID of the mod.</li>
+        <li><strong>variables</strong>: <code>object</code> Variable object.</li>
+    </ul>
+
+    <h3>7. iMod.gatherModV(modId, ...args)</h3>
+    <ul>
+        <li><strong>modId</strong>: <code>string</code> The identification ID of the mod.</li>
+        <li><strong>args</strong>: <code>string[]</code> List of variable names.</li>
+        <li><strong>Returns</strong>: <code>object</code> An object containing variable names and values.</li>
+    </ul>
+
+    <h3>8. iMod.gatherVariable(...args)</h3>
+    <ul>
+        <li><strong>args</strong>: <code>string[]</code> List of global variable names.</li>
+        <li><strong>Returns</strong>: <code>object</code> An object containing variable names and values.</li>
+    </ul>
+
+    <h3>9. iMod.isSafePeriod()</h3>
+    <ul>
+        <li><strong>Returns</strong>: <code>boolean</code> Whether it is currently a safe period.</li>
+    </ul>
+
+    <h3>10. window.updateObj(refObj, newObj, overwrite)</h3>
+    <ul>
+        <li><strong>refObj</strong>: <code>object</code> Reference object.</li>
+        <li><strong>newObj</strong>: <code>object</code> New value object.</li>
+        <li><strong>overwrite</strong>: <code>boolean</code> Whether to overwrite existing values (default is false).</li>
+        <li><strong>Returns</strong>: <code>object</code> The updated object.</li>
+    </ul>
+
+    <h3>11. iMod.remove(modId)</h3>
+    <ul>
+        <li><strong>modId</strong>: <code>string</code> The identification ID of the mod.</li>
+    </ul>
+
+    <h2>Other System Functions</h2>
+    <h3>12. iMod.init()</h3>
+    <ul>
+        <li>Initialize the mod manager.</li>
+    </ul>
+    <h3>13. iMod.playZone(zone, passageTitle)</h3>
+    <ul>
+        <li><strong>zone</strong>: <code>string</code> Zone name.</li>
+        <li><strong>passageTitle</strong>: <code>string</code> Passage title.</li>
+    </ul>
+    <h3>14. iMod.state</h3>
+    <ul>
+        <li>The state object of the mod manager.</li>
+    </ul>
+    <h3>15. iMod.state.isReady()</h3>
+    <ul>
+        <li><strong>Returns</strong>: <code>boolean</code> Whether the mod manager is ready.</li>
+    </ul>
+    <h3>16. iMod.state.isLoading()</h3>
+    <ul>
+        <li><strong>Returns</strong>: <code>boolean</code> Whether the mod manager is currently loading.</li>
+    </ul>
+    <h3>17. iMod.state.setReady()</h3>
+    <ul>
+        <li>Set the state of the mod manager to ready.</li>
+    </ul>
+    <h3>18. iMod.state.setLoading()</h3>
+    <ul>
+        <li>Set the state of the mod manager to loading.</li>
+    </ul>
+    <h3>19. iMod.getModList()</h3>
+    <ul>
+        <li><strong>Returns</strong>: <code>string[]</code> An array containing the identification IDs of all loaded mods.</li>
+    </ul>
+    <h3>20. iMod.modData</h3>
+    <ul>
+        <li>Stores the data of all loaded mods.</li>
+    </ul>
+    <h3>21. iMod.initMods()</h3>
+    <ul>
+        <li>Initialize all loaded mods.</li>
+    </ul>
+
+    <h2>Global Variables</h2>
+
+    <h3>V.iModConfigs</h3>
+    <ul>
+        <li>Stores the global configurations of the mods.</li>
+    </ul>
+
+    <h3>V.iModVar</h3>
+    <ul>
+        <li>Stores all variables of the mods.</li>
+    </ul>
+
+    <h3>Tvar or V.tvar</h3>
+    <ul>
+        <li>Tvar is a shortcut that points to V.tvar. Temporary variables used for runtime state management of the mods.</li>
+    </ul>
+</body>
+</body>
+</html>

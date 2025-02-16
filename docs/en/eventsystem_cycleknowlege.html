@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event System - Basic Concepts and Detailed Workflow</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h2>Basic Concepts of Events</h2>
+
+    <p>In the event system, an event is typically composed of the following core elements:</p>
+
+    <h3>1. Event</h3>
+
+    <p>An event is an independent action that can be triggered in a game. It can be a dialogue, a storyline, a standalone scene, or even a direct entry into a battle.</p>
+
+    <p><strong>Characteristics:</strong></p>
+
+    <ul>
+    <li>Independent logical unit</li>
+    <li>Can contain multiple phases</li>
+    <li>Controlled by triggers</li>
+    </ul>
+
+    <h3>2. Trigger</h3>
+
+    <p>A trigger is the mechanism that determines when an event occurs. It can be based on the current stage, passage, time, probability, specific conditions, and more.</p>
+
+    <p><strong>Common types:</strong></p>
+
+    <ul>
+    <li><strong>Scene trigger:</strong> Triggered when entering a specific scene</li>
+    <li><strong>Condition trigger:</strong> Triggered when specific conditions are met</li>
+    <li><strong>Random trigger:</strong> Occurs with a certain probability</li>
+    </ul>
+
+    <h3>3. Condition</h3>
+
+    <p>Conditions in triggers are used to further restrict the triggering of events. For example, a certain storyline event can only be triggered at night or when a specific NPC is present. In the condition, the default first parameter is the flags for the requested call, the second parameter is the passage object (the current running scene), and the third parameter is the prevPassage object (the previous scene).</p>
+
+    <p><strong>Example:</strong></p>
+
+    <pre><code>flags => flags.hasKey && Time.hour >= 18
+    (flags, passage, prevPassage) => flags.num >= 0 && passage.title !== prevPassage.title
+    </code></pre>
+
+    <h3>4. Action</h3>
+
+    <p>An action refers to a unified operation performed when an event reaches a specific position. For example, uniformly initializing random NPCs during initialization (init), performing corresponding value operations at specific phases, and more.</p>
+
+    <p>All available execution positions:</p>
+
+    <ul>
+    <li><code>init</code>: During event initialization</li>
+    <li><code>end</code>: When the event ends</li>
+    <li><code>next</code>: When proceeding to the next step</li>
+    <li><code>phase_X</code>: When the specified phase is executed. X can be replaced with the corresponding value, for example, phase_1</li>
+    <li><code>branch_X</code>: When the specified branch is executed. X can be replaced with the corresponding value, for example, branch_yes</li>
+    </ul>
+
+    <p><strong>Example:</strong></p>
+
+    <pre><code>.Action('init', '&lt;&lt;randomnpc 1&gt;&gt;')
+    .Action('phase_1', '&lt;&lt;set $flag.a to 1&gt;&gt;')
+    </code></pre>
+
+    <h3>5. Execution Flow</h3>
+
+    <p>The event framework performs event detection every time the game is about to enter a scene (passage). It categorizes the detection based on the type of passage:</p>
+
+    <ul>
+    <li><strong>If it is a stage passage:</strong> It directly executes the detection from the corresponding series of events in the scene and selects the executable events.</li>
+    <li><strong>If it is not a stage passage:</strong> It executes the event detection from the general event library and randomly selects the executable events.</li>
+    </ul>
+
+    <p>When it is determined that an event will be executed, it will jump to the corresponding event passage or stage passage based on the event occurrence status.</p>
+
+    <h4>Event Validity Check and Initialization</h4>
+
+    <p>Before confirming the execution of an event, its validity is checked, such as:</p>
+
+    <ul>
+    <li>Whether it has been tampered with by the player, resulting in incorrect stages or invalid conditions.</li>
+    <li>Whether the event document's <code>PassageTitle</code> is valid and exists with multiple language branches, and more.</li>
+    </ul>
+
+    <p>If there is a problem with the event, it will be cleared and returned to the previously saved position.</p>
+
+    <p>When the event is confirmed to be executed, the event system first initializes the event archive (init), registers the event archive in the event system cache (<code>iEvent.current</code>) and the game system cache (<code>tvar.event</code>), and changes the running state of the event system to <code>running</code>. Then, it jumps and starts executing the event.</p>
+
+    <h4>Event Execution and Page Rendering</h4>
+
+    <p>When executing the event, pre-processing is done before rendering the page.</p>
+
+    <ul>
+    <li><strong>If it is a phase event:</strong> The title is set to the current phase and the corresponding <code>Action</code> is executed (if it exists).</li>
+    <li><strong>If it is a branch event:</strong> The corresponding <code>Action</code> is directly executed (if it exists).</li>
+    </ul>
+
+    <p>In addition, the common <code>predisplay</code> processing for the current event is also executed (if it exists).</p>
+
+    <h4>Event Page Rendering and Next Step Link</h4>
+
+    <p>When the page is rendered, it checks if there are available links on the current page. If not, an "Next" link is automatically created.</p>
+
+    <ul>
+    <li><strong>If the event has an</strong> <code>next</code><strong> Action</strong>, the corresponding execution code will be added to the link.</li>
+    <li><strong>If the current phase ends</strong>, the automatically generated "Next" link will point to the pre-set event exit.</li>
+    <li><strong>If the event has no explicit exit</strong>, it will return to the initial trigger position, which is the player's initial scene.</li>
+    </ul>
+
+    <p>Each processing automatically adds 1 second of game time to ensure that event execution corresponds to the passage of time.</p>
+
+    <p>If it is a phase event, the phase will automatically advance by +1 after the page is rendered.</p>
+
+    <p>Additionally, when the page is rendered, the system automatically executes the current event's common postdisplay processing (if it exists).</p>
+</body>
+</html>

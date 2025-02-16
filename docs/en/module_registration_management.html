@@ -1,0 +1,237 @@
+
+<!DOCTYPE html>
+<html lang="e">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module Registration and Management Interface</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Module Registration and Management Interface</h1>
+
+    <h2>Overview</h2>
+    <p>The module registration and management functionality is a core part of the framework, supporting developers to dynamically register modules, manage configurations and variables, and simplify operations in the module lifecycle through various interfaces.</p>
+
+    <h2>Registering via bootJson</h2>
+    <p>
+        Registering modules through the <code>boot.json</code> file is the simplest way, just add the module's configuration in the <code>boot.json</code>. This method is suitable for simple modules that do not require additional code support.
+    </p>
+    <p> Add the parameter <code>SFPlugin</code> to your boot.json, and then add the addWidget object to set the content that needs to be registered to various modules, such as iModHeader, iModFooter, BeforeLinkZone, etc.</p>
+    <pre><code>
+        // For example, add a position before the link zone in the passage "Domus Street" that includes a widget with a link to "My Apartment"
+        "SFPlugin": {
+            "addWidget": {
+                "BeforeLinkZone": [
+                    {
+                        "passage": "Domus Street",
+                        "widget": "myNewApartmentEntry"
+                    }
+                ]
+            }
+        }
+    </code></pre>
+    <br>
+    <p>In SFPlugin, add defaultConfigs or defaultVariables to set the configurations or variables required by the module</p>
+    <pre><code>
+        // For example, this MOD requires a configuration to enable fast mode and a variable to record the number of combat rounds
+        "SFPlugin": {
+            "defaultConfigs": {
+                "fastMode": false
+            },
+            "defaultVariables": {
+                "combatRound": 0
+            }
+        }
+    </code></pre>
+    <p>After registration, you can use <code>iMod.getCf('myModId')</code> in JS to get the configuration for setting. Or use <code>iMod.getV('myModId')</code> to get the variable for operation.</p>
+    <hr>
+    <h2>Core Interfaces and Explanations</h2>
+
+    <h3>1. setV and getV</h3>
+    <p>Used to set and get variables of the module. Compared to directly manipulating <code>V.iModVar</code>, this method provides better integrated management, ensuring automatic initialization of variables, version compatibility, and consistent management. It also makes it easy to introduce new variables or modify existing variables when the module version is updated.</p>
+
+    <pre><code>/**
+    * Set module variable.
+    * @param {string} modId - Unique identifier of the module.
+    * @param {string} path - Variable path.
+    * @param {*} value - Variable value.
+    */
+    iMod.setV(modId, path, value);
+
+    /**
+    * Get module variable.
+    * @param {string} modId - Unique identifier of the module.
+    * @param {string} prop - Variable path.
+    * @returns {*} Returns the value of the variable.
+    */
+    iMod.getV(modId, path);
+    </code></pre>
+
+    <p><strong>Example:</strong></p>
+    <pre><code>
+    iMod.setV("customMod", "level", 5);
+    console.log(iMod.getV("customMod", "level")); // Output: 5
+
+    // You can also directly set the object path
+    iMod.setV("customMod", "player.hp", 100);
+    // The actual object when getting customMod is { level: 5, player: { hp: 100 } }
+
+    console.log(iMod.getV("customMod", "player.hp")); // Output: 100
+
+    // When the path is empty, it returns the entire module variable object
+    console.log(iMod.getV("customMod")); // Output: { level: 5, player: { hp: 100 } }
+    </code></pre>
+<hr>
+
+    <h3>2. setCf and getCf</h3>
+    <p>Used to set and get module configurations. Similarly, this method is safer and ensures the initialization, version compatibility, and consistent management of variables compared to direct variable operations.</p>
+
+    <pre><code>/**
+    * Set module configuration.
+    * @param {string} path - Configuration path, should include the unique identifier of the module.
+    * @param {*} value - Configuration value.
+    */
+    iMod.setCf(path, value);
+
+    /**
+    * Get module configuration.
+    * @param {string} path - Configuration path, should include the unique identifier of the module.
+    * @returns {*} Returns the value of the configuration item.
+    */
+    iMod.getCf(prop);
+    </code></pre>
+
+    <p><strong>Example:</strong></p>
+    <pre><code>
+    iMod.setCf("language", "EN");
+    console.log(iMod.getCf("language")); // Output: EN
+
+    // You can also directly set the object path
+    iMod.setCf("customMod.disableEncount", true);
+    // The actual object when getting customMod is { disableEncount: true }
+    console.log(iMod.getCf("customMod.disableEncount")); // Output: true
+    </code></pre>
+
+<hr>
+
+    <h3>3. regist and registV</h3>
+    <p>The core interfaces for registering modules, used to dynamically initialize the configurations and variables of the module.</p>
+    <p><strong>Difference:</strong></p>
+    <ul>
+        <li>regist: Used for module initialization and complete registration, providing initialization of default configurations and variables. The code can be directly released in the JS script. The variables registered here will be uniformly initialized and added to the game by the module system when the game completes initialization, ensuring that the module can safely complete initialization and is not affected by the original game.</li>
+        <li>registV: Used to dynamically supplement variables during the game process. The code needs to be wrapped in a function and released in a specific game process.</li>
+    </ul>
+
+    <pre><code>/**
+    * Register module.
+    * @param {string} modId - Unique identifier of the module.
+    * @param {object} defaultConfig - Default configuration object.
+    * @param {object} defaultVariables - Default variable object.
+    */
+    iMod.regist(modId, defaultConfig = {}, defaultVariables = {});
+
+    /**
+    * Register variables directly to the storage.
+    * @param {string} modId - Unique identifier of the module.
+    * @param {object} variables - Variable object.
+    */
+    iMod.registV(modId, variables);
+    </code></pre>
+<hr>
+
+    <h3>4. gatherModV and gatherVariable</h3>
+    <p>Batch get module variables or global variables, these methods are very suitable for internal logic management within the module or when sharing data between different modules. For example:</p>
+    <ul>
+        <li>Module updates: Check and synchronize multiple key variables at once.</li>
+        
+        <li>Module interaction: Pass and share data between different modules.</li>
+        
+        <li>Path pointer: gatherVariable can even directly input the specific path of the global variable to directly obtain the value in the path.</li>
+    </ul>
+    <pre><code>/**
+    * Batch get module variables.
+    * @param {string} modId - Unique identifier of the module.
+    * @param {...string} args - List of variable names to get.
+    * @returns {object} Object containing variable names and values.
+    */
+    iMod.gatherModV(modId, ...args);
+
+    /**
+    * Batch get global variables.
+    * @param {...string} args - List of global variable names to get.
+    * @returns {object} Object containing variable names and values.
+    */
+    iMod.gatherVariable(...args);
+    </code></pre>
+
+    <p><strong>Example:</strong></p>
+    <pre><code>
+    iMod.regist("customMod", {}, { hp: 100, mp: 50 });
+    console.log(iMod.gatherModV("customMod", "hp", "mp")); // Output: { hp: 100, mp: 50 }
+
+    // Get value based on path
+    V.someObj = { subObj: { ap: 51, bp: 66 } a: 1, b: 'test' };
+    console.log(iMod.gatherVariable("someObj.subObj.ap", "someObj.b"));
+    // Output: { someObj: { subObj: { ap: 51 }, b: 'test' } }
+    </code></pre>
+
+    <h3>5. isSafePeriod</h3>
+    <p>Check if the current period is a safe period (not in combat or original event state).</p>
+    <pre><code>
+    /**
+    * Check if it is currently a safe period.
+    * @returns {boolean} Returns true if it is currently a safe period.
+    */
+    iMod.isSafePeriod();
+
+    // Example
+    if (iMod.isSafePeriod()) {
+        console.log("Currently in a safe period, can perform operations.");
+    }
+    </code></pre>
+
+    <h3>6. updateObj</h3>
+    <p>Deeply merge two objects, supporting recursive updates.</p>
+    <pre><code>/**
+    * Update the values of two objects.
+    * @param {object} refObj - Reference object.
+    * @param {object} newObj - New value object.
+    * @param {boolean} overwrite - Whether to overwrite existing values.
+    * @returns {object} Updated object.
+    */
+    window.updateObj(refObj, newObj, overwrite = false);
+    </code></pre>
+
+    <p><strong>Example:</strong></p>
+    <pre><code>
+    const baseConfig = { hp: 100, skills: ["attack"] };
+    const newConfig = { mp: 50, skills: ["defend"] };
+    const updated = window.updateObj(baseConfig, newConfig, true);
+    console.log(updated); // Output: { hp: 100, mp: 50, skills: ["defend"] }
+
+    // If overwrite is set to false, the array will be merged and deduplicated
+    const updated2 = window.updateObj(baseConfig, newConfig, false);
+    console.log(updated2); // Output: { hp: 100, mp: 50, skills: ["attack", "defend"] }
+    </code></pre>
+
+    <p>Use cases</p>
+
+    <li>Module initialization: Dynamically merge default configurations with user-defined configurations.</li>
+
+    <li>Module updates: Safely introduce new features and maintain old data when the game version is updated.</li>
+
+    <li>Complex object management: Dynamic updates of scenes, events, or multi-level configurations.</li>
+
+    <hr>
+    <p><strong>Summary</strong></p>
+
+    <p>With the above interfaces, developers can easily manage module variables and configurations, achieve dynamic content expansion, and efficient modular development. These interfaces are designed to be concise and powerful, supporting flexible customization requirements.</p>
+
+</body>
+</html>

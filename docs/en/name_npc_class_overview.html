@@ -1,0 +1,243 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NameNPC Features</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>NameNPC Class Overview</h1>
+
+    <h2>Overview</h2>
+    <p>The <code>NameNPC</code> class is one of the core modules in the SimpleFramework. It is used to manage and manipulate the basic information and advanced features of NPCs. It provides a flexible interface to help developers quickly create NPCs with complex behaviors and states.</p>
+
+    <h2>Constructor</h2>
+    <pre><code>new NamedNPC(name, title, des, type)</code></pre>
+    <p><strong>Parameters:</strong></p>
+    <ul>
+        <li><strong>name</strong> (<code>string</code>): The absolute ID of the NPC.</li>
+        <li><strong>title</strong> (<code>string</code>): The title of the NPC. Supports multiple languages.</li>
+        <li><strong>des</strong> (<code>string</code>): The descriptive name of the NPC. Supports multiple languages.</li>
+        <li><strong>type</strong> (<code>string</code>): The category of the NPC (e.g., "human" or "elf").</li>
+    </ul>
+    <p><strong>Example:</strong></p>
+    <pre><code>
+        // Create an NPC using a multi-language object format, suitable for multiple language environments.
+        const npc = new NamedNPC("Evelyn", {EN:"Businessmen", CN:"商人"}, {EN:"Evelyn",CN:"艾芙琳"}, "human");
+
+        // Create an NPC using a multi-language array format, suitable for Chinese-English comparison environments.
+        const npc1 = new NamedNPC("Evelyn", ["Evelyn", "商人"], ["Evelyn", "艾芙琳"], "human");
+
+        // Create an NPC using a single language format.
+        const npc2 = new NamedNPC("Evelyn", "商人", "艾芙琳", "human");
+    </code></pre>
+
+    <h2>Class Properties</h2>
+    <ul>
+        <li><code>nam</code>: The name of the NPC.</li>
+        <li><code>title</code>: The title of the NPC (supports multiple languages).</li>
+        <li><code>description</code>: The description of the NPC.</li>
+        <li><code>type</code>: The type of the NPC.</li>
+        <li><code>trust</code>, <code>love</code>, <code>dom</code>, etc.: Emotional and relationship properties.</li>
+        <li><code>penis</code>, <code>vagina</code>, etc.: Gender organ properties (used to indicate gender and related descriptions).</li>
+        <li><code>clothes</code>, <code>outfits</code>: Currently worn clothes and preset outfits.</li>
+        <li><code>pregnancy</code>: Detailed data about pregnancy status.</li>
+        <li><code>virginity</code>: Purity status (supports multiple aspects).</li>
+    </ul>
+    <hr>
+
+    <h2>Core Methods</h2>
+    <h3>1. Initialization Methods</h3>
+    <ul>
+        <li><strong>Init(gender, age)</strong>: Initializes the gender and age of the NPC.</li>
+            <ul>
+                <li>gender: (<code>string</code>) Should be f (female), m (male), or h (hermaphrodite).</li>
+                <li>age: (<code>string</code>) Should be "teen" or "adult".</li>
+            </ul>
+        <li><strong>setValue(key, value)</strong>: Dynamically sets the key-value pair of NPC properties.</li>
+            <ul>
+                <li>key: (<code>string</code>) The key of the property.</li>
+                <li>value: (<code>any</code>) The value of the property.</li>
+            </ul>
+    </ul>
+    <p>Example:</p>
+    <pre><code>
+        const npc = new NamedNPC("Evelyn", "商人", "艾芙琳", "human");
+        npc.Init("f", "adult")
+           .setValue("trust", 50)
+           .setValue("love", true);
+    </code></pre>
+
+    <hr>
+
+    <h3>2. Property Setting Methods</h3>
+    <ul>
+        <li><strong>setGender(gender)</strong>: Sets the gender of the NPC.
+            <ul>
+                <li>gender: (<code>string</code>) Should be "f" (female), "m" (male), or "h" (hermaphrodite).</li>
+            </ul>
+        </li>
+        <li><strong>setAge(age)</strong>: Sets the age range of the NPC.
+            <ul>
+                <li>age: (<code>string</code>) Should be "teen" or "adult".</li>
+            </ul>
+        </li>
+        <li><strong>setColour(skin, eye, hair)</strong>: Sets the appearance color of the NPC.
+            <ul>
+                <li>skin: (<code>string</code>) The skin color of the NPC.</li>
+                <li>eye: (<code>string</code>) The eye color of the NPC.</li>
+                <li>hair: (<code>string</code>) The hair color of the NPC.</li>
+            </ul>
+        </li>
+        <li><strong>setVirginity(object)</strong>: Sets the virginity status of the NPC.
+            <ul>
+                <li>object: (<code>object</code>) Contains the virginity status for different aspects, e.g., { vaginal: true, anal: false }. Only the specified key will be modified.</li>
+            </ul>
+        </li>
+        <li><strong>setPregnancy()</strong>: Initializes the pregnancy data of the NPC.</li>
+        <li><strong>setCustomPronouns(object)</strong>: Sets the custom pronouns of the NPC.
+            <ul>
+            <li>object: (<code>object</code>) Contains key-value pairs for custom pronouns, e.g., { he: "she", him: "her", his: "her" }. Only the specified key will be modified.</li>
+            </ul>
+            <p>Available parameters:</p>
+            <ul>
+            <li>he (string): Subject pronoun (e.g., "he" or "she").</li>
+            <li>his (string): Possessive pronoun (e.g., "his" or "her").</li>
+            <li>hers (string): Possessive pronoun (e.g., "his" or "hers").</li>
+            <li>him (string): Object pronoun (e.g., "him" or "her").</li>
+            <li>himself (string): Reflexive pronoun (e.g., "himself" or "herself").</li>
+            <li>man (string): Male-related title (e.g., "man" or "woman").</li>
+            <li>boy (string): Young male-related title (e.g., "boy" or "girl").</li>
+            <li>men (string): Plural male-related title (e.g., "men" or "women").</li>
+            </ul>
+        </li>
+        <li>
+            <strong>setPenis(size, des)</strong>: Sets the penis attributes of the NPC.
+            <ul>
+                <li>size: (<code>number</code>) The size of the penis.</li>
+                <li>des: (<code>string</code>) The description of the penis.</li>
+            </ul>
+        </li>
+        <li>
+            <strong>setBreasts(size, des, desc)</strong>: Sets the breast attributes of the NPC.
+            <ul>
+                <li>size: (<code>number</code>) The size of the breasts.</li>
+                <li>des: (<code>string</code>) The description of the breasts.</li>
+                <li>desc: (<code>string</code>) The plural description of the breasts.</li>
+            </ul>
+            <p>If des/desc is empty, it will be automatically set based on the size from the dictionary.</p>
+            <p>Example:</p>
+            <pre><code>
+                npc.setBreasts(3, "moderate breast", "moderate breasts");
+
+                npc.setBreasts(2); // Automatically set to small breast/small breasts
+            </code></pre>
+        </li>
+        <li><strong>setOutfits(...outfits)</strong>: Sets the preset outfit list of the NPC.
+            <ul>
+                <li>outfits: (<code>string[]</code>) An array of strings containing the preset outfits.</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+                npc.setOutfits("casual", "formal", "swimwear");
+            </code></pre>
+        </li>
+        <li><strong>setClothes(pos, details)</strong>: Sets the clothing of the NPC for the specified body part.
+            <ul>
+                <li>pos: (<code>string</code>) The name of the body part, e.g., "upper", "lower".</li>
+                <li>details: (<code>object</code>) The specific clothing details.</li>
+            </ul>
+            <p>Example:</p>
+            <pre><code>
+                npc.setClothes("upper", { name: "shirt", color: "red", integrity: 100 });
+                npc.setClothes("lower", { name: "pants", color: "blue", integrity: 100 });
+            </code></pre>
+        </li>
+    </ul>
+    </ul>
+
+    <h3>3. State Management Methods</h3>
+    <ul>
+        <li><strong>isImportant()</strong>: Marks the NPC as an important character, which will appear in the NPC panel.</li>
+        <li><strong>isSpecial()</strong>: Marks the NPC as a special character, which will be hidden except in special cases (similar to the handling of ghosts). Currently, there doesn't seem to be any special effect...</li>
+    </ul>
+
+    <h3>4. Public Management Methods</h3>
+    <ul>
+        <li><strong>NamedNPC.add(npcObject)</strong>: Adds a new NPC object to the global management.</li>
+        <li><strong>NamedNPC.get(npcId)</strong>: Retrieves the NPC object corresponding to the ID.</li>
+        <li><strong>NamedNPC.has(npcId)</strong>: Checks if an NPC with the specified ID already exists. Returns -1 if it doesn't exist, or the corresponding index value if it does.</li>
+    </ul>
+
+    <h2>Adding New NPCs and Comprehensive Example</h2>
+    <pre><code>
+        NamedNPC.add( new NamedNPC("Evelyn", "Businessmen", "艾芙琳", "human")
+            .Init("f", "adult")
+            .setColour("white", "blue", "black")
+            .setVirginity({ vaginal: true, anal: false })
+            .setPregnancy()
+            .setCustomPronouns({ he: "she", him: "her", his: "her" })
+            .setOutfits("casual", "formal", "swimwear")
+            .setClothes("upper", { name: "shirt", color: "red", integrity: 100 })
+            .setClothes("lower", { name: "pants", color: "blue", integrity: 100 })
+            .isImportant()
+        );
+    </code></pre>
+    <hr>
+    <p><code>NamedNPC.add</code> can add multiple characters at once. In many cases, you may only need a simple syntax.</p>
+    <pre><code></code>
+        NamedNPC.add( 
+            new NamedNPC("Evelyn", "Businessmen", "艾芙琳", "human"),
+            new NamedNPC("Alice", "Student", "爱丽丝", "human"),
+            new NamedNPC("Luna", "Magician", "露娜", "human")
+        );
+    </code></pre>
+    <hr>
+
+    <h3>5. Additional NPC Settings</h3>
+    <p>If you need to make more detailed settings for certain NPCs, you can create corresponding objects in the JavaScript script and add them to setup.ModNpcSetting.</p>
+    <pre><code>
+        // First, create an object
+        let myNPC = {
+            Evelyn: {
+                love: { maxValue: 30 }, // Set the maximum value of the love variable
+                trust: { name: "Confidence", activeIcon: "img/ui/confidence.png", color: "blue" }, // Set the display name, icon, and color of the trust variable
+                dom: { displayname: {CN: "关心", EN:"Concern"}, requirements : () => C.npc.Evelyn.dom > 50 }, // Set the multilingual display name of the dom variable and the condition for displaying it in the UI
+                important: () => C.npc.Evelyn.trust > 50, // Set the condition for Evelyn to be important, or simply set it to true
+                loveInterest: ()=> C.npc.Evelyn.love > 50, // Set the condition for Evelyn to appear as a love interest in options, or simply set it to true
+            }
+        }
+
+        // In most cases, you only need to set the properties you want to set, and leave out the rest. So sometimes you may only need a simple object.
+        let myNPC = {
+            Evelyn: {
+                love: { maxValue: 30, displayname: {CN: "好感", EN:"Love"} },
+            }
+        }
+
+        // Most settings can be set as functions, making it convenient to dynamically adjust them in the game.
+        let myNPC = {
+            Evelyn: {
+                trust: { maxValue: ()=> { 
+                     if (V.npc.Evelyn.isBestFriend) { 
+                        return 100; 
+                    }
+                     else { 
+                        return 50; 
+                    }
+                 }}
+            }
+        }
+
+        // Finally, remember to add the well-defined object to setup.ModNpcSetting
+        Object.assign(setup.ModNpcSetting, myNPC);
+    </code></pre>
+</body>
+</html>

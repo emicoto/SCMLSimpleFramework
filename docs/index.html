@@ -1,127 +1,245 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
+<html>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./style.css"/>
     <title>简易框架 - 文档导航</title>
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        #sidebar {
-            width: 250px;
-            background-color: #2c3e50;
-            color: white;
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            overflow-y: auto;
-            padding: 20px;
-        }
-        #sidebar h3 {
-            margin-top: 0;
-            color: #ecf0f1;
-        }
-        #sidebar li {
-            margin-left: -5px;
-            margin-top: 5px;
-        }
-        #sidebar a {
-            color: #bdc3c7;
-        }
-        #sidebar a:hover {
-            color: #fff184;
-            cursor: pointer;
-        }
-        #main-content {
-            margin-left: 250px;
-            padding: 20px;
-        }
-        iframe {
-            width: 100%;
-            height: calc(100vh - 40px);
-            border: none;
-        }
-        code {
-            background-color: #ecf0f1;
-            padding: 2px 4px;
-            display: inline-block;
-        }
-    </style>
 </head>
+<style>
+    body {
+        overflow: hidden;
+        margin: 0;
+    }
+</style>
+<script>
+    const navigator = [
+        {
+            node: 'h2',
+            title: ['功能目录', 'Menu'],
+            items: [
+                {
+                    title: ['一切的基础，前置必备知识', 'All the Beginning'],
+                    url: 'all_the_beginning.html'
+                },
+                {
+                    title: ['框架概览与模组注册', 'Overview and Registration'],
+                    url: 'overview_and_registration.html'
+                }
+            ]
+        },
+        {
+            node: 'hr'
+        },
+        {
+            node: 'h3',
+            title: ['主要功能', 'Main Function']
+        },
+        {
+            node: 'hr'
+        },
+        {
+            node: 'h3',
+            title: ['模组管理器', 'Mod Management'],
+            items: [
+                {
+                    title: ['模组注册与管理接口', 'Module Registration Management'],
+                    url: 'module_registration_management.html'
+                },
+                {
+                    title: ['API文档', 'API List'],
+                    url: 'imod_api_list.html'
+                }
+            ]
+        },
+        {
+            node: 'h3',
+            title: ['命名NPC系统', 'Name NPC System'],
+            items: [
+                {
+                    title: ['新增NamedNPC以及设置', 'Name NPC Class Overview'],
+                    url: 'name_npc_class_overview.html'
+                },
+                {
+                    title: ['NPC管理与调用', 'NPC Management Methods'],
+                    url: 'npc_management_methods.html'
+                }
+            ]
+        },
+        {
+            node: 'h3',
+            title: ['新增自定义内容', 'Custom Content'],
+            items: [
+                {
+                    title: ['Macro Widget与动态内容', 'Simple Widget Overview'],
+                    url: 'SimpleWidgetOverview.html'
+                },
+                {
+                    title: ['自定义特征、纹身等', 'Simple Custom Contents'],
+                    url: 'simple_custom_contents.html'
+                },
+                {
+                    title: ['htmlTool功能API详解', 'DomTool API Book'],
+                    url: 'domtool_apibook.html'
+                }
+            ]
+        },
+        {
+            node: 'h3',
+            title: ['事件系统', 'Event System'],
+            items: [
+                {
+                    title: ['事件注册', 'Event System Regist'],
+                    url: 'eventsystem_regist.html'
+                },
+                {
+                    title: ['基础概念与流程详解', 'Event System Cycle Knowlege'],
+                    url: 'eventsystem_cycleknowlege.html'
+                },
+                {
+                    title: ['事件的制作', 'Event Making'],
+                    url: 'blank.html'
+                },
+                {
+                    title: ['API文档', 'API List'],
+                    url: 'blank.html'
+                }
+            ]
+        },
+        {
+            node: 'h3',
+            title: ['时间管理系统', 'Time Handler'],
+            items: [
+                {
+                    title: ['时间事件注册', 'Time Event Regist'],
+                    url: 'blank.html'
+                },
+                {
+                    title: ['功能详解', 'Function Detail'],
+                    url: 'blank.html'
+                },
+                {
+                    title: ['API文档', 'API List'],
+                    url: 'blank.html'
+                }
+            ]
+        },
+        {
+            node: 'h3',
+            title: ['自定义UI', 'Custom UI'],
+            items: [
+                {
+                    title: ['自定义弹窗', 'Custom Popups'],
+                    url: 'customUI.html'
+                },
+                {
+                    title: ['通知消息', 'Notification'],
+                    url: 'headerMsg.html'
+                },
+                {
+                    title: ['API文档', 'API List'],
+                    url: 'blank.html'
+                }
+            ]
+        },
+        {
+            node: 'h3',
+            title: ['多语言支持', 'Language Support'],
+            items: [
+                {
+                    title: ['语言包注册', 'Language Pack Regist'],
+                    url: 'blank.html'
+                },
+                {
+                    title: ['语言切换', 'Language Switch'],
+                    url: 'blank.html'
+                },
+                {
+                    title: ['API文档', 'API List'],
+                    url: 'blank.html'
+                }
+            ]
+        },
+        {
+            node: 'h3',
+            title: ['其他功能', 'Other Features'],
+            items: [
+                {
+                    title: ['便利工具', 'Convenient Tools'],
+                    url: 'blank.html'
+                },
+                {
+                    title: ['代码示例', 'Code Examples'],
+                    url: 'blank.html'
+                },
+                {
+                    title: ['API文档', 'API List'],
+                    url: 'blank.html'
+                }
+            ]
+        },
+        {
+            node: 'h3',
+            title: ['集成指南', 'Integration Guide']
+        },
+        {
+            node: 'h3',
+            title: ['版本信息', 'Version Info']
+        }
+    ]
+    function lanSwitch(lanArr) {
+        return lanArr[window.currentLanguage === 'zh' ? 0 : 1];
+    }
+    function generateNavi() {
+        const sidebar = document.getElementById('sidebar');
+        navigator.forEach(item => {
+            let node = document.createElement(item.node);
+            if (item.url && item.title) {
+                node.innerHTML = `<a href="./${window.currentLanguage}/${item.url}" target="content-frame">${lanSwitch(item.title)}</a>`;
+            }
+            else if (item.title) {
+                node.innerHTML = `<span>${lanSwitch(item.title)}</span>`;
+            }
+
+            sidebar.appendChild(node);
+
+            if (item.items) {
+                const ul = document.createElement('ul');
+                item.items.forEach(subItem => {
+                    const li = document.createElement('li');
+                    const a = document.createElement('a');
+                    a.href = subItem.url ? `./${window.currentLanguage}/${subItem.url}` : '#';
+                    a.target = 'content-frame';
+                    a.innerText = lanSwitch(subItem.title);
+                    li.appendChild(a);
+                    ul.appendChild(li);
+                });
+                sidebar.appendChild(ul);
+            }
+        });
+    }
+    function switchLanguage(lang) {
+        window.currentLanguage = lang;
+        document.querySelectorAll('iframe').forEach(iframe => {
+            iframe.src = iframe.src.replace(/\/(zh|en)\//, `/${lang}/`);
+        });
+        document.getElementById('sidebar').innerHTML = '';
+        generateNavi();
+    }
+</script>
 <body>
-    <div class="container">
+    <div id="headbar">
+        <a onclick="switchLanguage('zh')" href="#">中文</a> | <a onclick="switchLanguage('en')" href="#">English</a>
+    </div>
+    <div id="container">
         <div id="sidebar">
-            <h2>功能目录</h2>
-            <ul>
-                <li><a href="./all_the_beginning.html" target="content-frame">一切的基础，前置必备知识</a></li>
-                <li><a href="./overview_and_registration.html" target="content-frame">框架概览与模组注册</a></li>
-            </ul>
-            <hr>
-            <h3>主要功能</h3>
-            <hr>
-            <h3>模组管理器</h3>
-            <ul>
-                <li><a href="./module_registration_management.html" target="content-frame">模组注册与管理接口</a></li>
-                <li><a href="./imod_api_list.html" target="content-frame">API文档</a></li>
-            </ul>
-
-            <h3>命名NPC系统</h3>
-            <ul>
-                <li><a href="./name_npc_class_overview.html" target="content-frame">新增NamedNPC以及设置</a></li>
-                <li><a href="./npc_management_methods.html" target="content-frame">NPC管理与调用</a></li>
-            </ul>
-
-            <h3>新增自定义内容</h3>
-            <ul>
-                <li><a href="./SimpleWidgetOverview.html" target="content-frame">Macro Widget与动态内容</a></li>
-                <li><a href="./simple_custom_contents.html" target="content-frame">自定义特征、纹身等</a></li>
-                <li><a href="./domtool_apibook.html" target="content-frame">htmlTool功能API详解</a></li>
-            </ul>
-
-            <h3>事件系统</h3>
-            <ul>
-                <li><a href="./eventsystem_regist.html" target="content-frame">事件注册</a></li>
-                <li><a href="./eventsystem_cycleknowlege.html" target="content-frame">基础概念与流程详解</a></li>
-                <li><a href="#" target="content-frame">事件的制作</a></li>
-                <li><a href="#" target="content-frame">API文档</a></li>
-            </ul>
-
-            <h3>时间管理系统</h3>
-            <ul>
-                <li><a href="#" target="content-frame">时间事件注册</a></li>
-                <li><a href="#" target="content-frame">功能详解</a></li>
-                <li><a href="#" target="content-frame">API文档</a></li>
-            </ul>
-
-            <h3>自定义UI</h3>
-            <ul>
-                <li><a href="#" target="content-frame">自定义弹窗</a></li>
-                <li><a href="#" target="content-frame">通知消息</a></li>
-                <li><a href="#" target="content-frame">API文档</a></li>
-            </ul>
-
-            <h3>多语言支持</h3>
-            <ul>
-                <li><a href="#" target="content-frame">语言包注册</a></li>
-                <li><a href="#" target="content-frame">语言切换</a></li>
-                <li><a href="#" target="content-frame">API文档</a></li>
-            </ul>
-
-            <h3>其他功能</h3>
-            <ul>
-                <li><a href="#" target="content-frame">便利工具</a></li>
-                <li><a href="#" target="content-frame">代码示例</a></li>
-                <li><a href="#" target="content-frame">API文档</a></li>
-            </ul>
-
-            <h3>集成指南</h3>
-            <h3>版本信息</h3>
         </div>
         <div id="main-content" class="content">
-            <iframe name="content-frame" src="overview_and_registration.html"></iframe>
+            <iframe name="content-frame" src="./zh/overview_and_registration.html"></iframe>
         </div>
     </div>
 </body>
+<script>
+    window.currentLanguage = 'zh';
+    generateNavi();
+</script>
 </html>

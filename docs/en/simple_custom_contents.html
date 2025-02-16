@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DomTool.js API list</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h3>Custom Content Adding Guide</h3>
+
+    <p>This document aims to provide a detailed guide on how to use the functionality modules in the Simple Framework to easily extend custom content, enhancing the interactivity and playability of the game.</p>
+    
+    <hr>
+    
+    <h4>1. Modules and Traits</h4>
+    
+    <h5>General Traits</h5>
+    
+    <pre><code>
+    {
+        // addto: The category to add the trait to. Should match an existing category or a newly added one.
+        addto  : 'General Traits', 
+    
+        // name: The name of the trait, provided in an array for multi-language support. For example, ['Fearless', '无畏'].
+        name   : ['Trait Name (EN)', 'Trait Name (CN)'], 
+    
+        // cond: The condition to control the display of the trait, usually a function. Should match an existing category or a newly added one. For example, () => V.someVariable > 10.
+        cond   : () => V.someVariable > 10, 
+    
+        // text: The description of the trait, also supports multi-language. For example, ['Description in EN', '描述信息'].
+        text   : ['Description (EN)', 'Description (CN)'], 
+    
+        // colour: (optional) The color to display the trait, supports standard color names or hexadecimal codes. For example, 'green' or '#00FF00'.
+        colour : 'green' 
+    };
+    </code></pre>
+    
+    <h5>Add New Trait Categories</h5>
+    
+    <pre><code>
+    setup.ModTraitTitle.push({
+        title   : 'Custom Traits', // The class. Unique identifier.
+        display : ['Custom Traits (EN)', 'Custom Traits (CN)'], // Display name
+        traits  : [
+            {
+                name : ['Example Trait', '示例特征'],
+                cond : () => V.someFlag,
+                text : ['This is an example trait.', '这是一个示例特征。']
+            }
+        ]
+    });
+    </code></pre>
+    
+    <p>Call <code>setup.addModTrait()</code> to automatically load all new traits or categories.</p>
+    
+    <hr>
+    
+    <h4>2. Add New Tattoos</h4>
+    
+    <p>The tattoo feature is used to customize character appearance, supporting multi-language and visual effects.</p>
+    
+    <h5>Tattoo Structure</h5>
+    
+    <pre><code>
+    {
+        // key: Unique identifier to differentiate different tattoos internally.
+        key     : 'unique_tattoo_key', 
+    
+        // name: Display name of the tattoo, supports multi-language format. For example, ['Tattoo Name', '刺青名称'].
+        name    : 'Tattoo Name (EN)', 
+    
+        // cn: Chinese display name as a supplement (optional).
+        cn      : 'Tattoo Name (CN)', 
+    
+        // type: Display type, default is 'text', optional values include: 'object' (item type), 'pattern' (pattern type).
+        type    : 'text', 
+    
+        // arrow: Indicates whether to display an arrow pointing to a specific body part, 0 for no arrow, 1 for arrow.
+        arrow   : 0, 
+    
+        // special: Category used for grouping or triggering specific logic, supports value examples: 'slave', 'sex', 'prostitution', 'pregnant', 'animal', 'violence', 'drug'.
+        special : 'sex', 
+    
+        // gender: Gender preference of the tattoo, default is 'n' (no preference), optional values include 'f' (female preference) and 'm' (male preference).
+        gender  : 'n', 
+    
+        // lewd: Indicates whether the tattoo attracts extra attention, the higher the value, the more attention it attracts.
+        lewd    : 1, 
+    
+        // degree: Describes the strength or impact range of the tattoo, only valid in tattoos of the prostitution category, used to calculate rewards when interaction is successful.
+        degree  : 10, 
+    
+        // sprites: (optional) Array of associated visual resource paths, for example ['path/to/sprite1.png', 'path/to/sprite2.png'].
+        sprites : ['sprite_path.png'] 
+    };
+    </code></pre>
+    
+    <p>Load all new tattoos using <code>setup.addBodyWriting()</code>.</p>
+    
+    <hr>
+    
+    <h4>3. Extend Combat Actions</h4>
+    
+    <p>Customize combat actions using <code>setup.modCombatActions</code>.</p>
+    
+    <h5>Combat Action Structure</h5>
+    
+    <pre><code>
+    setup.modCombatActions.push({
+        displayname : ['Action Name (EN)', '动作名 (CN)'], // Action name
+        value       : 'action_value', // Internal identifier
+        type        : 'rightaction', // Action type it belongs to, can be leftaction, rightaction, legaction, mouthaction, etc.
+        condition   : () => V.playerStrength > 50, // Enable condition
+        color       : 'brat', // (optional) Display color, brat or submissive
+        widget      : 'CustomWidgetName' // (optional) Associated widget for difficulty display
+    });
+    </code></pre>
+    
+    <h5>Adjust Difficulty Dynamically</h5>
+    
+    <pre><code>
+    modCombatDifficul('action_value', 'difficulty');
+    </code></pre>
+    
+    <hr>
+    
+    <h4>4. Dynamic Loading and Multi-Language Support</h4>
+    
+    <h5>Dynamic Loading</h5>
+    <p>Use <code>setup.addModTrait()</code> and <code>setup.addBodyWriting()</code> to ensure all custom content is loaded correctly.</p>
+    
+    <h5>Multi-Language Support</h5>
+    <p>The names and descriptions of traits, tattoos, and actions should use multi-language arrays (e.g., [EN, CN]). Use <code>lanSwitch()</code> to automatically switch based on the player's language settings.</p>
+    
+    <hr>
+    
+    <h4>5. Example Code</h4>
+    
+    <pre><code>
+    // Add custom traits
+    let myTrait = {
+        addto  : 'General Traits',
+        name   : ['Fearless', '无畏'],
+        cond   : () => V.courage > 80,
+        text   : ['This character fears nothing.', '这个角色无所畏惧。'],
+        colour : 'blue'
+    };
+    setup.ModTraits.push(myTrait);
+
+    let myTraits = [
+        {
+            addto : 'General Traits',
+            name : ['Innocent', '天真'],
+            cond : () => V.charm > 50,
+            text : ['This character is innocent.', '这个角色天真无邪。']
+        },
+        {
+            addto : 'General Traits',
+            name : ['Cruel', '残忍'],
+            cond : () => V.cruelty > 50,
+            text : ['This character is cruel.', '这个角色残忍无比。'],
+            colour : 'red'
+        }
+    ]
+    setup.ModTraits.push(...myTraits);
+    
+    // Add custom tattoos
+    let myTattoo = {
+        key     : 'fearless_mark',
+        name    : 'Fearless Mark',
+        cn      : '无畏标记',
+        special : 'combat',
+        degree  : 50
+    };
+    setup.modTattoos.push(myTattoo);
+
+    let myTattoos = [
+    {
+        key     : 'two_hundred_pound_whore',
+        name    : '£200',
+        special : 'prostitution',
+        degree  : 20000
+    },
+    {
+        key     : 'ultimate_bitch',
+        name    : 'Ultimate Bitch',
+        cn      : '终极婊子',
+        special : 'sex'
+    }
+    ];
+    setup.modTattoos.push(...myTattoos)
+    
+    // Add combat actions
+    setup.modCombatActions.push({
+        displayname : ['Power Strike', '强力一击'],
+        value       : 'power_strike',
+        type        : 'leftaction',
+        widget      : 'powerstrikeDifficulShow',
+        condition   : () => V.playerEnergy > 20,
+        color       : 'brat'
+    });
+    </code></pre>
+</body>
+
+</body>
+</html>

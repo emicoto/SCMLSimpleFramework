@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event System - Registration Process and Explanation</title>
+    <link rel="stylesheet" href=".././style.css"/>
+    <style>
+        body {
+            margin: 20px !important;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Framework Event System - Event Registration</h1>
+    <p>The event system is one of the core features of the framework, allowing MOD developers to implement dynamic events based on custom conditions and scenarios.</p>
+    
+    <h2>What is Event Registration?</h2>
+    
+    <p>Event registration is the process of storing event information in the framework's event data system for triggering when needed.</p>
+    
+    <p>Through registration, developers can define the event's trigger conditions, priority, actions, and other related metadata.</p>
+    
+    <h3>Why Register Events?</h3>
+    
+    <p>Event registration allows MOD developers to:</p>
+    
+    <ul>
+        <li>Add dynamic behaviors to the game.</li>
+        <li>Trigger events based on specific conditions to enhance interactivity.</li>
+        <li>Separate complex logic into independently manageable modules.</li>
+    </ul>
+    
+    <h2>Basic Concepts</h2>
+    
+    <p>Event registration typically involves the following steps:</p>
+    
+    <ol>
+        <li><strong>Define Event Type</strong>: For example, scene events or condition events.</li>
+        <li><strong>Specify Event ID</strong>: Each event needs a unique identifier (ID).</li>
+        <li><strong>Set Trigger Conditions</strong>: Define the rules for triggering the event.</li>
+        <li><strong>Define Actions</strong>: Actions to be executed after the event is triggered.</li>
+        <li><strong>Configure Other Properties</strong>: Such as priority, exit logic, etc.</li>
+    </ol>
+    
+    <p>It is important to note that the scene series ID should match the stage ID you write in the twee file.</p>
+    
+    <p>For example:</p>
+    
+    <pre><code>
+    :: Stage CustomLocationId [scene]
+    &lt;&lt;effects&gt;&gt;
+    &lt;div id="locationDescription"&gt;
+    &lt;&lt;if $phase is 0 and iEvent.state.isRunning() is false&gt;&gt;
+            This is the general description of the location when no event is triggered.
+        &lt;&lt;else&gt;&gt;
+            Content displayed during event execution.
+        &lt;&lt;/if&gt;&gt;
+    &lt;/div&gt;
+    &lt;div id="eventcontent"&gt;
+        &lt;!-- If your location needs a general street event, such as fainting on the street, or an event exposed on the street --&gt;
+        &lt;&lt;if iEventUtils.generalStreetEvent().length > 1&gt;&gt;
+            &lt;&lt;=iEventUtils.generalStreetEvent()&gt;&gt;
+        &lt;&lt;elseif $tvar.eventTitle&gt;&gt;
+            &lt;!-- If a location event is registered in the event system, it will be displayed here when triggered --&gt;
+            &lt;&lt;include $tvar.eventTitle&gt;&gt;
+        &lt;&lt;else&gt;&gt;
+            &lt;!-- A default scene --&gt;
+            &lt;&lt;include "defaultScenePassageTitleByYourOwn"&gt;&gt;
+        &lt;&lt;/if&gt;&gt;
+    &lt;/div&gt;
+    </code></pre>
+    
+    <p>This defines a stage (舞台) with the ID CustomLocationId in the twee file.</p>
+    
+    <p>CustomLocationId can be replaced with any name you need, such as ChinaTown.</p>
+    
+    <p>Make sure there are no extra spaces and the location name is merged into a single entry.</p>
+    
+    <p>After that, the registered scene series will be displayed in the eventcontent based on the conditions in the event system.</p>
+    
+    <h2>Differences Between EventSeries and ConditionSeries</h2>
+    
+    <p>Although EventSeries and ConditionSeries are both extensions of the same class, they have different design intentions and usage patterns.</p>
+    
+    <ol>
+        <li><strong>EventSeries</strong>:
+    
+           <ul>
+               <li><strong>Mainly used for specific scene events</strong>: EventSeries is designed to be associated with specific scenes in the game. Each EventSeries is usually associated with a specific stage (Passage) and must be defined in the twee file.</li>
+               <li><strong>Execution Mode</strong>:
+
+                 </ul>
+               </li>
+               <li><strong>Interactive Impact</strong>:
+
+                 </ul>
+               </li>
+           </ul>
+    
+        <li><strong>ConditionSeries</strong>:
+    
+           <ul>
+               <li><strong>More inclined towards traditional event systems</strong>: ConditionSeries is usually used for events that can be triggered at any time, without being tied to specific scenes.</li>
+               <li><strong>Trigger Mechanism</strong>: When the player performs any operation that takes time, it will be determined whether to jump to:
+
+                 </ul>
+               </li>
+               <li><strong>Default Type</strong>: The event type of ConditionSeries is default to <code>event</code>.</li>
+           </ul>
+    
+    </ol>
+    
+    <h2>PlayOptions and Trigger in Detail</h2>
+    
+    <h3>PlayOptions</h3>
+    <p>PlayOptions are used to define the execution mode of the event and how to select the stage or passage:</p>
+    
+    <ol>
+        <li><strong>Jump or Not</strong>:
+           <ul>
+               <li>If playoptions is set, you can specify <code>stage</code> or <code>passage</code>, and the event will jump to the corresponding stage or passage when triggered.</li>
+               <li>If playoption is not set, it will be determined based on the type of SceneData, such as scene for embedded type and event for jump type.</li>
+           </ul>
+        </li>
+   
+        <li><strong>Set Stage</strong>:
+           <ul>
+               <li>When <code>type</code> is <code>scene</code>, if not specified, the default stage of the series will be used.</li>
+               <li>When <code>type</code> is <code>event</code>, it will run on the common stage <code>SFEventLoop</code> by default.</li>
+           </ul>
+        </li>
+    </ol>
+    
+    <p>Example:</p>
+    <pre><code>
+    sceneData.PlayOptions({
+        type: 'event', // Specify the type as scene
+        stage: 'Stage CustomLocation', // Jump to the custom location to execute the event
+    });
+    </code></pre>
+    
+    <h3>Trigger</h3>
+    <p>Trigger defines the trigger conditions of the event. It supports the following trigger types and parameters:</p>
+    
+    <ol>
+        <li><strong>passage type</strong>:
+           <ul>
+               <li>Parameter: <code>{ passage: 'passage Title' }</code>.</li>
+               <li>Description: Triggered when the player enters the specified passage.</li>
+           </ul>
+        </li>
+    
+        <li><strong>passageIsnot type</strong>:
+           <ul>
+               <li>Parameter: <code>{ passageIsnot: 'passage Title' }</code>.</li>
+               <li>Description: Triggered when the player enters a page that is not the specified passage.</li>
+           </ul>
+        </li>
+    
+        <li><strong>prevPassage type</strong>:
+           <ul>
+               <li>Parameter: <code>{ prevPassageIs: 'previous passage title' }</code>.</li>
+               <li>Description: Triggered when the previous page is the specified passage.</li>
+           </ul>
+        </li>
+    
+        <li><strong>prevPassageIsnot type</strong>:
+           <ul>
+
+               <li>Description: Triggered when the previous page is not the specified passage.</li>
+           </ul>
+        </li>
+    
+        <li><strong>location type</strong>:
+           <ul>
+
+               <li>Description: Triggered when the player is in any of the locations in the matching list.</li>
+           </ul>
+        </li>
+    
+        <li><strong>match type</strong>:
+           <ul>
+
+               <li>Description: Match the page title using regular expressions.</li>
+           </ul>
+        </li>
+    
+        <li><strong>callback function</strong>:
+           <ul>
+
+               <li>Description: Can determine whether to trigger based on dynamic conditions.</li>
+           </ul>
+        </li>
+    </ol>
+    
+    <p>Example:</p>
+    <pre><code>new SceneData('RandomEvent', 'event')
+    .Trigger('location', { location: ['market'] }, flags => flags.debug)
+    .Action('end', '&lt;&lt;set $eventComplete to true&gt;&gt;');
+</code></pre>
+    
+    <h2>Example Code</h2>
+    
+    <p>Here is a simple example of event registration, including two scene events and one condition event.</p>
+    
+    <pre><code>// Register scene events
+const sceneSeries = new EventSeries('ChinaTown').Flag('chinatown');
+sceneSeries.add(
+    // First event
+    new SceneData('Intro', 'event')
+        .set({
+            maxPhase: 2, // Maximum phase
+            exit: 'Stage Chinatown', // Exit point
+            priority: 1000 // Priority
+        })
+        .Trigger('scene', { prevPassageIsnot: 'Stage Chinatown' }, flags => !flags.intro)
+        .Action('end', '&lt;&lt;run iEvent.setFlag("chinatown", "intro", 1)&gt;&gt;'),
+
+    // Second event
+    new SceneData('Random_Vendor', 'event')
+        .Trigger('location', { location: ['chinatown'], prevPassageIs: 'Stage Chinatown' }, flags => flags.debug == 'vendor' && between(Time.hour, 6, 21))
+        .Action('init', '&lt;&lt;set $tvar.onselect to true&gt;&gt;&lt;&lt;generateRole 0 0 "vendor"&gt;&gt;&lt;&lt;person1&gt;&gt;')
+        .Action('end', '&lt;&lt;set $eventskip to 1&gt;&gt;')
+);
+// Get the default category and register the condition event
+const conditionSeries = iEvent.data.get('condition', 'common');
+conditionSeries.add(
+    new SceneData('Chinatown RandomRumors', 'event')
+        .Flags('chinatown')
+        .Trigger('match', { match: /[a-zA-Z]+ Street$|Park$/ }, flags => flags.intro === undefined && V.location == 'town' && random(100) < 30 && Time.days > 2 && flags.rumorstoday < 2)
+);
+</code></pre>
+    
+    <h3>Code Explanation</h3>
+    
+    <ol>
+        <li><strong>Define event series</strong>:
+    
+           <pre><code>const sceneSeries = new EventSeries('ChinaTown').Flag('chinatown');
+</code></pre>
+    
+           <p>Create an event series named <code>ChinaTown</code> and set a flag <code>chinatown</code>.</p>
+    
+        </li>
+    
+        <li><strong>Register scene events</strong>:
+    
+           <pre><code>sceneSeries.add(
+   new SceneData('Intro', 'event')
+       .set({ maxPhase: 2, exit: 'Stage Chinatown', priority: 1000 })
+       .Trigger('scene', { prevPassageIsnot: 'Stage Chinatown' }, flags => !flags.intro)
+       .Action('end', '&lt;&lt;run iEvent.setFlag("chinatown", "intro", 1)&gt;&gt;')
+);
+</code></pre>
+    
+           <ul>
+               <li><code>Intro</code> is the event ID and the event type is <code>event</code>.</li>
+               <li><code>Trigger</code> defines the trigger condition: <code>prevPassageIsnot</code> means the previous page is not <code>Stage Chinatown</code>.</li>
+               <li><code>Action</code> sets the <code>intro</code> flag of <code>chinatown</code> to 1 when the event ends.</li>
+           </ul>
+    
+        </li>
+    
+        <li><strong>Register condition event</strong>:
+    
+           <pre><code>conditionSeries.add(
+   new SceneData('Chinatown RandomRumors', 'event')
+       .Flags('chinatown')
+       .Trigger('match', { match: /[a-zA-Z]+ Street$|Park$/ }, flags => flags.intro === undefined && V.location == 'town' && random(100) < 30 && Time.days > 2 && flags.rumorstoday < 2)
+);
+</code></pre>
+    
+           <ul>
+               <li>Match the page name using regular expressions, such as <code>Street</code> or <code>Park</code>.</li>
+               <li>Add complex trigger conditions, such as random trigger probability, time restrictions, etc.</li>
+           </ul>
+    
+        </li>
+    </ol>
+    <h2>Event Registration Parameters in Detail</h2>
+    <ol>
+        <li><strong>SceneData</strong>:
+            <ul>
+
+                <li><strong>Trigger</strong>: Defines the trigger, supports types like <code>scene</code>, <code>location</code>, <code>match</code>, etc.</li>
+            </ul>
+        </li>
+        <li><strong>EventSeries</strong>:
+            <ul>
+
+                <li><strong>add</strong>: Adds event data to the series.</li>
+            </ul>
+        </li>
+        <li><strong>Trigger</strong>:
+            <ul>
+
+                <li><strong>callback</strong>: Callback function that returns a boolean value to determine whether to trigger.</li>
+            </ul>
+        </li>
+    </ol>
+    <h2>Use Cases</h2>
+    <ul>
+        <li><strong>Dialogue System</strong>: Dynamically trigger different dialogues based on player choices.</li>
+        <li><strong>Exploration Mechanism</strong>: Trigger exclusive events in specific locations and times.</li>
+        <li><strong>Quest System</strong>: Trigger subsequent content based on the status of a quest.</li>
+    </ul>
+    <p>With this tutorial, you have learned the basics of event registration in the Simple Framework. In the next chapter, we will explore event triggering and evaluation mechanisms.</p>
+</body>
+</html>
