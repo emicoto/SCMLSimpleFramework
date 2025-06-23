@@ -426,9 +426,16 @@ const ApplyZone = (() => {
             for (let i = nodes.length - 1; i >= 0; i--) {
                 const node = nodes[i];
 
-                if (isIconImg(node) && node?.src?.has(entranceImg)) {
-                    lastNode = node;
-                    console.log('[SFDebug] lastNode:',i, lastNode);
+                if (isIconImg(node)) {
+                    let src = null;
+                    console.log(node.nodeName);
+                    if (node.nodeName === 'IMG') {
+                        src = node.getAttribute('src');
+                    }
+                    if (src && entranceImg.some(keyword => src.includes(keyword))) {
+                        lastNode = node;
+                        console.log('[SFDebug] entranceNode:',i, lastNode);
+                    }
                     break;
                 }
                 else if (isMacroLink(node) && node.textContent.has(lastContent)) {

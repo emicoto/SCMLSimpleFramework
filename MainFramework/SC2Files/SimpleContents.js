@@ -14,6 +14,7 @@ setup.ModTraitTitle = [];
 setup.addModTrait = function () {
     const Traits = [
         'General Traits',
+        'Medicinal Traits',
         'Special Traits',
         'School Traits',
         'Trauma Traits',
